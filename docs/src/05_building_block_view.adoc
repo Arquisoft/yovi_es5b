@@ -60,18 +60,34 @@ otras. En el mejor de los casos bastará con ejemplos o la firma de los mismos.
 ****
 endif::arc42help[]
 
-_**<Diagrama general>**_
+[plantuml,"vista-bloques-1",png]
+----
+@startuml
+actor Usuario
+actor Bot
+
+cloud "Aplicación web YOVI" as yovi
+Usuario -> yovi : "Se registra en la aplicación y juega partidas"
+Bot -> yovi : "Interactúa con el API para obtener información y jugar"
+
+
+@enduml
+----
 
 Motivación::
 
-_<Explicación en texto>_
+La aplicación web **YOVI** permite a los usuarios registrarse en su sistema para jugar partidas al juego Y. Una vez registrados, los jugadores pueden jugar partidas contra la máquina; el sistema registrará su histórico de juego y diversas estadísticas.
 
+Además, la aplicación ofrece un _API_ externo que permite a los bots interactuar con ella y obtener información de partidas y de jugadores, así como jugar contra ella.
 
 Bloques de construcción contenidos::
-_<Desripción de los bloques de construcción contenidos (Cajas negras)>_
-
-Interfases importantes::
-_<Descripción de las interfases importantes>_
+[cols="1,2" options="header"]
+|===
+| **Nombre** | **Responsabilidad**
+| Usuario | Interactúa con la aplicación web para registrarse en ella y jugar partidas al juego Y
+| Bot | Interactúa con el _API_ de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina
+| Aplicación web YOVI | Muestra la interfaz web al usuario y expone el API para los bots.
+|===
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -93,8 +109,6 @@ importante. El título es el nombre de la caja negra.
 ****
 endif::arc42help[]
 
-==== <Caja Negra 1>
-
 ifdef::arc42help[]
 [role="arc42help"]
 ****
@@ -109,36 +123,6 @@ Aqui se describe la <caja negra 1> acorde a la siguiente plantilla:
 ****
 endif::arc42help[]
 
-_<Propósito/Responsabilidad>_
-
-_<Interfase(s)>_
-
-_<(Opcional) Características de Calidad/Performance>_
-
-_<(Opcional) Ubicación Archivo/Directorio>_
-
-_<(Opcional) Requerimientos Satisfechos>_
-
-_<(Opcional) Riesgos/Problemas/Incidentes Abiertos>_
-
-
-
-
-==== <Caja Negra 2>
-
-_<plantilla de caja negra>_
-
-==== <Caja Negra N>
-
-_<Plantilla de caja negra>_
-
-
-==== <Interfase 1>
-
-...
-
-==== <Interfase m>
-
 === Nivel 2
 
 ifdef::arc42help[]
@@ -152,7 +136,7 @@ sorprendentes, riesgosos, complejos o volátiles. Deje fuera las partes normales
 ****
 endif::arc42help[]
 
-==== Caja Blanca _<bloque de construcción 1>_
+==== Caja Blanca Aplicación web YOVI
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -161,21 +145,41 @@ ifdef::arc42help[]
 ****
 endif::arc42help[]
 
-_<plantilla de caja blanca>_
+[plantuml,"vista-bloques-2-yovi",png]
+----
+@startuml
+actor Usuario
+actor Bot
 
-==== Caja Blanca _<bloque de construcción 2>_
+node "Aplicación web YOVI" as yovi {
+    component Gamey #Gray
+    component Webapp #LightGray
+    component Users #DarkGray
+}
+
+Usuario --> yovi : "Se registra en la aplicación y juega partidas"
+Bot --> yovi : "Interactúa con el API para obtener información y jugar"
+Webapp --> Users : "Obtiene información de usuarios e histórico"
+Webapp --> Gamey : "Consulta estado de los juegos en curso"
+
+@enduml
+----
 
 
-_<plantilla de caja blanca>_
+Motivación::
 
-...
+La aplicación se divide en tres subsistemas: el motor de juego, _Gamey_, el módulo de gestión de usuarios, _Users_, y la interfaz de la aplicación web, _Webapp_. _Webapp_ se comunica con _Gamey_ y _Users_ para poder llevar a cabo sus funciones de gestionar sesiones de usuarios y juegos en curso.
 
-==== Caja Blanca _<bloque de construcción m>_
-
-
-_<plantilla de caja blanca>_
-
-
+Bloques de construcción contenidos::
+[cols="1,2" options="header"]
+|===
+| **Nombre** | **Responsabilidad**
+| Usuario | Interactúa con la aplicación web para registrarse en ella y jugar partidas al juego Y
+| Bot | Interactúa con el _API_ de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina
+| Gamey | Gestiona el motor del juego Y tanto como para usuarios como para bots
+| Users | Gestiona el registro e inicio de sesión de usuarios, así como su histórico
+| Webapp | Muestra la aplicación web al usuario y expone el API de juego a los bots
+|===
 
 === Nivel 3
 
@@ -188,7 +192,7 @@ Cuando la arquitectura requiera más niveles detallados copiar esta sección par
 ****
 endif::arc42help[]
 
-==== Caja Blanca <_bloque de construcción x.1_>
+==== Caja Blanca Gamey
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -196,16 +200,90 @@ ifdef::arc42help[]
 Especifica la estructura interna de _bloque de construcción x.1_.
 ****
 endif::arc42help[]
+[plantuml,"vista-bloques-3-gamey",png]
+----
+@startuml
+actor Usuario
+actor Bot
 
-_<plantilla de caja blanca>_
+node "Aplicación web YOVI" as yovi {
+    component "Gamey" {
+        component Bots #DarkGray
+        component BotServer #DarkGray
+        component Core #DarkGray
+        component Notation #DarkGray
+    }
+    component Webapp #DarkGray
+    component Users #DarkGray
+}
+
+Core --> Notation
+BotServer --> Bots : "IA del juego"
+BotServer --> Core : "Mecánicas del juego"
+
+Usuario --> Webapp
+Bot --> Webapp
+Webapp --> Users : "Gestión de usuarios/información"
+Webapp --> BotServer : "Gestión del juego"
+
+@enduml
+----
 
 
-==== Caja Blanca <_bloque de construcción x.2_>
+Motivación::
 
-_<plantilla de caja blanca>_
+El módulo de juego _Gamey_ separa las responsabilidades de gestión de peticiones de juego, gestión de mecánicas del juego y selección de IAs contra las que jugar en submódules diferentes con el objetivo de que estos sean fácilmente configurables o reemplazables.
+
+Bloques de construcción contenidos::
+[cols="1,2" options="header"]
+|===
+| **Nombre** | **Responsabilidad**
+| Bots | Provee lógica de juego contra la que otros usuarios y bots podrán jugar
+| BotServer | Gestiona las peticiones de juegos (movimientos  de juego, estado de la partida) realizadas por usuarios y bots.
+| Core | Provee la lógica base de las mecánicas del juego tales como los movimientos válidos o las condiciones de victoria
+| Notation | Provee estructura sobre la notación YEN de movimientos y estado del juego
+|===
 
 
+==== Caja Blanca Users
 
-==== Caja Blanca <_bloque de construcción y.1_>
+Motivación::
 
-_<plantilla de caja blanca>_
+El módulo de juego _Users_ separa las responsabilidades de registro/inicio de sesión de usuarios y recopilación de estadísticas de juego en dos submódulos distintos con acceso a la base de datos.
+
+Bloques de construcción contenidos::
+[cols="1,2" options="header"]
+|===
+| **Nombre** | **Responsabilidad**
+| users-service | Gestiona el registro e inicio de sesión de usuarios
+| users-stats-service | Gestiona las estadísticas de juego y rankings de usuarios
+|===
+
+[plantuml,"vista-bloques-3-users",png]
+----
+@startuml
+actor Usuario
+actor Bot
+
+node "Aplicación web YOVI" as yovi {
+    component "Gamey" #DarkGray
+    component Webapp #DarkGray
+    component Users {
+        component "users-service" as users #DarkGray
+        component "user-stats-service" as stats #DarkGray
+        database DBUsers as db
+
+    }
+}
+
+
+Usuario --> Webapp
+Bot --> Webapp
+Webapp --> users : "Gestión de usuarios"
+Webapp --> stats : "Gestión de estadísticas de juego"
+Webapp --> Gamey : "Gestión del juego"
+users <..> db
+stats <..> db
+
+@enduml
+----
