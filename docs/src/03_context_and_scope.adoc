@@ -53,6 +53,20 @@ endif::arc42help[]
 
 **<Diagram or Table>**
 
+**Business Context Diagram**
+[plantuml]
+----
+@startuml
+left to right direction
+skinparam rectangleStyle rounded
+title YOVI - Business Context Diagram
+actor Player
+rectangle "YOVI System"
+Player --> "YOVI System" : Registers and plays the game
+"YOVI System" --> Player : Provides game results\nand feedback
+@enduml
+----
+
 **<optionally: Explanation of external domain interfaces>**
 
 === Technical Context
