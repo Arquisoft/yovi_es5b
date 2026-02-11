@@ -1,32 +1,32 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-solution-strategy]]
-== *Estrategia de Solución*
+== Estrategia de Solución
 
-=== *Tecnologías seleccionadas*
+=== Tecnologías seleccionadas
 Basándonos en los requisitos del proyecto, se han seleccionado las siguientes tecnologías para garantizar un sistema modular y eficiente:
 
-* *Frontend:*
+* Frontend:
 
 ** React & Vite: Para construir una interfaz de usuario rápida y reactiva como Single Page Application (SPA).
 
 ** TypeScript: Añade tipado estático para reducir errores en el desarrollo del frontend.
 
-* *Backend de Usuarios:*
+* Backend de Usuarios:
 
 ** Node.js & Express: Entorno ligero y escalable para gestionar la lógica de usuarios y la API REST.
 
-* *Motor de Juego:*
+* Motor de Juego:
 
 ** Rust: Elegido por su alto rendimiento y seguridad de memoria para el core del motor y la lógica de bots.
 
 ** Cargo: Sistema de gestión de paquetes y construcción para el ecosistema Rust.
 
-* *Persistencia y Datos:*
+* Persistencia y Datos:
 
 MySQL: junto al orm "sequelize npm" para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.
 
-=== *Decisiones de organización del equipo*
+=== Decisiones de organización del equipo
 
 Para maximizar la eficiencia y la colaboración usaremos todas las herramientas disponibles, como GitHub para el control de versiones y la gestión de tareas a través de Issues y Projects, ademas de crear un kanban para organizar las tareas y el progreso del proyecto. Se asignarán roles específicos a cada miembro del equipo, como desarrolladores frontend, backend y de motor de juego, para asegurar que cada área del proyecto esté bien cubierta.
 
