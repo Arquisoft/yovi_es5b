@@ -30,6 +30,9 @@ Ver https://docs.arc42.org/section-3/[Context and Scope] en la documentación de
 ****
 endif::arc42help[]
 
+Esta sección describe el entorno en el que opera el sistema YOVI y las interacciones con actores externos.
+El sistema se presenta como una caja negra, mostrando únicamente sus relaciones con el exterior.
+
 === Contexto de negocio
 
 ifdef::arc42help[]
@@ -60,6 +63,9 @@ rectangle "Sistema YOVI"
 Jugador --> "Sistema YOVI" : Se registra y juega
 "Sistema YOVI" --> Jugador : Muestra resultado del juego
 @enduml
+
+El actor externo principal del sistema es el *jugador*, que puede registrarse y participar en partidas.
+El sistema YOVI proporciona al jugador información sobre el estado del juego y diferentes estadísticas.
 
 === Contexto técnico
 
