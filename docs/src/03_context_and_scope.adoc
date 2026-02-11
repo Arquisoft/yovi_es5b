@@ -90,6 +90,26 @@ endif::arc42help[]
 
 **<Diagrama o tabla>**
 
+[plantuml]
+----
+@startuml
+left to right direction
+skinparam rectangleStyle rounded
+
+title YOVI - Contexto técnico
+
+actor Jugador
+node "Navegador web" as browser
+rectangle "Sistema YOVI" as system
+
+Jugador --> browser : Interacción del usuario
+browser --> system : HTTP/HTTPS + JSON
+system --> browser : Respuestas REST
+browser --> Jugador : Interfaz gráfica
+
+@enduml
+----
+
 **<opcional: explicación de interfaces técnicas>**
 
 **<Mapeo de entrada/salida a canales>**
