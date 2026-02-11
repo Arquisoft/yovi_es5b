@@ -445,10 +445,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#section-introduction-and-goals">1. Introduction and Goals</a>
+<li><a href="#section-introduction-and-goals">1. Introducción y objetivos</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements_overview">1.1. Requirements Overview</a></li>
-<li><a href="#_quality_goals">1.2. Quality Goals</a></li>
+<li><a href="#_resumen_de_requisitos">1.1. Resumen de requisitos</a></li>
+<li><a href="#_objetivos_de_calidad">1.2. Objetivos de calidad</a></li>
 <li><a href="#_stakeholders">1.3. Stakeholders</a></li>
 </ul>
 </li>
@@ -555,8 +555,11 @@ For documentation of your own system you use better the <em>plain</em> version.<
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-introduction-and-goals">1. Introduction and Goals</h2>
+<h2 id="section-introduction-and-goals">1. Introducción y objetivos</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de reglas y verificación está implementado en Rust, mientras que el cliente web principal está desarrollado en TypeScript.</p>
+</div>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -585,105 +588,80 @@ These include</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_requirements_overview">1.1. Requirements Overview</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
+<h3 id="_resumen_de_requisitos">1.1. Resumen de requisitos</h3>
 <div class="paragraph">
-<div class="title">Contents</div>
-<p>Short description of the functional requirements, driving forces, extract (or abstract)
-of requirements. Link to (hopefully existing) requirements documents
-(with version number and information where to find it).</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>From the point of view of the end users a system is created or modified to
-improve support of a business activity and/or improve the quality.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>Short textual description, probably in tabular use-case format.
-If requirements documents exist this overview should refer to these documents.</p>
-</div>
-<div class="paragraph">
-<p>Keep these excerpts as short as possible. Balance readability of this document with potential redundancy w.r.t to requirements documents.</p>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-1/">Introduction and Goals</a> in the arc42 documentation.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_quality_goals">1.2. Quality Goals</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>The top three (max five) quality goals for the architecture whose fulfillment is of highest importance to the major stakeholders.
-We really mean quality goals for the architecture. Don&#8217;t confuse them with project goals.
-They are not necessarily identical.</p>
-</div>
-<div class="paragraph">
-<p>Consider this overview of potential topics (based upon the ISO 25010 standard):</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="./images/01_2_iso-25010-topics-EN.drawio.png" alt="Categories of Quality Requirements">
-</div>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>You should know the quality goals of your most important stakeholders, since they will influence fundamental architectural decisions.
-Make sure to be very concrete about these qualities, avoid buzzwords.
-If you as an architect do not know how the quality of your work will be judged&#8230;&#8203;</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>A table with quality goals and concrete scenarios, ordered by priorities</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_stakeholders">1.3. Stakeholders</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>Explicit overview of stakeholders of the system, i.e. all person, roles or organizations that</p>
+<p>Los requisitos principales del sistema son:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>should know the architecture</p>
+<p>Proporcionar una versión usable y funcional del juego Y.</p>
 </li>
 <li>
-<p>have to be convinced of the architecture</p>
+<p>Disponible en la web y accesible desde navegadores principales.</p>
 </li>
 <li>
-<p>have to work with the architecture or with code</p>
+<p>Ofrecer diferentes estrategias para jugar con distintos niveles de dificultad.</p>
 </li>
 <li>
-<p>need the documentation of the architecture for their work</p>
+<p>Permitir que los usuarios se registren en el sistema con credenciales seguras.</p>
 </li>
 <li>
-<p>have to come up with decisions about the system or its development</p>
+<p>Permitir que los usuarios consulten su histórico de partidas.</p>
+</li>
+<li>
+<p>Ofrecer la opción de jugar contra un bot mediante una API documentada.</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>You should know all parties involved in development of the system or affected by the system.
-Otherwise, you may get nasty surprises later in the development process.
-These stakeholders determine the extent and the level of detail of your work and its results.</p>
 </div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>Table with role names, person names, and their expectations with respect to the architecture and its documentation.</p>
+<div class="sect2">
+<h3 id="_objetivos_de_calidad">1.2. Objetivos de calidad</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Objetivo de calidad</th>
+<th class="tableblock halign-left valign-top">Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usabilidad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe ser fácil de usar y de aprender para los usuarios finales. Esto fomentará que utilicen la aplicación nuevamente y disfruten la experiencia. Interfaces intuitivas y flujos de usuario simplificados (≤3 pasos para acciones principales).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Funcionalidad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe implementar correctamente los requisitos, permitiendo a los usuarios jugar al juego Y con diferentes estrategias, registrarse en la aplicación y consultar sus estadísticas sin errores de lógica.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Accesibilidad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La aplicación debe estar disponible desde la web.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rendimiento</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (&lt; 4 segundos) para evitar que abandonen la aplicación y garantizar una experiencia positiva que los anime a volver.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mantenibilidad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe ser fácil de mantener y extender. Esto se logra siguiendo buenas prácticas de programación, manteniendo excelente comunicación dentro del equipo de desarrollo y documentación clara.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Seguridad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Los datos privados de los usuarios registrados deben mantenerse seguros.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exactitud</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-</div>
-</div>
+<div class="sect2">
+<h3 id="_stakeholders">1.3. Stakeholders</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
@@ -699,14 +677,24 @@ These stakeholders determine the extent and the level of detail of your work and
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Role-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Contact-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Expectation-1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Equipo de desarrollo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/NachoTS" class="bare">https://github.com/NachoTS</a>, <a href="https://github.com/tonipdd" class="bare">https://github.com/tonipdd</a>, <a href="https://github.com/alonsobayonalejandro-ctrl" class="bare">https://github.com/alonsobayonalejandro-ctrl</a>, <a href="https://github.com/Gedepe" class="bare">https://github.com/Gedepe</a>, <a href="https://github.com/UO300475" class="bare">https://github.com/UO300475</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Responsables de desarrollar la aplicación usando buenas técnicas, trabajar adecuadamente como equipo y lograr una solución lo más mantenible, usable y extensible posible.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Role-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Contact-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Expectation-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuarios / Jugadores</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Correo de los usuarios</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Micrati</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Correo de la empresa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Espera obtener una aplicación que se alinee con sus ideas y objetivos, que pueda servir como base para futuras extensiones comerciales.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Profesor de la asignatura ASW</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pablo González - <a href="mailto:gonzalezgpablo@uniovi.es">gonzalezgpablo@uniovi.es</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1980,7 +1968,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2026-01-29 10:02:36 +0100
+Last updated 2026-02-11 17:07:25 +0100
 </div>
 </div>
 </body>
