@@ -460,25 +460,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#section-solution-strategy">4. Solution Strategy</a></li>
-<li><a href="#section-building-block-view">5. Building Block View</a>
+<li><a href="#section-building-block-view">5. Vista de Bloques</a>
 <ul class="sectlevel2">
-<li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
-<li><a href="#_level_2">5.2. Level 2</a></li>
-<li><a href="#_level_3">5.3. Level 3</a></li>
+<li><a href="#_sistema_general_de_caja_blanca">5.1. Sistema General de Caja Blanca</a></li>
+<li><a href="#_nivel_2">5.2. Nivel 2</a></li>
+<li><a href="#_nivel_3">5.3. Nivel 3</a></li>
 </ul>
 </li>
 <li><a href="#section-runtime-view">6. Runtime View</a>
 <ul class="sectlevel2">
-<li><a href="#_runtime_scenario_1">6.1. &lt;Runtime Scenario 1&gt;</a></li>
-<li><a href="#_runtime_scenario_2">6.2. &lt;Runtime Scenario 2&gt;</a></li>
-<li><a href="#">6.3. &#8230;&#8203;</a></li>
-<li><a href="#_runtime_scenario_n">6.4. &lt;Runtime Scenario n&gt;</a></li>
+<li><a href="#_registro_de_un_nuevo_usuario">6.1. Registro de un nuevo usuario</a></li>
+<li><a href="#_inicio_de_sesión">6.2. Inicio de sesión</a></li>
+<li><a href="#_secuencia_de_partida_de_juego">6.3. Secuencia de partida de juego</a></li>
 </ul>
 </li>
-<li><a href="#section-deployment-view">7. Deployment View</a>
+<li><a href="#section-deployment-view">7. Vista de Despliegue</a>
 <ul class="sectlevel2">
-<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
-<li><a href="#_infrastructure_level_2">7.2. Infrastructure Level 2</a></li>
+<li><a href="#_nivel_de_infraestructura_1">7.1. Nivel de infraestructura 1</a></li>
 </ul>
 </li>
 <li><a href="#section-concepts">8. Cross-cutting Concepts</a>
@@ -803,6 +801,14 @@ The title of the table is the name of your system, the three columns contain the
 <p><strong>&lt;Diagram or Table&gt;</strong></p>
 </div>
 <div class="paragraph">
+<p><strong>Business Context Diagram</strong></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/diag-plantuml-md5-c077e3d60136007d58abd1c3f47d01e9.png" alt="Diagram" width="366" height="144">
+</div>
+</div>
+<div class="paragraph">
 <p><strong>&lt;optionally: Explanation of external domain interfaces&gt;</strong></p>
 </div>
 </div>
@@ -886,120 +892,112 @@ Refer to details in the following sections.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-building-block-view">5. Building Block View</h2>
+<h2 id="section-building-block-view">5. Vista de Bloques</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<div class="title">Content</div>
-<p>The building block view shows the static decomposition of the system into building blocks (modules, components, subsystems, classes, interfaces, packages, libraries, frameworks, layers, partitions, tiers, functions, macros, operations, data structures, &#8230;&#8203;) as well as their dependencies (relationships, associations, &#8230;&#8203;)</p>
+<div class="title">Contenido</div>
+<p>La vista de bloques muestra la descomposición estática del sistema en bloques de construcción (módulos, componentes,
+subsistemas, clases, interfases, paquetes, bibliotecas, marcos de desarrollo, capas, particiones, funciones, macros,
+operaciones, estructuras de datos,&#8230;&#8203;) así como sus dependencias (relaciones, asociaciones,&#8230;&#8203;)</p>
 </div>
 <div class="paragraph">
-<p>This view is mandatory for every architecture documentation.
-In analogy to a house this is the <em>floor plan</em>.</p>
+<p>Esta vista es obligatoria para cualquier documentación de arquitectura.
+Es la analogía al plano de una casa.</p>
 </div>
 <div class="paragraph">
-<div class="title">Motivation</div>
-<p>Maintain an overview of your source code by making its structure understandable through
-abstraction.</p>
+<div class="title">Motivación</div>
+<p>Mantener una visión general de su código fuente haciendo su estructura comprensible de manera abstracta.</p>
 </div>
 <div class="paragraph">
-<p>This allows you to communicate with your stakeholder on an abstract level without disclosing implementation details.</p>
+<p>Esto permite comunicar a las partes interesades en un nivel abstracto sin entrar en detalles de implementación.</p>
 </div>
 <div class="paragraph">
-<div class="title">Form</div>
-<p>The building block view is a hierarchical collection of black boxes and white boxes
-(see figure below) and their descriptions.</p>
+<div class="title">Forma</div>
+<p>La vista de bloques comprende una colección jerárquica de cajas negras y cajas blancas (ver figura de abajo)
+y sus descripciones.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/05_building_blocks-EN.png" alt="Hierarchy of building blocks">
+<img src="./images/05_building_blocks-ES.png" alt="Jerarquía de bloques de construcción">
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Level 1</strong> is the white box description of the overall system together with black
-box descriptions of all contained building blocks.</p>
+<p><strong>Nivel 1</strong> comprende la descripción de Caja Blanca del sistema en general junto con las descripciones de Caja Negra de
+todos los bloques contenidos.</p>
 </div>
 <div class="paragraph">
-<p><strong>Level 2</strong> zooms into some building blocks of level 1.
-Thus it contains the white box description of selected building blocks of level 1, together with black box descriptions of their internal building blocks.</p>
+<p><strong>Nivel 2</strong> hace zoom a los bloques de construcción del Nivel 1. Entonces contiene la descripción de Caja Blanca de los
+bloques de construcción selecionadas del nivel 1,junto con las descripciones de caja negra de sus bloques de construcción
+internas.</p>
 </div>
 <div class="paragraph">
-<p><strong>Level 3</strong> zooms into selected building blocks of level 2, and so on.</p>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-5/">Building Block View</a> in the arc42 documentation.</p>
+<p><strong>Nivel 3</strong> Hace zoom a los bloques selectos del nivel 2, y así sucesivamente.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_whitebox_overall_system">5.1. Whitebox Overall System</h3>
+<h3 id="_sistema_general_de_caja_blanca">5.1. Sistema General de Caja Blanca</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<p>Here you describe the decomposition of the overall system using the following white box template. It contains</p>
+<p>Aquí se describe la descomposición del sistema en general usando la siguiente plantilla de caja blanca. Contiene:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>an overview diagram</p>
+<p>Un diagrama general</p>
 </li>
 <li>
-<p>a motivation for the decomposition</p>
+<p>La motivación para la descomposición</p>
 </li>
 <li>
-<p>black box descriptions of the contained building blocks. For these we offer you alternatives:</p>
+<p>Descripciones de caja negra de los bloques de construcción contenidos. Para estos se ofrecen las siguientes
+alternativas:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>use <em>one</em> table for a short and pragmatic overview of all contained building blocks and their interfaces</p>
+<p>Usar <em>una</em> tabla para una revisión pragmática y corta de todos los bloques de construcción contenidos y sus
+interfaces</p>
 </li>
 <li>
-<p>use a list of black box descriptions of the building blocks according to the black box template (see below).
-Depending on your choice of tool this list could be sub-chapters (in text files), sub-pages (in a Wiki) or nested elements (in a modeling tool).</p>
+<p>Usar una lista de descripciones de caja negra de los bloques de construcción acorde a la plantilla de caja negra (ver abajo). Dependiendo de la herramienta utilizada, esta lista podría constar de sub-capítulos (en archivos de texto),
+sub-páginas (en un wiki) o elementos anidados (en una herramienta de modelado).</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>(optional:) important interfaces, that are not explained in the black box templates of a building block, but are very important for understanding the white box.
-Since there are so many ways to specify interfaces why do not provide a specific template for them.
- In the worst case you have to specify and describe syntax, semantics, protocols, error handling,
- restrictions, versions, qualities, necessary compatibilities and many things more.
-In the best case you will get away with examples or simple signatures.</p>
+<p>(opcional:) Interfases importantes, que no están explicadas en las plantillas de caja negra de un bloque de construcción,
+pero que son muy importantes para entender la caja blanca. En el peor de los casos se deberá especificar y desribir la
+sintaxis, semántica, protocolos, manejo de errores, restricciones, versiones, calidades, compatibilidades necesarias, entre
+otras. En el mejor de los casos bastará con ejemplos o la firma de los mismos.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vista-bloques-1.png" alt="vista bloques 1" width="605" height="94">
+</div>
 </div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Motivation</dt>
+<dt class="hdlist1">Motivación</dt>
 <dd>
-<p><em>&lt;text explanation&gt;</em></p>
-</dd>
-<dt class="hdlist1">Contained Building Blocks</dt>
-<dd>
-<p><em>&lt;Description of contained building block (black boxes)&gt;</em></p>
-</dd>
-<dt class="hdlist1">Important Interfaces</dt>
-<dd>
-<p><em>&lt;Description of important interfaces&gt;</em></p>
+<p>La aplicación web <strong>YOVI</strong> permite a los usuarios registrarse en su sistema para jugar partidas al juego Y. Una vez registrados, los jugadores pueden jugar partidas contra la máquina; el sistema registrará su histórico de juego y diversas estadísticas.</p>
 </dd>
 </dl>
 </div>
-<div class="sidebarblock arc42help">
-<div class="content">
 <div class="paragraph">
-<p>Insert your explanations of black boxes from level 1:</p>
+<p>Además, la aplicación ofrece un <em>API</em> externo que permite a los bots interactuar con ella y obtener información de partidas y de jugadores, así como jugar contra ella.</p>
 </div>
-<div class="paragraph">
-<p>If you use tabular form you will only describe your black boxes with name and
-responsibility according to the following schema:</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Bloques de construcción contenidos</dt>
+</dl>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1008,180 +1006,268 @@ responsibility according to the following schema:</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top"><strong>Name</strong></th>
-<th class="tableblock halign-left valign-top"><strong>Responsibility</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Nombre</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Responsabilidad</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;black box 1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Text&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con la aplicación web para registrarse en ella y jugar partidas al juego Y</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;black box 2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Text&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con el <em>API</em> de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Aplicación web YOVI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Muestra la interfaz web al usuario y expone el API para los bots.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sidebarblock arc42help">
+<div class="content">
+<div class="paragraph">
+<p>Inserte las explicaciones de las cajas negras del nivel 1:</p>
+</div>
+<div class="paragraph">
+<p>Si usa la forma tabular solo describa las cajas negras con nombre y responsabilidad acorde al
+siguiente esquema:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Nombre</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Responsabilidad</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;caja negra 1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Texto&gt;</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;caja negra 2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Texto&gt;</em></p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>If you use a list of black box descriptions then you fill in a separate black box template for every important building block .
-Its headline is the name of the black box.</p>
+<p>Si utiliza una lista de descripciones de cajas negras entonces llene una plantilla de caja negra por cada bloque de construcción
+importante. El título es el nombre de la caja negra.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_name_black_box_1">5.1.1. &lt;Name black box 1&gt;</h4>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<p>Here you describe &lt;black box 1&gt;
-according the the following black box template:</p>
+<p>Aqui se describe la &lt;caja negra 1&gt; acorde a la siguiente plantilla:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Purpose/Responsibility</p>
+<p>Propósito/Responsabilidad</p>
 </li>
 <li>
-<p>Interface(s), when they are not extracted as separate paragraphs. This interfaces may include qualities and performance characteristics.</p>
+<p>Interfases, cuando no son extraídas como párrafos separados. Estas interfases pueden incluir características de calidad y rendimiento.</p>
 </li>
 <li>
-<p>(Optional) Quality-/Performance characteristics of the black box, e.g.availability, run time behavior, &#8230;&#8203;.</p>
+<p>(Opcional) Características de Calidad / Rendimiento de la caja negra, por ejemplo, disponibilidad, comportamiento en ejecución, &#8230;&#8203;</p>
 </li>
 <li>
-<p>(Optional) directory/file location</p>
+<p>(Opcional) Ubicación archivo/directorio</p>
 </li>
 <li>
-<p>(Optional) Fulfilled requirements (if you need traceability to requirements).</p>
+<p>(Opcional) Requerimientos satisfechos (si se necesita contar con la trazabilidad a los requerimientos).</p>
 </li>
 <li>
-<p>(Optional) Open issues/problems/risks</p>
+<p>(Opcional) Incidentes/problemas/riesgos abiertos</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_nivel_2">5.2. Nivel 2</h3>
+<div class="sidebarblock arc42help">
+<div class="content">
 <div class="paragraph">
-<p><em>&lt;Purpose/Responsibility&gt;</em></p>
+<p>Aquí se especifica la estructura interna de (algunos) bloques de construcción del nivel 1 como cajas blancas.</p>
 </div>
 <div class="paragraph">
-<p><em>&lt;Interface(s)&gt;</em></p>
+<p>Debe decidir cuales bloques de construcción del sistema son lo suficientemente importantes para justificar una
+descripción detallada. Prefiera la relevancia sobre la completitud. Especifique bloques de construcción importantes,
+sorprendentes, riesgosos, complejos o volátiles. Deje fuera las partes normales, simples, estándares o aburridas del sistema.</p>
 </div>
-<div class="paragraph">
-<p><em>&lt;(Optional) Quality/Performance Characteristics&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(Optional) Directory/File Location&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(Optional) Fulfilled Requirements&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(optional) Open Issues/Problems/Risks&gt;</em></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_name_black_box_2">5.1.2. &lt;Name black box 2&gt;</h4>
+<h4 id="_caja_blanca_aplicación_web_yovi">5.2.1. Caja Blanca Aplicación web YOVI</h4>
+<div class="sidebarblock arc42help">
+<div class="content">
 <div class="paragraph">
-<p><em>&lt;black box template&gt;</em></p>
+<p>&#8230;&#8203;Describe la estructura interna de <em>bloque de construcción 1</em>.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_name_black_box_n">5.1.3. &lt;Name black box n&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;black box template&gt;</em></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vista-bloques-2-yovi.png" alt="vista bloques 2 yovi" width="620" height="337">
 </div>
 </div>
-<div class="sect3">
-<h4 id="_name_interface_1">5.1.4. &lt;Name interface 1&gt;</h4>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivación</dt>
+<dd>
+<p>La aplicación se divide en tres subsistemas: el motor de juego, <em>Gamey</em>, el módulo de gestión de usuarios, <em>Users</em>, y la interfaz de la aplicación web, <em>Webapp</em>. <em>Webapp</em> se comunica con <em>Gamey</em> y <em>Users</em> para poder llevar a cabo sus funciones de gestionar sesiones de usuarios y juegos en curso.</p>
+</dd>
+<dt class="hdlist1">Bloques de construcción contenidos</dt>
+</dl>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_name_interface_m">5.1.5. &lt;Name interface m&gt;</h4>
-
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Nombre</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Responsabilidad</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con la aplicación web para registrarse en ella y jugar partidas al juego Y</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con el <em>API</em> de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gamey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona el motor del juego Y tanto como para usuarios como para bots</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona el registro e inicio de sesión de usuarios, así como su histórico</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Webapp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Muestra la aplicación web al usuario y expone el API de juego a los bots</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_level_2">5.2. Level 2</h3>
+<h3 id="_nivel_3">5.3. Nivel 3</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<p>Here you can specify the inner structure of (some) building blocks from level 1 as white boxes.</p>
+<p>Aqui se especifica la estructura interna de (algunos) de los bloques de construcción del nivel 2 como cajas blancas.</p>
 </div>
 <div class="paragraph">
-<p>You have to decide which building blocks of your system are important enough to justify such a detailed description.
-Please prefer relevance over completeness. Specify important, surprising, risky, complex or volatile building blocks.
-Leave out normal, simple, boring or standardized parts of your system</p>
+<p>Cuando la arquitectura requiera más niveles detallados copiar esta sección para niveles adicionales.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_white_box_building_block_1">5.2.1. White Box <em>&lt;building block 1&gt;</em></h4>
+<h4 id="_caja_blanca_gamey">5.3.1. Caja Blanca Gamey</h4>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<p>&#8230;&#8203;describes the internal structure of <em>building block 1</em>.</p>
+<p>Especifica la estructura interna de <em>bloque de construcción x.1</em>.</p>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_2">5.2.2. White Box <em>&lt;building block 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_m">5.2.3. White Box <em>&lt;building block m&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_3">5.3. Level 3</h3>
-<div class="sidebarblock arc42help">
+<div class="imageblock">
 <div class="content">
-<div class="paragraph">
-<p>Here you can specify the inner structure of (some) building blocks from level 2 as white boxes.</p>
-</div>
-<div class="paragraph">
-<p>When you need more detailed levels of your architecture please copy this
-part of arc42 for additional levels.</p>
+<img src="./images/vista-bloques-3-gamey.png" alt="vista bloques 3 gamey" width="383" height="533">
 </div>
 </div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivación</dt>
+<dd>
+<p>El módulo de juego <em>Gamey</em> separa las responsabilidades de gestión de peticiones de juego, gestión de mecánicas del juego y selección de IAs contra las que jugar en submódules diferentes con el objetivo de que estos sean fácilmente configurables o reemplazables.</p>
+</dd>
+<dt class="hdlist1">Bloques de construcción contenidos</dt>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Nombre</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Responsabilidad</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bots</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Provee lógica de juego contra la que otros usuarios y bots podrán jugar</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BotServer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona las peticiones de juegos (movimientos  de juego, estado de la partida) realizadas por usuarios y bots.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Core</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Provee la lógica base de las mecánicas del juego tales como los movimientos válidos o las condiciones de victoria</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Provee estructura sobre la notación YEN de movimientos y estado del juego</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
-<h4 id="_white_box_building_block_x_1">5.3.1. White Box &lt;_building block x.1_&gt;</h4>
-<div class="sidebarblock arc42help">
+<h4 id="_caja_blanca_users">5.3.2. Caja Blanca Users</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivación</dt>
+<dd>
+<p>El módulo de juego <em>Users</em> separa las responsabilidades de registro/inicio de sesión de usuarios y recopilación de estadísticas de juego en dos submódulos distintos con acceso a la base de datos.</p>
+</dd>
+<dt class="hdlist1">Bloques de construcción contenidos</dt>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Nombre</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Responsabilidad</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">users-service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona el registro e inicio de sesión de usuarios</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">users-stats-service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona las estadísticas de juego y rankings de usuarios</p></td>
+</tr>
+</tbody>
+</table>
+<div class="imageblock">
 <div class="content">
-<div class="paragraph">
-<p>Specifies the internal structure of <em>building block x.1</em>.</p>
+<img src="./images/vista-bloques-3-users.png" alt="vista bloques 3 users" width="526" height="428">
 </div>
-</div>
-</div>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_x_2">5.3.2. White Box &lt;_building block x.2_&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_y_1">5.3.3. White Box &lt;_building block y.1_&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -1191,243 +1277,223 @@ part of arc42 for additional levels.</p>
 <div class="sect1">
 <h2 id="section-runtime-view">6. Runtime View</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
 <div class="paragraph">
-<div class="title">Contents</div>
-<p>The runtime view describes concrete behavior and interactions of the system’s building blocks in form of scenarios from the following areas:</p>
+<p>A continuacion se presentan los distintos escenarios que describen las interacciones entre las instancias del sistema. Cada escenario se centra en un caso de uso específico, que seran:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>important use cases or features: how do building blocks execute them?</p>
+<p>Registro de un nuevo usuario</p>
 </li>
 <li>
-<p>interactions at critical external interfaces: how do building blocks cooperate with users and neighboring systems?</p>
+<p>Inicio de sesión</p>
 </li>
 <li>
-<p>operation and administration: launch, start-up, stop</p>
+<p>Partida de juego</p>
 </li>
 <li>
-<p>error and exception scenarios</p>
+<p>Consultar ranking de jugadores</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>Remark: The main criterion for the choice of possible scenarios (sequences, workflows) is their <strong>architectural relevance</strong>. It is <strong>not</strong> important to describe a large number of scenarios. You should rather document a representative selection.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>You should understand how (instances of) building blocks of your system perform their job and communicate at runtime.
-You will mainly capture scenarios in your documentation to communicate your architecture to stakeholders that are less willing or able to read and understand the static models (building block view, deployment view).</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>There are many notations for describing scenarios, e.g.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>numbered list of steps (in natural language)</p>
-</li>
-<li>
-<p>activity diagrams or flow charts</p>
-</li>
-<li>
-<p>sequence diagrams</p>
-</li>
-<li>
-<p>BPMN or EPCs (event process chains)</p>
-</li>
-<li>
-<p>state machines</p>
-</li>
-<li>
-<p>&#8230;&#8203;</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-6/">Runtime View</a> in the arc42 documentation.</p>
-</div>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_runtime_scenario_1">6.1. &lt;Runtime Scenario 1&gt;</h3>
-<div class="ulist">
-<ul>
-<li>
-<p><em>&lt;insert runtime diagram or textual description of the scenario&gt;</em></p>
-</li>
-<li>
-<p><em>&lt;insert description of the notable aspects of the interactions between the
-building block instances depicted in this diagram.&gt;</em></p>
-</li>
-</ul>
-</div>
+<h3 id="_registro_de_un_nuevo_usuario">6.1. Registro de un nuevo usuario</h3>
 <div class="paragraph">
-<p>It is possible to use a sequence diagram:</p>
+<p>Al entrar por primera vez a la aplicación, el usuario se encuentra con la pantalla de registro. En esta pantalla, el usuario introduce sus datos y al hacer clic en el botón de registro, se envía una solicitud al servidor para crear una nueva cuenta. Si es valida se crea la cuenta y se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error indicando el motivo del fallo.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Sequence%20diagram.png" alt="Sequence diagram" width="332" height="335">
+<img src="./images/registro_usuario.png" alt="registro usuario" width="661" height="365">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_runtime_scenario_2">6.2. &lt;Runtime Scenario 2&gt;</h3>
-
+<h3 id="_inicio_de_sesión">6.2. Inicio de sesión</h3>
+<div class="paragraph">
+<p>Tras crear un usuario, el usuario puede iniciar sesión en la aplicación. En la pantalla de inicio de sesión, el usuario introduce su nombre de usuario y contraseña. Al hacer clic en el botón de inicio de sesión, se envía una solicitud al servidor para autenticar al usuario. Si las credenciales son correctas, se muestra la pantalla principal de la aplicación, de lo contrario se muestra un mensaje de error indicando que las credenciales son incorrectas.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/inicio_sesion_usuario.png" alt="inicio sesion usuario" width="777" height="518">
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="">6.3. &#8230;&#8203;</h3>
-
+<h3 id="_secuencia_de_partida_de_juego">6.3. Secuencia de partida de juego</h3>
+<div class="paragraph">
+<p>Una vez que el usuario ha iniciado sesión, puede comenzar una partida de juego. Al hacer clic en el botón "Start Game", se envía una solicitud al servidor para iniciar una nueva partida. El servidor responde con los detalles de la partida, como el número de jugadores y el estado del juego. La aplicación muestra la pantalla de juego con la información recibida.</p>
 </div>
-<div class="sect2">
-<h3 id="_runtime_scenario_n">6.4. &lt;Runtime Scenario n&gt;</h3>
+<div class="imageblock">
+<div class="content">
+<img src="./images/inicio_sesion_usuario.png" alt="inicio sesion usuario" width="564" height="517">
+</div>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-deployment-view">7. Deployment View</h2>
+<h2 id="section-deployment-view">7. Vista de Despliegue</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<div class="title">Content</div>
-<p>The deployment view describes:</p>
+<div class="title">Contenido</div>
+<p>La vista de despliegue describe:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>technical infrastructure used to execute your system, with infrastructure elements like geographical locations, environments, computers, processors, channels and net topologies as well as other infrastructure elements and</p>
+<p>La infraestructura técnica usada para ejecutar el sistema, con elementos de infraestructura como locaciones geográficas,
+ambientes, computadoras, procesadores, canales y topologías de red así como otros elementos de infraestructura.</p>
 </li>
 <li>
-<p>mapping of (software) building blocks to that infrastructure elements.</p>
+<p>El mapeo de los bloques de construcción (software) en dichos elementos de infraestructura.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Often systems are executed in different environments, e.g. development environment, test environment, production environment. In such cases you should document all relevant environments.</p>
+<p>Comúnmente los sistemas son ejecutados en diferentes ambientes, por ejemplo, ambiente de desarrollo, de pruebas, de producción. En dichos casos deberían documentarse todos los ambientes relevantes.</p>
 </div>
 <div class="paragraph">
-<p>Especially document a deployment view if your software is executed as distributed system with more than one computer, processor, server or container or when you design and construct your own hardware processors and chips.</p>
+<p>Deberá documentarse la vista de despliegue de manera especial cuando el software se ejecute como un sistema distribuido
+con mas de una computadora, procesador, servidor o contenedor o cuando se diseñen los procesadores y chips de hardware propios.</p>
 </div>
 <div class="paragraph">
-<p>From a software perspective it is sufficient to capture only those elements of an infrastructure that are needed to show a deployment of your building blocks. Hardware architects can go beyond that and describe an infrastructure to any level of detail they need to capture.</p>
+<p>Desde una perspectiva de software es suficiente con capturar los elementos de la infraestructura necesarios para mostrar
+el despliegue de los bloques de construcción. Los arquitectos de hardware pueden ir más alla y describir la infraestructura
+a cualquier nivel de detalle que requieran.</p>
 </div>
 <div class="paragraph">
-<div class="title">Motivation</div>
-<p>Software does not run without hardware.
-This underlying infrastructure can and will influence a system and/or some
-cross-cutting concepts. Therefore, there is a need to know the infrastructure.</p>
+<div class="title">Motivación</div>
+<p>El software no corre sin haardware.
+El hardware subyacente puede influenciar el sistema o algunos conceptos entrecruzados. Por ende, es necesario conocer
+la infraestructura.</p>
 </div>
 <div class="paragraph">
-<div class="title">Form</div>
-<p>Maybe a highest level deployment diagram is already contained in section 3.2. as
-technical context with your own infrastructure as ONE black box. In this section one can
-zoom into this black box using additional deployment diagrams:</p>
+<div class="title">Forma</div>
+<p>Quizá el más alto nivel de diagrama de despliegue esté contenido en la sección 3.2. como contexto técnico con la
+propia infraestructura como UNA caja negra. En esta sección se deberá realizar un acercamiento a ésta caja negra
+utilizando diagramas de despliegue adicionales:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>UML offers deployment diagrams to express that view. Use it, probably with nested diagrams,
-when your infrastructure is more complex.</p>
+<p>UML provee diagramas de despliegue para expresar la vista. Uselos, probablemente con diagramas anidados.</p>
 </li>
 <li>
-<p>When your (hardware) stakeholders prefer other kinds of diagrams rather than a deployment diagram, let them use any kind that is able to show nodes and channels of the infrastructure.</p>
+<p>Cuando las partes relacionadas de Hardware prefieran otro tipo de diagramas además de los diagramas de despliegue,
+permítales usar cualquier tipo que permita mostrar los nodos y canales de la infraestructura.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-7/">Deployment View</a> in the arc42 documentation.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_infrastructure_level_1">7.1. Infrastructure Level 1</h3>
+<h3 id="_nivel_de_infraestructura_1">7.1. Nivel de infraestructura 1</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
-<p>Describe (usually in a combination of diagrams, tables, and text):</p>
+<p>Describa (Usualmente en una combinación de diagramas, tablas y texto):</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>distribution of a system to multiple locations, environments, computers, processors, .., as well as physical connections between them</p>
+<p>La distribución del sistema en múltiples ubicaciones, ambientes, computadoras, procesadores, &#8230;&#8203; así como las
+conexiones físicas entre ellos</p>
 </li>
 <li>
-<p>important justifications or motivations for this deployment structure</p>
+<p>La motivación o justificación de importancia para la estructura de despliegue</p>
 </li>
 <li>
-<p>quality and/or performance features of this infrastructure</p>
+<p>Características de Calidad y/o rendimiento de la infraestructura</p>
 </li>
 <li>
-<p>mapping of software artifacts to elements of this infrastructure</p>
+<p>El mapeo de los artefactos de software a los elementos de la infraestructura.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>For multiple environments or alternative deployments please copy and adapt this section of arc42 for all relevant environments.</p>
+<p>Para múltiples ambientes o despliegues alternativos copie esta sección para todos los ambientes relevantes.</p>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
+<div class="imageblock">
+<div class="content">
+<img src="./images/diagrama-despliegue-1.png" alt="diagrama despliegue 1" width="642" height="584">
+</div>
 </div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Motivation</dt>
+<dt class="hdlist1">Motivación</dt>
 <dd>
-<p><em>&lt;explanation in text form&gt;</em></p>
+<p>La infraestructura del sistema se divide en varios servicios desplegados en sendos contenedores Docker con el objetivo de conseguir una arquitectura modular que permita que cada servicio sea fácilmente reemplazable y desplegable en otra máquina o entorno.</p>
 </dd>
-<dt class="hdlist1">Quality and/or Performance Features</dt>
+<dt class="hdlist1">Características de Calidad/Rendimiento</dt>
 <dd>
-<p><em>&lt;explanation in text form&gt;</em></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Tolerancia a fallos</strong>: un módulo concreto puede fallar sin que esto afecte al resto.</p>
+</li>
+<li>
+<p><strong>Modularidad</strong>: los componentes pueden ser reemplazados de forma sencilla.</p>
+</li>
+<li>
+<p><strong>Reusabilidad</strong>: componentes concretos pueden ser instalados en otros entornos de forma sencilla.</p>
+</li>
+<li>
+<p><strong>Coexistencia</strong>: la infraestructura puede desplegarse correctamente en entornos que comportan otros productos.</p>
+</li>
+<li>
+<p><strong>Adaptabilidad</strong>: la infraestructura puede ser desplegada en un sistema abstrayéndose de su configuración concreta.</p>
+</li>
+<li>
+<p><strong>Instalabilidad</strong>: la infraestructura puede ser instalada de forma sencilla en un nuevo sistema.</p>
+</li>
+</ul>
+</div>
 </dd>
-<dt class="hdlist1">Mapping of Building Blocks to Infrastructure</dt>
+<dt class="hdlist1">Mapeo de los Bloques de Construcción a Infraestructura</dt>
 <dd>
-<p><em>&lt;description of the mapping&gt;</em></p>
+<p>Cada módulo de la aplicación es desplegado en un contenedor Docker distinto. De la misma forma, el sistema gestor de bases de datos también es desplegado en su propio contenedor Docker.</p>
 </dd>
 </dl>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_infrastructure_level_2">7.2. Infrastructure Level 2</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
 <div class="paragraph">
-<p>Here you can include the internal structure of (some) infrastructure elements from level 1.</p>
+<p>A continuación se detalla el mapeo de artefactos de software a infraestructura.</p>
 </div>
-<div class="paragraph">
-<p>Please copy the structure from level 1 for each selected element.</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_1">7.2.1. <em>&lt;Infrastructure Element 1&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_2">7.2.2. <em>&lt;Infrastructure Element 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_n">7.2.3. <em>&lt;Infrastructure Element n&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong> Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Infraestructura</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gamey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contenedor Docker Gamey</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contenedor Docker Users</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Webapp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contenedor Docker Webapp</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Base de datos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contenedor Docker MySQL</p></td>
+</tr>
+</tbody>
+</table>
 <div style="page-break-after: always;"></div>
-</div>
 </div>
 </div>
 </div>
