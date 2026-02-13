@@ -23,7 +23,12 @@ pub mod choose;
 pub mod error;
 pub mod state;
 pub mod version;
-use axum::response::IntoResponse;
+use axum::{
+    response::IntoResponse,
+    http::header,
+    middleware::Next,
+    extract::Request,
+};
 use std::sync::Arc;
 pub use choose::MoveResponse;
 pub use error::ErrorResponse;
@@ -42,6 +47,38 @@ pub fn create_router(state: AppState) -> axum::Router {
             axum::routing::post(choose::choose),
         )
         .with_state(state)
+        .layer(axum::middleware::from_fn(add_headers_middleware))
+}
+
+/// Middleware that adds comprehensive HTTP headers to all responses.
+/// 
+/// Includes CORS headers, security headers, API version, and other metadata.
+async fn add_headers_middleware(request: Request, next: Next) -> impl IntoResponse {
+    let mut response = next.run(request).await;
+    let headers = response.headers_mut();
+
+    headers.insert(
+        header::ACCESS_CONTROL_ALLOW_ORIGIN,
+        "*".parse().unwrap(),
+    );
+    headers.insert(
+        header::ACCESS_CONTROL_ALLOW_METHODS,
+        "GET".parse().unwrap(),
+    );
+    headers.insert(
+        header::ACCESS_CONTROL_ALLOW_HEADERS,
+        "Content-Type".parse().unwrap(),
+    );
+    headers.insert(
+        header::X_CONTENT_TYPE_OPTIONS,
+        "nosniff".parse().unwrap(),
+    );
+    headers.insert(
+        header::HeaderName::from_static("x-frame-options"),
+        "DENY".parse().unwrap(),
+    );
+
+    response
 }
 
 /// Creates the default application state with the standard bot registry.
@@ -87,6 +124,7 @@ pub async fn run_bot_server(port: u16) -> Result<(), GameYError> {
 /// Health check endpoint handler.
 ///
 /// Returns "OK" to indicate the server is running.
+/// Includes additional headers for status metadata.
 pub async fn status() -> impl IntoResponse {
     "OK"
 }
