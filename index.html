@@ -799,111 +799,71 @@ These include</p>
 <div class="sect1">
 <h2 id="section-context-and-scope">3. Contexto y alcance</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contenido</div>
-<p>El alcance y contexto del sistema - como lo sugiere el nombre - delimita al sistema (es decir, el alcance) de todos sus
-socios de comunicación (Usuarios y sistemas vecinos, es decir, el contexto del sistema). Con ello se especifican las interfaces externas.</p>
-</div>
-<div class="paragraph">
-<p>Si es necesario, diferenciar el contexto de negocio (Entradas y salidas específicas del dominio) del contexto técnico (canales, protocolos, hardware).</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivación</div>
-<p>Las interfaces de dominio y las interfaces técnicas a los socios de comunicación son de los aspectos más críticos del sistema. Asegúrate de que los comprendes totalmente.</p>
-</div>
-<div class="paragraph">
-<div class="title">Forma</div>
-<p>Varias opciones:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Diagramas de contexto</p>
-</li>
-<li>
-<p>Listas de socios de comunicación y sus interfaces.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Más información</div>
-<p>Ver <a href="https://docs.arc42.org/section-3/">Context and Scope</a> en la documentación de arc42.</p>
-</div>
-</div>
-</div>
 <div class="paragraph">
 <p>Esta sección describe el entorno en el que opera el sistema YOVI y las interacciones con actores externos.
 El sistema se presenta como una caja negra, mostrando únicamente sus relaciones con el exterior.</p>
 </div>
 <div class="sect2">
 <h3 id="_contexto_de_negocio">3.1. Contexto de negocio</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contenido</div>
-<p>La especificación de <strong>todos</strong> los socios de comunicación (usuarios, sistemas&#8230;&#8203;) con explicaciones de las entradas y salidas específicas de dominio o interfaces.
-Opcionalmente se pueden añadir formatos específicos de dominio o protocolos de comunicación.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivación</div>
-<p>Todas las partes interesadas deben entender qué datos se intercambian en el entorno del sistema.</p>
-</div>
-<div class="paragraph">
-<div class="title">Forma</div>
-<p>Todo tipo de diagramas que muestren el sistema como una caja negra y especifiquen las interfaces de dominio a los socios de comunicación.
-Alternativamente (o adicionalmente) se puede usar una tabla.
-El título de la tabla es el nombre de tu sistema y las tres columnas contienen el nombre del socio de comunicación, las entradas y las salidas.</p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Diagrama de contexto de negocio</strong></p>
-</div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/diag-plantuml-md5-96cf7b3baa11547caed14bd3f0cf7b15.png" alt="Diagram" width="437" height="144">
 </div>
 </div>
 <div class="paragraph">
-<p>El actor externo principal del sistema es el <strong>jugador</strong>, que puede registrarse y participar en partidas.
-El sistema YOVI proporciona al jugador información sobre el estado del juego y diferentes estadísticas.</p>
+<p>El actor externo principal del sistema es el <strong>jugador</strong>, que puede registrarse y participar en partidas.</p>
+</div>
+<div class="paragraph">
+<p>El <strong>sistema YOVI</strong> proporciona al jugador información sobre el estado del juego y diferentes estadísticas.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_contexto_técnico">3.2. Contexto técnico</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contenido</div>
-<p>Las interfaces técnicas (canales y medios de transmisión) que enlazan al sistema con su entorno. Además, el mapeo de las entradas/salidas específicas del dominio a los canales, es decir, una explicación sobre qué entrada/salida utiliza qué canal.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivación</div>
-<p>Muchas partes interesadas toman decisiones arquitectónicas basadas en las interfaces técnicas entre el sistema y su contexto. Especialmente los diseñadores de infrastructura o hardware deciden estas interfaces técnicas.</p>
-</div>
-<div class="paragraph">
-<div class="title">Forma</div>
-<p>Por ejemplo, los diagramas UML de despliegue describiendo canales a sistemas vecinos, junto con una tabla que muestre las relaciones entre canales y entrada/salida.</p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>&lt;Diagrama o tabla&gt;</strong></p>
-</div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-d7cde0e415a2f69aec762c2d262a2a7d.png" alt="Diagram" width="646" height="134">
+<img src="./images/diag-plantuml-md5-ef0ff6b6bca0443b018f6be356ed6488.png" alt="Diagram" width="613" height="140">
 </div>
 </div>
 <div class="paragraph">
-<p><strong>&lt;opcional: explicación de interfaces técnicas&gt;</strong></p>
+<p>El sistema YOVI expone una interfaz basada en servicios web accesibles mediante protocolo HTTP/HTTPS.</p>
 </div>
 <div class="paragraph">
-<p><strong>&lt;Mapeo de entrada/salida a canales&gt;</strong></p>
+<p>Los actores externos interactúan con el sistema mediante peticiones y respuestas estructuradas en formato JSON.</p>
 </div>
+<div class="sect3">
+<h4 id="_mapeo_de_entradasalida_a_canales">3.2.1. Mapeo de entrada/salida a canales</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Actor</th>
+<th class="tableblock halign-left valign-top">Canal</th>
+<th class="tableblock halign-left valign-top">Entrada al sistema</th>
+<th class="tableblock halign-left valign-top">Salida del sistema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Jugador</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP/HTTPS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datos de registro, autenticación, acciones del juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Estado del juego, resultados, estadísticas</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP/HTTPS + JSON</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Acciones automatizadas del juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Estado del juego y resultados</p></td>
+</tr>
+</tbody>
+</table>
 <div style="page-break-after: always;"></div>
+</div>
 </div>
 </div>
 </div>
