@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-const RegisterForm: React.FC = () => {
+interface RegisterFormProps {
+  onRegisterSuccess: (username: string) => void;
+}
+
+const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const [username, setUsername] = useState('');
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +34,10 @@ const RegisterForm: React.FC = () => {
       const data = await res.json();
       if (res.ok) {
         setResponseMessage(data.message);
-        setUsername('');
+        // Redirect to game page after 1.5 seconds
+        setTimeout(() => {
+          onRegisterSuccess(username);
+        }, 1500);
       } else {
         setError(data.error || 'Server error');
       }
