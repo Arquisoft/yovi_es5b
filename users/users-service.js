@@ -5,9 +5,19 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require('node:fs');
 const YAML = require('js-yaml');
 const promBundle = require('express-prom-bundle');
+const { Sequelize, DataTypes } = require('sequelize');
 
 const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
+
+const sequelize = new Sequelize(process.env.DATABASE_URL || 'mysql://user:user_password@localhost:3306/yovi_db');
+
+const User = sequelize.define('User', {
+    username: { type: DataTypes.STRING, allowNull: false, unique: true },
+    password: { type: DataTypes.STRING, allowNull: false },
+});
+
+sequelize.sync();
 
 try {
   const swaggerDocument = YAML.load(fs.readFileSync('./openapi.yaml', 'utf8'));
@@ -27,18 +37,21 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.post('/createuser', async (req, res) => {
-  const username = req.body && req.body.username;
+  const { username, password } = req.body;
   try {
-    // Simulate a 1 second delay to mimic processing/network latency
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const newUser = await User.create({ 
+        username: username, 
+        password: password 
+    });
 
-    const message = `Hello ${username}! welcome to the course!`;
-    res.json({ message });
+    res.json({ 
+        message: `Hello ${newUser.username}! welcome to the course!`,
+        userId: newUser.id 
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: "Error al crear el usuario en MySQL: " + err.message });
   }
 });
-
 
 if (require.main === module) {
   app.listen(port, () => {
@@ -46,4 +59,4 @@ if (require.main === module) {
   })
 }
 
-module.exports = app
+module.exports = app;
