@@ -1,10 +1,30 @@
 services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: yovi_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
+    networks:
+      - monitor-net
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   users:
     build: ./users
     container_name: users
     image: ghcr.io/arquisoft/yovi_es5b-users:latest
     ports:
       - "3000:3000"
+    depends_on:
+      - mysql
+    environment:
+      - DATABASE_URL=mysql://user:user_password@mysql:3306/yovi_db
     networks:
       - monitor-net
 
@@ -55,3 +75,6 @@ services:
 networks:
   monitor-net:
     driver: bridge
+
+volumes:
+  mysql_data:
