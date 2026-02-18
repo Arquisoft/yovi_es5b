@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-glossary]]
-== Glossary
+== Glosario
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -34,11 +34,11 @@ endif::arc42help[]
 
 [cols="e,2e" options="header"]
 |===
-|Term |Definition
+|Término |Definición
 
-|<Term-1>
-|<definition-1>
+|<Término-1>
+|<Definición-1>
 
-|<Term-2>
-|<definition-2>
+|<Término-2>
+|<Definición-2>
 |===

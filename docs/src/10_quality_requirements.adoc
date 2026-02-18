@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-quality-scenarios]]
-== Quality Requirements
+== Requisitos de calidad
 
 
 ifdef::arc42help[]
@@ -27,7 +27,7 @@ See https://docs.arc42.org/section-10/[Quality Requirements] in the arc42 docume
 ****
 endif::arc42help[]
 
-=== Quality Tree
+=== Árbol de Calidad
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -50,7 +50,7 @@ In any case the tree should include links to the scenarios of the following sect
 ****
 endif::arc42help[]
 
-=== Quality Scenarios
+=== Escenarios de Calidad
 
 ifdef::arc42help[]
 [role="arc42help"]
