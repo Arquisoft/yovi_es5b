@@ -64,8 +64,9 @@ Para la gestión de la información del **Juego Y**, se ha diseñado un esquema 
 * **Modelo de Herencia:** Se utiliza la entidad **Jugador** como una abstracción que vincula a un **Usuario** (humano) o a un **Robot** mediante un atributo `behaviour_Type` y un `id_externo`.
 * **Gestión de Partidas:** La entidad **Partida** registra el enfrentamiento entre dos jugadores, almacenando la puntuación final y el número de turnos transcurridos.
 * **Tecnología:** El sistema utiliza **SQLite** para la persistencia, permitiendo una gestión ágil de los datos en un entorno local de desarrollo mediante un motor de base de datos sin servidor y basado en múltiples archivos para asegurar el princpio de responsabilidad única.
+
 .Diagrama del Modelo de Datos para el Juego Y
-image::DiagramaBD.png["Esquema de la Base de Datos", width=800, align="center"]
+image::../images/DiagramaBD.png["Esquema de la Base de Datos", width=800, align="center"]
 
 [cols="1,3"]
 |===
