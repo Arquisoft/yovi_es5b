@@ -1,29 +1,31 @@
-ifndef::imagesdir[:imagesdir: ../images]
-
 [[section-architecture-constraints]]
-== Architecture Constraints
+== Restricciones de Arquitectura
 
+Esta sección describe las restricciones que limitan la libertad de decisión de los arquitectos de software en cuanto al diseño, implementación y proceso de desarrollo.
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-Any requirement that constraints software architects in their freedom of design and implementation decisions or decision about the development process. These constraints sometimes go beyond individual systems and are valid for whole organizations and companies.
+=== Restricciones Técnicas
+[cols="1,3"]
+|===
+|Restricción |Descripción
+| **Arquitectura Políglota** | El sistema debe estar compuesto por servicios que utilizan diferentes tecnologías: **TypeScript** (Aplicación web) y **Rust** (Motor de Juego).
+| **Contenedores** | Todos los servicios y componentes de infraestructura deben estar contenedorizados mediante **Docker** en al menos dos subsistemas.
+| **API para bots** | Se debe ofrecer un **API** que permita a bots interactuar con la aplicación.
+| **Estándar de Documentación** | La documentación de la arquitectura debe seguir la plantilla **Arc42** y estar escrita en formato **AsciiDoc**.
+|===
 
-.Motivation
-Architects should know exactly where they are free in their design decisions and where they must adhere to constraints.
-Constraints must always be dealt with; they may be negotiable, though.
+=== Restricciones Organizativas
+[cols="1,3"]
+|===
+|Restricción |Descripción
+| **Control de Versiones** | Uso obligatorio de **GitHub** como repositorio central para el código, seguimiento de incidencias (issues) y colaboración.
+| **Despliegue** | Despliegue automatizado mediante **GitHub Actions** y alojamiento de la documentación técnica en **GitHub Pages**.
+|===
 
-.Form
-Simple tables of constraints with explanations.
-If needed you can subdivide them into
-technical constraints, organizational and political constraints and
-conventions (e.g. programming or versioning guidelines, documentation or naming conventions)
-
-
-.Further Information
-
-See https://docs.arc42.org/section-2/[Architecture Constraints] in the arc42 documentation.
-
-****
-endif::arc42help[]
+=== Convenciones
+[cols="1,3"]
+|===
+|Restricción |Descripción
+| **Arquitectura de Tres Capas** | El sistema debe mantener una separación clara entre la interfaz de usuario (`webapp`), la gestión de usuarios (`users`) y la lógica del juego (`gamey`).
+| **Comunicación API** | Los servicios deben comunicarse a través de APIs REST utilizando JSON, con puntos de enlace (endpoints) configurables (ej. `VITE_API_URL`).
+| **Estándar de Notación** | El motor de juego debe utilizar formatos específicos para la representación de las partidas: **YEN** (Y Exchange Notation).
+|===

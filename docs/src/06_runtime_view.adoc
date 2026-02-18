@@ -3,65 +3,96 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-runtime-view]]
 == Runtime View
 
+A continuacion se presentan los distintos escenarios que describen las interacciones entre las instancias del sistema. Cada escenario se centra en un caso de uso específico, que seran:
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-The runtime view describes concrete behavior and interactions of the system’s building blocks in form of scenarios from the following areas:
-
-* important use cases or features: how do building blocks execute them?
-* interactions at critical external interfaces: how do building blocks cooperate with users and neighboring systems?
-* operation and administration: launch, start-up, stop
-* error and exception scenarios
-
-Remark: The main criterion for the choice of possible scenarios (sequences, workflows) is their *architectural relevance*. It is *not* important to describe a large number of scenarios. You should rather document a representative selection.
-
-.Motivation
-You should understand how (instances of) building blocks of your system perform their job and communicate at runtime.
-You will mainly capture scenarios in your documentation to communicate your architecture to stakeholders that are less willing or able to read and understand the static models (building block view, deployment view).
-
-.Form
-There are many notations for describing scenarios, e.g.
-
-* numbered list of steps (in natural language)
-* activity diagrams or flow charts
-* sequence diagrams
-* BPMN or EPCs (event process chains)
-* state machines
-* ...
+* Registro de un nuevo usuario
+* Inicio de sesión
+* Partida de juego
+* Consultar ranking de jugadores
 
 
-.Further Information
+=== Registro de un nuevo usuario
+Al entrar por primera vez a la aplicación, el usuario se encuentra con la pantalla de registro. En esta pantalla, el usuario introduce sus datos y al hacer clic en el botón de registro, se envía una solicitud al servidor para crear una nueva cuenta. Si es valida se crea la cuenta y se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error indicando el motivo del fallo.
 
-See https://docs.arc42.org/section-6/[Runtime View] in the arc42 documentation.
-
-****
-endif::arc42help[]
-
-=== <Runtime Scenario 1>
-
-
-* _<insert runtime diagram or textual description of the scenario>_
-* _<insert description of the notable aspects of the interactions between the
-building block instances depicted in this diagram.>_
-
-It is possible to use a sequence diagram:
-
-[plantuml,"Sequence diagram",png]
+[plantuml, registro_usuario, png]
 ----
-actor Alice
-actor Bob
-database Pod as "Bob's Pod"
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-Alice  --> Pod: Store route
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+@startuml
+actor Usuario
+participant Webapp as "Webapp"
+participant Users as "Users Service"
+database DB as "DataBase"
+
+Usuario -> Webapp: Rellena formulario y pulsa "Register"
+Webapp -> Users: Envio de los datos de registro
+Users -> DB: Validar y procesar datos
+DB -> Users: Confirmar datos validos
+Users --> Webapp: Mensaje de bienvenida
+Webapp -> Usuario: Muestra confirmación en pantalla
+@enduml
 ----
 
-=== <Runtime Scenario 2>
+=== Inicio de sesión
+Tras crear un usuario, el usuario puede iniciar sesión en la aplicación. En la pantalla de inicio de sesión, el usuario introduce su nombre de usuario y contraseña. Al hacer clic en el botón de inicio de sesión, se envía una solicitud al servidor para autenticar al usuario. Si las credenciales son correctas, se muestra la pantalla principal de la aplicación, de lo contrario se muestra un mensaje de error indicando que las credenciales son incorrectas.
 
-=== ...
+[plantuml, inicio_sesion_usuario, png]
+----
+@startuml
+actor Usuario
+participant Webapp as "Webapp"
+participant Users as "Users Service"
+database DB as "DataBase"
 
-=== <Runtime Scenario n>
+Usuario -> Webapp: escribe sus credenciales
+Webapp -> Users: Envio de los datos de inicio de sesión
+
+activate Users
+Users -> DB: Validar y procesar datos
+
+activate DB
+DB -> Users: Confirmar datos correctos
+deactivate DB
+
+alt Credenciales válidas
+    Users --> Webapp: Mensaje de bienvenida
+    Webapp -> Usuario: Pasa a la pagina principal
+    
+else Credenciales incorrectas
+    Users --> Webapp: Error por datos invalidos/incorrectos
+    deactivate Users
+    Webapp -> Usuario: Mostrar "Usuario o contraseña incorrectos"
+    Usuario -> Usuario: Pantalla de inicio de sesion
+end
+@enduml
+----
+
+=== Secuencia de partida de juego
+Una vez que el usuario ha iniciado sesión, puede comenzar una partida de juego. Al hacer clic en el botón "Start Game", se envía una solicitud al servidor para iniciar una nueva partida. El servidor responde con los detalles de la partida, como el número de jugadores y el estado del juego. La aplicación muestra la pantalla de juego con la información recibida.
+
+[plantuml, inicio_sesion_usuario, png]
+----
+@startuml
+actor Usuario
+participant Webapp as "Webapp"
+participant GameY as "GameY Engine"
+database db as "DataBase"
+
+Usuario -> Webapp: Escoge modo de juego
+Webapp -> GameY: Comienza el juego
+activate GameY
+
+loop Hasta que un jugador gane
+GameY -> GameY: Jugador 1 coloca pieza
+GameY -> GameY: Jugador 2 coloca pieza
+end
+
+GameY --> Webapp: Devolver resultados
+deactivate GameY
+Webapp -> Usuario: Mostrar resultados
+
+opt Si se quieren registrar los resultados
+Usuario -> Webapp: Guardar puntuación
+Webapp -> db: Registrar resultados
+
+end
+@enduml
+----

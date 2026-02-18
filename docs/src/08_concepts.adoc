@@ -57,18 +57,22 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-=== _<Concept 1>_
+==== Persistencia de Datos (Esquema de Base de Datos)
 
-_<explanation>_
+Para la gestión de la información del **Juego Y**, se ha diseñado un esquema relacional que permite tratar de forma uniforme a los jugadores humanos y a los bots.
 
+* **Modelo de Herencia:** Se utiliza la entidad **Jugador** como una abstracción que vincula a un **Usuario** (humano) o a un **Robot** mediante un atributo `behaviour_Type` y un `id_externo`.
+* **Gestión de Partidas:** La entidad **Partida** registra el enfrentamiento entre dos jugadores, almacenando la puntuación final y el número de turnos transcurridos.
+* **Tecnología:** El sistema utiliza **MySQL** para la persistencia, permitiendo una gestión ágil de los datos en un entorno local de desarrollo mediante un motor de base de datos sin servidor y basado en múltiples archivos para asegurar el princpio de responsabilidad única.
 
+.Diagrama del Modelo de Datos para el Juego Y
+image::../images/DiagramaBD.png["Esquema de la Base de Datos", width=800, align="center"]
 
-=== _<Concept 2>_
-
-_<explanation>_
-
-...
-
-=== _<Concept n>_
-
-_<explanation>_
+[cols="1,3"]
+|===
+| **Entidad** | **Descripción**
+| **Usuario** | Almacena los datos personales y credenciales de acceso (nombre, usuario, contraseña).
+| **Robot** | Define los diferentes tipos de comportamiento o algoritmos de IA disponibles.
+| **Jugador** | Tabla intermedia que unifica a humanos y robots para participar en partidas.
+| **Partida** | Registra el resultado de un juego, incluyendo puntuación, turnos y los dos jugadores implicados.
+|===
