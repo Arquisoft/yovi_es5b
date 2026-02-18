@@ -68,7 +68,7 @@ end
 === Secuencia de partida de juego
 Una vez que el usuario ha iniciado sesión, puede comenzar una partida de juego. Al hacer clic en el botón "Start Game", se envía una solicitud al servidor para iniciar una nueva partida. El servidor responde con los detalles de la partida, como el número de jugadores y el estado del juego. La aplicación muestra la pantalla de juego con la información recibida.
 
-[plantuml, inicio_sesion_usuario, png]
+[plantuml, secuencia_partida_juego, png]
 ----
 @startuml
 actor Usuario
