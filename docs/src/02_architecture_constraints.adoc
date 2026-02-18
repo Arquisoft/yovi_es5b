@@ -7,10 +7,10 @@ Esta sección describe las restricciones que limitan la libertad de decisión de
 [cols="1,3"]
 |===
 |Restricción |Descripción
-| **Arquitectura Políglota** | El sistema debe estar compuesto por servicios que utilizan diferentes tecnologías: **React + TypeScript** (Frontend), **Node.js + Express** (API de Usuarios) y **Rust** (Motor de Juego).
-| **Contenedores** | Todos los servicios y componentes de infraestructura deben estar contenedorizados mediante **Docker** y orquestados con **Docker Compose**.
+| **Arquitectura Políglota** | El sistema debe estar compuesto por servicios que utilizan diferentes tecnologías: **TypeScript** (Aplicación web) y **Rust** (Motor de Juego).
+| **Contenedores** | Todos los servicios y componentes de infraestructura deben estar contenedorizados mediante **Docker** en al menos dos subsistemas.
+| **API para bots** | Se debe ofrecer un **API** que permita a bots interactuar con la aplicación.
 | **Estándar de Documentación** | La documentación de la arquitectura debe seguir la plantilla **Arc42** y estar escrita en formato **AsciiDoc**.
-| **Monitorización** | El sistema debe integrar **Prometheus** para la recolección de métricas y datos del estado de los servicios.
 |===
 
 === Restricciones Organizativas
@@ -27,5 +27,5 @@ Esta sección describe las restricciones que limitan la libertad de decisión de
 |Restricción |Descripción
 | **Arquitectura de Tres Capas** | El sistema debe mantener una separación clara entre la interfaz de usuario (`webapp`), la gestión de usuarios (`users`) y la lógica del juego (`gamey`).
 | **Comunicación API** | Los servicios deben comunicarse a través de APIs REST utilizando JSON, con puntos de enlace (endpoints) configurables (ej. `VITE_API_URL`).
-| **Estándar de Notación** | El motor de juego debe utilizar formatos específicos para la representación de las partidas: **YEN** (Yovi Engine Notation) y **YGN** (Yovi Game Notation).
+| **Estándar de Notación** | El motor de juego debe utilizar formatos específicos para la representación de las partidas: **YEN** (Y Exchange Notation).
 |===
