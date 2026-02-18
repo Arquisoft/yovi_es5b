@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-concepts]]
-== Cross-cutting Concepts
+== Conceptos Transversales (Cross-cutting)
 
 
 ifdef::arc42help[]
@@ -57,7 +57,7 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-==== Persistencia de Datos (Esquema de Base de Datos)
+=== Persistencia de Datos (Esquema de Base de Datos)
 
 Para la gestión de la información del **Juego Y**, se ha diseñado un esquema relacional que permite tratar de forma uniforme a los jugadores humanos y a los bots.
 
