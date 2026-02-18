@@ -24,7 +24,7 @@ Basándonos en los requisitos del proyecto, se han seleccionado las siguientes t
 
 * Persistencia y Datos:
 
-MySQL: junto al orm "sequelize npm" para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.
+MySQL: junto al ORM Sequelize para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.
 
 === Decisiones de organización del equipo
 

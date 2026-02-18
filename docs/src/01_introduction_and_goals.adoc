@@ -37,8 +37,7 @@ Los requisitos principales del sistema son:
 |===
 |Objetivo de calidad|Descripción
 |Usabilidad|El sistema debe ser fácil de usar y de aprender para los usuarios finales. Esto fomentará que utilicen la aplicación nuevamente y disfruten la experiencia. Interfaces intuitivas y flujos de usuario simplificados (≤3 pasos para acciones principales).
-|Funcionalidad|El sistema debe implementar correctamente los requisitos, permitiendo a los usuarios jugar al juego Y con diferentes estrategias, registrarse en la aplicación y consultar sus estadísticas sin errores de lógica.
-|Accesibilidad|La aplicación debe estar disponible desde la web.
+|Accesibilidad|El juego debería tener en cuenta la usabilidad por parte de personas con problemas de visión o audición.
 |Rendimiento|La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (< 4 segundos) para evitar que abandonen la aplicación y garantizar una experiencia positiva que los anime a volver.
 |Mantenibilidad|El sistema debe ser fácil de mantener y extender. Esto se logra siguiendo buenas prácticas de programación, manteniendo excelente comunicación dentro del equipo de desarrollo y documentación clara.
 |Seguridad|Los datos privados de los usuarios registrados deben mantenerse seguros.
