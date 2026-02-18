@@ -438,12 +438,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1><span class="image"><img src="./images/arc42-logo.png" alt="arc42"></span> yovi_es5b</h1>
 <div class="details">
-<span id="revnumber">version 8.2 EN,</span>
-<span id="revdate">January 2023</span>
-<br><span id="revremark">(based upon AsciiDoc version)</span>
+<span id="revnumber">version 7.0 ES,</span>
+<span id="revdate">Enero 2017</span>
+<br><span id="revremark">(basado en la versión de AsciiDoc)</span>
 </div>
 <div id="toc" class="toc">
-<div id="toctitle">Table of Contents</div>
+<div id="toctitle">Contenido</div>
 <ul class="sectlevel1">
 <li><a href="#section-introduction-and-goals">1. Introducción y objetivos</a>
 <ul class="sectlevel2">
@@ -478,7 +478,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_nivel_3">5.3. Nivel 3</a></li>
 </ul>
 </li>
-<li><a href="#section-runtime-view">6. Runtime View</a>
+<li><a href="#section-runtime-view">6. Vista de ejecución</a>
 <ul class="sectlevel2">
 <li><a href="#_registro_de_un_nuevo_usuario">6.1. Registro de un nuevo usuario</a></li>
 <li><a href="#_inicio_de_sesión">6.2. Inicio de sesión</a></li>
@@ -490,22 +490,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_nivel_de_infraestructura_1">7.1. Nivel de infraestructura 1</a></li>
 </ul>
 </li>
-<li><a href="#section-concepts">8. Cross-cutting Concepts</a>
-<ul class="sectlevel2">
-<li><a href="#_concept_1">8.1. <em>&lt;Concept 1&gt;</em></a></li>
-<li><a href="#_concept_2">8.2. <em>&lt;Concept 2&gt;</em></a></li>
-<li><a href="#_concept_n">8.3. <em>&lt;Concept n&gt;</em></a></li>
+<li><a href="#section-concepts">8. Conceptos Transversales (Cross-cutting)</a>
+<ul class="sectlevel3">
+<li><a href="#_persistencia_de_datos_esquema_de_base_de_datos">8.1. Persistencia de Datos (Esquema de Base de Datos)</a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
-<li><a href="#section-quality-scenarios">10. Quality Requirements</a>
+<li><a href="#section-design-decisions">9. Decisiones de arquitectura</a></li>
+<li><a href="#section-quality-scenarios">10. Requisitos de calidad</a>
 <ul class="sectlevel2">
-<li><a href="#_quality_tree">10.1. Quality Tree</a></li>
-<li><a href="#_quality_scenarios">10.2. Quality Scenarios</a></li>
+<li><a href="#_árbol_de_calidad">10.1. Árbol de Calidad</a></li>
+<li><a href="#_escenarios_de_calidad">10.2. Escenarios de Calidad</a></li>
 </ul>
 </li>
-<li><a href="#section-technical-risks">11. Risks and Technical Debts</a></li>
-<li><a href="#section-glossary">12. Glossary</a></li>
+<li><a href="#section-technical-risks">11. Riesgos y deuda técnica</a></li>
+<li><a href="#section-glossary">12. Glosario</a></li>
 </ul>
 </div>
 </div>
@@ -522,39 +520,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 }
 </style>
 <div class="paragraph">
-<p><strong>About arc42</strong></p>
+<p><strong>Acerca de arc42</strong></p>
 </div>
 <div class="paragraph lead">
-<p>arc42, the template for documentation of software and system architecture.</p>
+<p>arc42, la plantilla de documentación para arquitectura de sistemas y de software.</p>
 </div>
 <div class="paragraph">
-<p>Template Version 8.2 EN. (based upon AsciiDoc version), January 2023</p>
+<p>Revisión de la plantilla: 7.0 ES (basada en asciidoc), Enero 2017</p>
 </div>
 <div class="paragraph">
-<p>Created, maintained and &#169; by Dr. Peter Hruschka, Dr. Gernot Starke and contributors.
-See <a href="https://arc42.org" class="bare">https://arc42.org</a>.</p>
+<p>Por Dr. Gernot Starke, Dr. Peter Hruschka y otros contribuyentes.</p>
+</div>
+<div class="paragraph">
+<p>Ver <a href="https://arc42.org" class="bare">https://arc42.org</a>.</p>
 </div>
 <hr>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>This version of the template contains some help and explanations.
-It is used for familiarization with arc42 and the understanding of the concepts.
-For documentation of your own system you use better the <em>plain</em> version.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -563,33 +543,6 @@ For documentation of your own system you use better the <em>plain</em> version.<
 <div class="sectionbody">
 <div class="paragraph">
 <p>La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de reglas y verificación está implementado en Rust, mientras que el cliente web principal está desarrollado en TypeScript.</p>
-</div>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Describes the relevant requirements and the driving forces that software architects and development team must consider.
-These include</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>underlying business goals,</p>
-</li>
-<li>
-<p>essential features,</p>
-</li>
-<li>
-<p>essential functional requirements,</p>
-</li>
-<li>
-<p>quality goals for the architecture and</p>
-</li>
-<li>
-<p>relevant stakeholders and their expectations</p>
-</li>
-</ul>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_resumen_de_requisitos">1.1. Resumen de requisitos</h3>
@@ -638,12 +591,8 @@ These include</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe ser fácil de usar y de aprender para los usuarios finales. Esto fomentará que utilicen la aplicación nuevamente y disfruten la experiencia. Interfaces intuitivas y flujos de usuario simplificados (≤3 pasos para acciones principales).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Funcionalidad</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe implementar correctamente los requisitos, permitiendo a los usuarios jugar al juego Y con diferentes estrategias, registrarse en la aplicación y consultar sus estadísticas sin errores de lógica.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Accesibilidad</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">La aplicación debe estar disponible desde la web.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El juego debería tener en cuenta la usabilidad por parte de personas con problemas de visión o audición.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Rendimiento</p></td>
@@ -726,19 +675,19 @@ These include</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Arquitectura Políglota</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe estar compuesto por servicios que utilizan diferentes tecnologías: <strong>React + TypeScript</strong> (Frontend), <strong>Node.js + Express</strong> (API de Usuarios) y <strong>Rust</strong> (Motor de Juego).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe estar compuesto por servicios que utilizan diferentes tecnologías: <strong>TypeScript</strong> (Aplicación web) y <strong>Rust</strong> (Motor de Juego).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Contenedores</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Todos los servicios y componentes de infraestructura deben estar contenedorizados mediante <strong>Docker</strong> y orquestados con <strong>Docker Compose</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Todos los servicios y componentes de infraestructura deben estar contenedorizados mediante <strong>Docker</strong> en al menos dos subsistemas.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>API para bots</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Se debe ofrecer un <strong>API</strong> que permita a bots interactuar con la aplicación.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Estándar de Documentación</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">La documentación de la arquitectura debe seguir la plantilla <strong>Arc42</strong> y estar escrita en formato <strong>AsciiDoc</strong>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Monitorización</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe integrar <strong>Prometheus</strong> para la recolección de métricas y datos del estado de los servicios.</p></td>
 </tr>
 </tbody>
 </table>
@@ -788,7 +737,7 @@ These include</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Estándar de Notación</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El motor de juego debe utilizar formatos específicos para la representación de las partidas: <strong>YEN</strong> (Yovi Engine Notation) y <strong>YGN</strong> (Yovi Game Notation).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El motor de juego debe utilizar formatos específicos para la representación de las partidas: <strong>YEN</strong> (Y Exchange Notation).</p></td>
 </tr>
 </tbody>
 </table>
@@ -811,10 +760,10 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 </div>
 <div class="paragraph">
-<p>El actor externo principal del sistema es el <strong>jugador</strong>, que puede registrarse y participar en partidas.</p>
+<p>El <strong>sistema YOVI</strong> proporciona al jugador información sobre el estado del juego y diferentes estadísticas.</p>
 </div>
 <div class="paragraph">
-<p>El <strong>sistema YOVI</strong> proporciona al jugador información sobre el estado del juego y diferentes estadísticas.</p>
+<p>El actor externo principal del sistema es el <strong>jugador</strong>, que puede registrarse y participar en partidas.</p>
 </div>
 </div>
 <div class="sect2">
@@ -919,7 +868,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </ul>
 </div>
 <div class="paragraph">
-<p>MySQL: junto al orm "sequelize npm" para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.</p>
+<p>MySQL: junto al ORM Sequelize para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.</p>
 </div>
 </div>
 <div class="sect2">
@@ -937,90 +886,8 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="sect1">
 <h2 id="section-building-block-view">5. Vista de Bloques</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contenido</div>
-<p>La vista de bloques muestra la descomposición estática del sistema en bloques de construcción (módulos, componentes,
-subsistemas, clases, interfases, paquetes, bibliotecas, marcos de desarrollo, capas, particiones, funciones, macros,
-operaciones, estructuras de datos,&#8230;&#8203;) así como sus dependencias (relaciones, asociaciones,&#8230;&#8203;)</p>
-</div>
-<div class="paragraph">
-<p>Esta vista es obligatoria para cualquier documentación de arquitectura.
-Es la analogía al plano de una casa.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivación</div>
-<p>Mantener una visión general de su código fuente haciendo su estructura comprensible de manera abstracta.</p>
-</div>
-<div class="paragraph">
-<p>Esto permite comunicar a las partes interesades en un nivel abstracto sin entrar en detalles de implementación.</p>
-</div>
-<div class="paragraph">
-<div class="title">Forma</div>
-<p>La vista de bloques comprende una colección jerárquica de cajas negras y cajas blancas (ver figura de abajo)
-y sus descripciones.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="./images/05_building_blocks-ES.png" alt="Jerarquía de bloques de construcción">
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Nivel 1</strong> comprende la descripción de Caja Blanca del sistema en general junto con las descripciones de Caja Negra de
-todos los bloques contenidos.</p>
-</div>
-<div class="paragraph">
-<p><strong>Nivel 2</strong> hace zoom a los bloques de construcción del Nivel 1. Entonces contiene la descripción de Caja Blanca de los
-bloques de construcción selecionadas del nivel 1,junto con las descripciones de caja negra de sus bloques de construcción
-internas.</p>
-</div>
-<div class="paragraph">
-<p><strong>Nivel 3</strong> Hace zoom a los bloques selectos del nivel 2, y así sucesivamente.</p>
-</div>
-</div>
-</div>
 <div class="sect2">
 <h3 id="_sistema_general_de_caja_blanca">5.1. Sistema General de Caja Blanca</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Aquí se describe la descomposición del sistema en general usando la siguiente plantilla de caja blanca. Contiene:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Un diagrama general</p>
-</li>
-<li>
-<p>La motivación para la descomposición</p>
-</li>
-<li>
-<p>Descripciones de caja negra de los bloques de construcción contenidos. Para estos se ofrecen las siguientes
-alternativas:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Usar <em>una</em> tabla para una revisión pragmática y corta de todos los bloques de construcción contenidos y sus
-interfaces</p>
-</li>
-<li>
-<p>Usar una lista de descripciones de caja negra de los bloques de construcción acorde a la plantilla de caja negra (ver abajo). Dependiendo de la herramienta utilizada, esta lista podría constar de sub-capítulos (en archivos de texto),
-sub-páginas (en un wiki) o elementos anidados (en una herramienta de modelado).</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>(opcional:) Interfases importantes, que no están explicadas en las plantillas de caja negra de un bloque de construcción,
-pero que son muy importantes para entender la caja blanca. En el peor de los casos se deberá especificar y desribir la
-sintaxis, semántica, protocolos, manejo de errores, restricciones, versiones, calidades, compatibilidades necesarias, entre
-otras. En el mejor de los casos bastará con ejemplos o la firma de los mismos.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/vista-bloques-1.png" alt="vista bloques 1" width="605" height="94">
@@ -1068,96 +935,11 @@ otras. En el mejor de los casos bastará con ejemplos o la firma de los mismos.<
 </tr>
 </tbody>
 </table>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Inserte las explicaciones de las cajas negras del nivel 1:</p>
-</div>
-<div class="paragraph">
-<p>Si usa la forma tabular solo describa las cajas negras con nombre y responsabilidad acorde al
-siguiente esquema:</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top"><strong>Nombre</strong></th>
-<th class="tableblock halign-left valign-top"><strong>Responsabilidad</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;caja negra 1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Texto&gt;</em></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;caja negra 2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Texto&gt;</em></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>Si utiliza una lista de descripciones de cajas negras entonces llene una plantilla de caja negra por cada bloque de construcción
-importante. El título es el nombre de la caja negra.</p>
-</div>
-</div>
-</div>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Aqui se describe la &lt;caja negra 1&gt; acorde a la siguiente plantilla:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Propósito/Responsabilidad</p>
-</li>
-<li>
-<p>Interfases, cuando no son extraídas como párrafos separados. Estas interfases pueden incluir características de calidad y rendimiento.</p>
-</li>
-<li>
-<p>(Opcional) Características de Calidad / Rendimiento de la caja negra, por ejemplo, disponibilidad, comportamiento en ejecución, &#8230;&#8203;</p>
-</li>
-<li>
-<p>(Opcional) Ubicación archivo/directorio</p>
-</li>
-<li>
-<p>(Opcional) Requerimientos satisfechos (si se necesita contar con la trazabilidad a los requerimientos).</p>
-</li>
-<li>
-<p>(Opcional) Incidentes/problemas/riesgos abiertos</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_nivel_2">5.2. Nivel 2</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Aquí se especifica la estructura interna de (algunos) bloques de construcción del nivel 1 como cajas blancas.</p>
-</div>
-<div class="paragraph">
-<p>Debe decidir cuales bloques de construcción del sistema son lo suficientemente importantes para justificar una
-descripción detallada. Prefiera la relevancia sobre la completitud. Especifique bloques de construcción importantes,
-sorprendentes, riesgosos, complejos o volátiles. Deje fuera las partes normales, simples, estándares o aburridas del sistema.</p>
-</div>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_caja_blanca_aplicación_web_yovi">5.2.1. Caja Blanca Aplicación web YOVI</h4>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>&#8230;&#8203;Describe la estructura interna de <em>bloque de construcción 1</em>.</p>
-</div>
-</div>
-</div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/vista-bloques-2-yovi.png" alt="vista bloques 2 yovi" width="620" height="337">
@@ -1210,25 +992,8 @@ sorprendentes, riesgosos, complejos o volátiles. Deje fuera las partes normales
 </div>
 <div class="sect2">
 <h3 id="_nivel_3">5.3. Nivel 3</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Aqui se especifica la estructura interna de (algunos) de los bloques de construcción del nivel 2 como cajas blancas.</p>
-</div>
-<div class="paragraph">
-<p>Cuando la arquitectura requiera más niveles detallados copiar esta sección para niveles adicionales.</p>
-</div>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_caja_blanca_gamey">5.3.1. Caja Blanca Gamey</h4>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Especifica la estructura interna de <em>bloque de construcción x.1</em>.</p>
-</div>
-</div>
-</div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/vista-bloques-3-gamey.png" alt="vista bloques 3 gamey" width="383" height="533">
@@ -1318,7 +1083,7 @@ sorprendentes, riesgosos, complejos o volátiles. Deje fuera las partes normales
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-runtime-view">6. Runtime View</h2>
+<h2 id="section-runtime-view">6. Vista de ejecución</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>A continuacion se presentan los distintos escenarios que describen las interacciones entre las instancias del sistema. Cada escenario se centra en un caso de uso específico, que seran:</p>
@@ -1378,89 +1143,8 @@ sorprendentes, riesgosos, complejos o volátiles. Deje fuera las partes normales
 <div class="sect1">
 <h2 id="section-deployment-view">7. Vista de Despliegue</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contenido</div>
-<p>La vista de despliegue describe:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>La infraestructura técnica usada para ejecutar el sistema, con elementos de infraestructura como locaciones geográficas,
-ambientes, computadoras, procesadores, canales y topologías de red así como otros elementos de infraestructura.</p>
-</li>
-<li>
-<p>El mapeo de los bloques de construcción (software) en dichos elementos de infraestructura.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Comúnmente los sistemas son ejecutados en diferentes ambientes, por ejemplo, ambiente de desarrollo, de pruebas, de producción. En dichos casos deberían documentarse todos los ambientes relevantes.</p>
-</div>
-<div class="paragraph">
-<p>Deberá documentarse la vista de despliegue de manera especial cuando el software se ejecute como un sistema distribuido
-con mas de una computadora, procesador, servidor o contenedor o cuando se diseñen los procesadores y chips de hardware propios.</p>
-</div>
-<div class="paragraph">
-<p>Desde una perspectiva de software es suficiente con capturar los elementos de la infraestructura necesarios para mostrar
-el despliegue de los bloques de construcción. Los arquitectos de hardware pueden ir más alla y describir la infraestructura
-a cualquier nivel de detalle que requieran.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivación</div>
-<p>El software no corre sin haardware.
-El hardware subyacente puede influenciar el sistema o algunos conceptos entrecruzados. Por ende, es necesario conocer
-la infraestructura.</p>
-</div>
-<div class="paragraph">
-<div class="title">Forma</div>
-<p>Quizá el más alto nivel de diagrama de despliegue esté contenido en la sección 3.2. como contexto técnico con la
-propia infraestructura como UNA caja negra. En esta sección se deberá realizar un acercamiento a ésta caja negra
-utilizando diagramas de despliegue adicionales:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>UML provee diagramas de despliegue para expresar la vista. Uselos, probablemente con diagramas anidados.</p>
-</li>
-<li>
-<p>Cuando las partes relacionadas de Hardware prefieran otro tipo de diagramas además de los diagramas de despliegue,
-permítales usar cualquier tipo que permita mostrar los nodos y canales de la infraestructura.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
 <div class="sect2">
 <h3 id="_nivel_de_infraestructura_1">7.1. Nivel de infraestructura 1</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Describa (Usualmente en una combinación de diagramas, tablas y texto):</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>La distribución del sistema en múltiples ubicaciones, ambientes, computadoras, procesadores, &#8230;&#8203; así como las
-conexiones físicas entre ellos</p>
-</li>
-<li>
-<p>La motivación o justificación de importancia para la estructura de despliegue</p>
-</li>
-<li>
-<p>Características de Calidad y/o rendimiento de la infraestructura</p>
-</li>
-<li>
-<p>El mapeo de los artefactos de software a los elementos de la infraestructura.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Para múltiples ambientes o despliegues alternativos copie esta sección para todos los ambientes relevantes.</p>
-</div>
-</div>
-</div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/diagrama-despliegue-1.png" alt="diagrama despliegue 1" width="642" height="584">
@@ -1541,350 +1225,92 @@ conexiones físicas entre ellos</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-concepts">8. Cross-cutting Concepts</h2>
+<h2 id="section-concepts">8. Conceptos Transversales (Cross-cutting)</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
+<div class="sect3">
+<h4 id="_persistencia_de_datos_esquema_de_base_de_datos">8.1. Persistencia de Datos (Esquema de Base de Datos)</h4>
+<div class="paragraph">
+<p>Para la gestión de la información del <strong>Juego Y</strong>, se ha diseñado un esquema relacional que permite tratar de forma uniforme a los jugadores humanos y a los bots.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Modelo de Herencia:</strong> Se utiliza la entidad <strong>Jugador</strong> como una abstracción que vincula a un <strong>Usuario</strong> (humano) o a un <strong>Robot</strong> mediante un atributo <code>behaviour_Type</code> y un <code>id_externo</code>.</p>
+</li>
+<li>
+<p><strong>Gestión de Partidas:</strong> La entidad <strong>Partida</strong> registra el enfrentamiento entre dos jugadores, almacenando la puntuación final y el número de turnos transcurridos.</p>
+</li>
+<li>
+<p><strong>Tecnología:</strong> El sistema utiliza <strong>MySQL</strong> para la persistencia, permitiendo una gestión ágil de los datos en un entorno local de desarrollo mediante un motor de base de datos sin servidor y basado en múltiples archivos para asegurar el princpio de responsabilidad única.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
 <div class="content">
-<div class="paragraph">
-<div class="title">Content</div>
-<p>This section describes overall, principal regulations and solution ideas that are relevant in multiple parts (= cross-cutting) of your system.
-Such concepts are often related to multiple building blocks.
-They can include many different topics, such as</p>
+<img src="./images/DiagramaBD.png" alt="Esquema de la Base de Datos" width="800">
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>models, especially domain models</p>
-</li>
-<li>
-<p>architecture or design patterns</p>
-</li>
-<li>
-<p>rules for using specific technology</p>
-</li>
-<li>
-<p>principal, often technical decisions of an overarching (= cross-cutting) nature</p>
-</li>
-<li>
-<p>implementation rules</p>
-</li>
-</ul>
+<div class="title">Figure 1. Diagrama del Modelo de Datos para el Juego Y</div>
 </div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>Concepts form the basis for <em>conceptual integrity</em> (consistency, homogeneity) of the architecture.
-Thus, they are an important contribution to achieve inner qualities of your system.</p>
-</div>
-<div class="paragraph">
-<p>Some of these concepts cannot be assigned to individual building blocks, e.g. security or safety.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>The form can be varied:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>concept papers with any kind of structure</p>
-</li>
-<li>
-<p>cross-cutting model excerpts or scenarios using notations of the architecture views</p>
-</li>
-<li>
-<p>sample implementations, especially for technical concepts</p>
-</li>
-<li>
-<p>reference to typical usage of standard frameworks (e.g. using Hibernate for object/relational mapping)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Structure</div>
-<p>A potential (but not mandatory) structure for this section could be:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Domain concepts</p>
-</li>
-<li>
-<p>User Experience concepts (UX)</p>
-</li>
-<li>
-<p>Safety and security concepts</p>
-</li>
-<li>
-<p>Architecture and design patterns</p>
-</li>
-<li>
-<p>"Under-the-hood"</p>
-</li>
-<li>
-<p>development concepts</p>
-</li>
-<li>
-<p>operational concepts</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Note: it might be difficult to assign individual concepts to one specific topic
-on this list.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="./images/08-concepts-EN.drawio.png" alt="Possible topics for crosscutting concepts">
-</div>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-8/">Concepts</a> in the arc42 documentation.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_concept_1">8.1. <em>&lt;Concept 1&gt;</em></h3>
-<div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_concept_2">8.2. <em>&lt;Concept 2&gt;</em></h3>
-<div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_concept_n">8.3. <em>&lt;Concept n&gt;</em></h3>
-<div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Entidad</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Descripción</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usuario</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Almacena los datos personales y credenciales de acceso (nombre, usuario, contraseña).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Robot</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Define los diferentes tipos de comportamiento o algoritmos de IA disponibles.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Jugador</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tabla intermedia que unifica a humanos y robots para participar en partidas.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Partida</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Registra el resultado de un juego, incluyendo puntuación, turnos y los dos jugadores implicados.</p></td>
+</tr>
+</tbody>
+</table>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-design-decisions">9. Architecture Decisions</h2>
+<h2 id="section-design-decisions">9. Decisiones de arquitectura</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>Important, expensive, large scale or risky architecture decisions including rationales.
-With "decisions" we mean selecting one alternative based on given criteria.</p>
-</div>
-<div class="paragraph">
-<p>Please use your judgement to decide whether an architectural decision should be documented
-here in this central section or whether you better document it locally
-(e.g. within the white box template of one building block).</p>
-</div>
-<div class="paragraph">
-<p>Avoid redundancy.
-Refer to section 4, where you already captured the most important decisions of your architecture.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>Stakeholders of your system should be able to comprehend and retrace your decisions.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>Various options:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>ADR (<a href="https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions">Documenting Architecture Decisions</a>) for every important decision</p>
-</li>
-<li>
-<p>List or table, ordered by importance and consequences or:</p>
-</li>
-<li>
-<p>more detailed in form of separate sections per decision</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-9/">Architecture Decisions</a> in the arc42 documentation.
-There you will find links and examples about ADR.</p>
-</div>
-</div>
-</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-quality-scenarios">10. Quality Requirements</h2>
+<h2 id="section-quality-scenarios">10. Requisitos de calidad</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Content</div>
-<p>This section contains all quality requirements as quality tree with scenarios. The most important ones have already been described in section 1.2. (quality goals)</p>
-</div>
-<div class="paragraph">
-<p>Here you can also capture quality requirements with lesser priority,
-which will not create high risks when they are not fully achieved.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>Since quality requirements will have a lot of influence on architectural
-decisions you should know for every stakeholder what is really important to them,
-concrete and measurable.</p>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-10/">Quality Requirements</a> in the arc42 documentation.</p>
-</div>
-</div>
+<div class="sect2">
+<h3 id="_árbol_de_calidad">10.1. Árbol de Calidad</h3>
+
 </div>
 <div class="sect2">
-<h3 id="_quality_tree">10.1. Quality Tree</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Content</div>
-<p>The quality tree (as defined in ATAM – Architecture Tradeoff Analysis Method) with quality/evaluation scenarios as leafs.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>The tree structure with priorities provides an overview for a sometimes large number of quality requirements.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>The quality tree is a high-level overview of the quality goals and requirements:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>tree-like refinement of the term "quality". Use "quality" or "usefulness" as a root</p>
-</li>
-<li>
-<p>a mind map with quality categories as main branches</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>In any case the tree should include links to the scenarios of the following section.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_quality_scenarios">10.2. Quality Scenarios</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>Concretization of (sometimes vague or implicit) quality requirements using (quality) scenarios.</p>
-</div>
-<div class="paragraph">
-<p>These scenarios describe what should happen when a stimulus arrives at the system.</p>
-</div>
-<div class="paragraph">
-<p>For architects, two kinds of scenarios are important:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Usage scenarios (also called application scenarios or use case scenarios) describe the system’s runtime reaction to a certain stimulus. This also includes scenarios that describe the system’s efficiency or performance. Example: The system reacts to a user’s request within one second.</p>
-</li>
-<li>
-<p>Change scenarios describe a modification of the system or of its immediate environment. Example: Additional functionality is implemented or requirements for a quality attribute change.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>Scenarios make quality requirements concrete and allow to
-more easily measure or decide whether they are fulfilled.</p>
-</div>
-<div class="paragraph">
-<p>Especially when you want to assess your architecture using methods like
-ATAM you need to describe your quality goals (from section 1.2)
-more precisely down to a level of scenarios that can be discussed and evaluated.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>Tabular or free form text.</p>
-</div>
-</div>
-</div>
+<h3 id="_escenarios_de_calidad">10.2. Escenarios de Calidad</h3>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-technical-risks">11. Risks and Technical Debts</h2>
+<h2 id="section-technical-risks">11. Riesgos y deuda técnica</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>A list of identified technical risks or technical debts, ordered by priority</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>“Risk management is project management for grown-ups” (Tim Lister, Atlantic Systems Guild.)</p>
-</div>
-<div class="paragraph">
-<p>This should be your motto for systematic detection and evaluation of risks and technical debts in the architecture, which will be needed by management stakeholders (e.g. project managers, product owners) as part of the overall risk analysis and measurement planning.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>List of risks and/or technical debts, probably including suggested measures to minimize, mitigate or avoid risks or reduce technical debts.</p>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-11/">Risks and Technical Debt</a> in the arc42 documentation.</p>
-</div>
-</div>
-</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-glossary">12. Glossary</h2>
+<h2 id="section-glossary">12. Glosario</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>The most important domain and technical terms that your stakeholders use when discussing the system.</p>
-</div>
-<div class="paragraph">
-<p>You can also see the glossary as source for translations if you work in multi-language teams.</p>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>You should clearly define your terms, so that all stakeholders</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>have an identical understanding of these terms</p>
-</li>
-<li>
-<p>do not use synonyms and homonyms</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>A table with columns &lt;Term&gt; and &lt;Definition&gt;.</p>
-</div>
-<div class="paragraph">
-<p>Potentially more columns in case you need translations.</p>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-12/">Glossary</a> in the arc42 documentation.</p>
-</div>
-</div>
-</div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1892,18 +1318,18 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Term</th>
-<th class="tableblock halign-left valign-top">Definition</th>
+<th class="tableblock halign-left valign-top">Término</th>
+<th class="tableblock halign-left valign-top">Definición</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Term-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;definition-1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Término-1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Definición-1&gt;</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Term-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;definition-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Término-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Definición-2&gt;</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -1912,8 +1338,8 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 8.2 EN<br>
-Last updated 2026-02-09 21:50:19 +0100
+Version 7.0 ES<br>
+Last updated 2026-02-18 20:43:07 +0100
 </div>
 </div>
 </body>
