@@ -4,7 +4,21 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_yovi_es5b&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_yovi_es5b)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_yovi_es5b&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_yovi_es5b)
 
-This project is a template with some basic functionality for the ASW labs.
+[Deployment in Azure](http://20.199.9.107)
+
+[Documentation](https://arquisoft.github.io/yovi_es5b/)
+
+[Decision log](https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones)
+
+## Contributors
+
+| Name  | UO  | Github username |
+|---|---|---|
+| **Alejandro** Aloso Bayón | UO300216 | [alonsobayonalejandro-ctrl](https://github.com/alonsobayonalejandro-ctrl) |
+| **Antonio** Postigo de Diego | UO265373  | [tonipdd](https://github.com/tonipdd) |
+| **Guillermo** Gil Naves | UO300475 | [UO300475](https://github.com/UO300475) |
+| **Ignacio** Torre Suárez | UO245469 | [NachoTS](https://github.com/NachoTS) |
+| **Pedro** Díaz González | UO294790 | [Gedepe](https://github.com/Gedepe) |
 
 ## Project Structure
 
