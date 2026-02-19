@@ -1,10 +1,32 @@
 services:
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: yovi_mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=secreta # Contraseña del root
+      - MYSQL_DATABASE=yovi_db      # Docker creará esta base de datos automáticamente
+    ports:
+      - "3307:3306"
+    networks:
+      - monitor-net
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   users:
     build: ./users
     container_name: users
     image: ghcr.io/arquisoft/yovi_es5b-users:latest
     ports:
       - "3000:3000"
+    environment:
+      - DB_NAME=yovi_db
+      - DB_USER=root
+      - DB_PASSWORD=secreta
+      - DB_HOST=mysql-db
+    depends_on:
+      - mysql-db
     networks:
       - monitor-net
 
@@ -51,6 +73,9 @@ services:
       - ./users/monitoring/grafana/provisioning:/etc/grafana/provisioning
     networks:
       - monitor-net
+
+volumes:
+  mysql_data:
 
 networks:
   monitor-net:

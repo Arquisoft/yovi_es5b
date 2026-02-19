@@ -14,6 +14,8 @@
     "express": "^5.2.1",
     "express-prom-bundle": "^8.0.0",
     "js-yaml": "^4.1.0",
+    "mysql2": "^3.17.2",
+    "sequelize": "^6.37.7",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
