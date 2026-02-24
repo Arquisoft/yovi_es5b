@@ -28,49 +28,41 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.post('/createuser', async (req, res) => {
-  const username = req.body && req.body.username;
-  try {
-    // Simulate a 1 second delay to mimic processing/network latency
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  // 1. Extraemos los nombres exactos que envías desde Swagger
+  const { nombre, nom_usuario, contrasena } = req.body;
 
-    const message = `Hello ${username}! welcome to the course!`;
-    res.json({ message });
+  try {
+    // 2. Intentamos guardar en la base de datos real
+    const nuevoUsuario = await Usuario.create({
+      nombre: nombre,
+      nom_usuario: nom_usuario,
+      contrasena: contrasena
+    });
+
+    // 3. Si funciona, devolvemos el nombre real guardado y el ID de la BD
+    res.status(201).json({ 
+      message: `¡Usuario ${nuevoUsuario.nom_usuario} creado con éxito!`,
+      userId: nuevoUsuario.id_usuario 
+    });
+    
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('Error en la base de datos:', err.message);
+    // Si el usuario ya existe, Sequelize saltará aquí
+    res.status(400).json({ error: "No se pudo crear el usuario (quizás ya existe)" });
   }
 });
 
-// app.post('/createuser', async (req, res) => {
-//   // 1. Extraemos los campos que espera nuestra tabla Usuario
-//   const { nombre, nom_usuario, contrasena } = req.body;
-
-//   try {
-//     // 2. Validación básica para asegurarnos de que nos envían todo
-//     if (!nombre || !nom_usuario || !contrasena) {
-//       return res.status(400).json({ 
-//         error: "Faltan datos. Por favor envía: nombre, nom_usuario y contrasena." 
-//       });
-//     }
-
-//     // 3. Guardamos el usuario real en la base de datos MySQL
-//     const nuevoUsuario = await Usuario.create({
-//       nombre: nombre,
-//       nom_usuario: nom_usuario,
-//       contrasena: contrasena
-//     });
-
-//     // 4. Devolvemos una respuesta de éxito con los datos guardados
-//     res.status(201).json({ 
-//       message: `¡Usuario ${nom_usuario} creado con éxito!`,
-//       usuario: nuevoUsuario
-//     });
-    
-//   } catch (err) {
-//     console.error('Error al guardar en la BD:', err);
-//     // Si el nom_usuario ya existe, Sequelize lanzará un error que capturamos aquí
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+// Ruta para obtener todos los usuarios (para probar que se guardan)
+app.get('/getusers', async (req, res) => {
+  try {
+    const usuarios = await Usuario.findAll({
+      attributes: ['id_usuario', 'nombre', 'nom_usuario'] // No enviamos la contraseña por seguridad
+    });
+    res.json(usuarios);
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener los usuarios" });
+  }
+});
 
 const conectarDB = async () => {
   let retries = 20;
