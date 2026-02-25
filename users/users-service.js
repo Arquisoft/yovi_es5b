@@ -94,7 +94,7 @@ const conectarDB = async () => {
 conectarDB();
 
 
-if (require.main === module) {
+if (require.main == module) {
   app.listen(port, () => {
     console.log(`User Service listening at http://localhost:${port}`)
   })
