@@ -44,7 +44,7 @@ pub fn create_router(state: AppState) -> axum::Router {
         .route("/status", axum::routing::get(status))
         .route(
             "/{api_version}/ybot/choose/{bot_id}",
-            axum::routing::post(choose::choose),
+            axum::routing::post(choose::choose).options(|| async { "OK" }),
         )
         .with_state(state)
         .layer(axum::middleware::from_fn(add_headers_middleware))
@@ -63,7 +63,7 @@ async fn add_headers_middleware(request: Request, next: Next) -> impl IntoRespon
     );
     headers.insert(
         header::ACCESS_CONTROL_ALLOW_METHODS,
-        "GET".parse().unwrap(),
+        "GET, POST, OPTIONS".parse().unwrap(), 
     );
     headers.insert(
         header::ACCESS_CONTROL_ALLOW_HEADERS,
