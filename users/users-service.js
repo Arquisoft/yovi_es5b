@@ -5,6 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require('node:fs');
 const YAML = require('js-yaml');
 const promBundle = require('express-prom-bundle');
+const { sequelize, Usuario } = require('./models');
 
 const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
@@ -27,20 +28,73 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.post('/createuser', async (req, res) => {
-  const username = req.body && req.body.username;
-  try {
-    // Simulate a 1 second delay to mimic processing/network latency
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  // 1. Extraemos los nombres exactos que envías desde Swagger
+  const { nombre, nom_usuario, contrasena } = req.body;
 
-    const message = `Hello ${username}! welcome to the course!`;
-    res.json({ message });
+  try {
+    // 2. Intentamos guardar en la base de datos real
+    const nuevoUsuario = await Usuario.create({
+      nombre: nombre,
+      nom_usuario: nom_usuario,
+      contrasena: contrasena
+    });
+
+    // 3. Si funciona, devolvemos el nombre real guardado y el ID de la BD
+    res.status(201).json({ 
+      message: `¡Usuario ${nuevoUsuario.nom_usuario} creado con éxito!`,
+      userId: nuevoUsuario.id_usuario 
+    });
+    
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('Error en la base de datos:', err.message);
+    // Si el usuario ya existe, Sequelize saltará aquí
+    res.status(400).json({ error: "No se pudo crear el usuario (quizás ya existe)" });
   }
 });
 
+// Ruta para obtener todos los usuarios (para probar que se guardan)
+app.get('/getusers', async (req, res) => {
+  try {
+    const usuarios = await Usuario.findAll({
+      attributes: ['id_usuario', 'nombre', 'nom_usuario'] // No enviamos la contraseña por seguridad
+    });
+    res.json(usuarios);
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener los usuarios" });
+  }
+});
 
-if (require.main === module) {
+const conectarDB = async () => {
+  let retries = 20;
+  while (retries > 0) {
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Conexión a MySQL establecida correctamente.');
+      
+      // Sincroniza las tablas ({ alter: true } actualiza columnas sin borrar datos)
+      await sequelize.sync({ alter: true });
+      console.log('✅ Tablas de YOVI listas.');
+      
+      // Si todo va bien, salimos del bucle
+      break; 
+    } catch (err) {
+      console.error(`❌ Error al conectar con MySQL. Reintentos restantes: ${retries - 1}`);
+      retries -= 1;
+      
+      if (retries === 0) {
+        console.error('❌ No se pudo conectar a la base de datos tras varios intentos:', err);
+      } else {
+        console.log('⏳ Esperando 3 segundos antes de reintentar...');
+        await new Promise(res => setTimeout(res, 3000));
+      }
+    }
+  }
+};
+
+conectarDB();
+
+
+if (require.main == module) {
   app.listen(port, () => {
     console.log(`User Service listening at http://localhost:${port}`)
   })

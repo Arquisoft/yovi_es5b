@@ -33,3 +33,22 @@ paths:
                     example: "Hello testuser! welcome to the course!"
         '400':
           description: Error creating user
+  /getusers:
+    get:
+      summary: Get all users
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_usuario:
+                      type: integer
+                    nombre:
+                      type: string
+                    nom_usuario:
+                      type: string
