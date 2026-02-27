@@ -64,11 +64,13 @@ endif::arc42help[]
 ----
 @startuml
 actor Usuario
-actor Bot
+together {
+    cloud "Aplicación web YOVI" as yovi
+    actor Bot
+}
 
-cloud "Aplicación web YOVI" as yovi
-Usuario -> yovi : "Se registra en la aplicación y juega partidas"
 Bot -> yovi : "Interactúa con el API para obtener información y jugar"
+Usuario -> yovi : "Se registra y juega partidas"
 
 
 @enduml
