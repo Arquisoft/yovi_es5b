@@ -63,7 +63,7 @@ async fn add_headers_middleware(request: Request, next: Next) -> impl IntoRespon
     );
     headers.insert(
         header::ACCESS_CONTROL_ALLOW_METHODS,
-        "GET".parse().unwrap(),
+        "GET, POST, OPTIONS".parse().unwrap(), 
     );
     headers.insert(
         header::ACCESS_CONTROL_ALLOW_HEADERS,

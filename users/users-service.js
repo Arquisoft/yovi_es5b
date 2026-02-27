@@ -5,119 +5,99 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require('node:fs');
 const YAML = require('js-yaml');
 const promBundle = require('express-prom-bundle');
-const { Sequelize, DataTypes } = require('sequelize');
+const { sequelize, Usuario } = require('./models');
 
-// Middleware de métricas
 const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
 
-// Configuración de Sequelize con variables de entorno
-const sequelize = new Sequelize(process.env.DATABASE_URL || 'mysql://yovi_user:yovi_pass@mysqldb:3306/users_db', {
-    dialect: 'mysql',
-    logging: false, // Evita saturar la consola con logs de SQL
-});
-
-// Definición del modelo de Usuario
-const User = sequelize.define('User', {
-    username: { type: DataTypes.STRING, allowNull: false, unique: true },
-    password: { type: DataTypes.STRING, allowNull: false },
-});
-
-// Carga de Swagger (OpenAPI)
 try {
-    const swaggerDocument = YAML.load(fs.readFileSync('./openapi.yaml', 'utf8'));
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  const swaggerDocument = YAML.load(fs.readFileSync('./openapi.yaml', 'utf8'));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 } catch (e) {
-    console.log("No se pudo cargar el archivo openapi.yaml:", e.message);
+  console.log(e);
 }
 
-// Configuración de CORS y JSON
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    if (req.method === 'OPTIONS') return res.sendStatus(204);
-    next();
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
 });
+
 app.use(express.json());
 
-// --- ENDPOINTS ---
-
-// Health check para que Docker sepa que el servicio está vivo
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', time: new Date().toISOString() });
-});
-
-// Registro de usuario
 app.post('/createuser', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const newUser = await User.create({ 
-            username: username, 
-            password: password 
-        });
+  // 1. Extraemos los nombres exactos que envías desde Swagger
+  const { nombre, nom_usuario, contrasena } = req.body;
 
-        res.json({ 
-            message: `Hello ${newUser.username}! welcome to the course!`,
-            userId: newUser.id 
-        });
-    } catch (err) {
-        res.status(400).json({ error: "El usuario ya existe o los datos son inválidos" });
-    }
+  try {
+    // 2. Intentamos guardar en la base de datos real
+    const nuevoUsuario = await Usuario.create({
+      nombre: nombre,
+      nom_usuario: nom_usuario,
+      contrasena: contrasena
+    });
+
+    // 3. Si funciona, devolvemos el nombre real guardado y el ID de la BD
+    res.status(201).json({ 
+      message: `¡Usuario ${nuevoUsuario.nom_usuario} creado con éxito!`,
+      userId: nuevoUsuario.id_usuario 
+    });
+    
+  } catch (err) {
+    console.error('Error en la base de datos:', err.message);
+    // Si el usuario ya existe, Sequelize saltará aquí
+    res.status(400).json({ error: "No se pudo crear el usuario (quizás ya existe)" });
+  }
 });
 
-// Login de usuario (comparación simple)
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const user = await User.findOne({ where: { username } });
-        if (user && user.password === password) {
-            res.json({ success: true, message: "Login correcto", username: user.username });
-        } else {
-            res.status(401).json({ error: "Usuario o contraseña incorrectos" });
-        }
-    } catch (err) {
-        res.status(500).json({ error: "Error interno en el servidor" });
-    }
+// Ruta para obtener todos los usuarios (para probar que se guardan)
+app.get('/getusers', async (req, res) => {
+  try {
+    const usuarios = await Usuario.findAll({
+      attributes: ['id_usuario', 'nombre', 'nom_usuario'] // No enviamos la contraseña por seguridad
+    });
+    res.json(usuarios);
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener los usuarios" });
+  }
 });
 
-// --- FUNCIÓN DE ARRANQUE CON REINTENTOS ---
-// Esto soluciona el error EAI_AGAIN esperando a que la DB esté lista
-async function startServer() {
-    let connected = false;
-    let attempts = 0;
-    const maxAttempts = 10;
-
-    console.log("Iniciando conexión con la base de datos...");
-
-    while (!connected && attempts < maxAttempts) {
-        try {
-            await sequelize.authenticate();
-            // sync() crea las tablas si no existen
-            await sequelize.sync();
-            console.log('Conexión a MySQL establecida correctamente.');
-            connected = true;
-        } catch (err) {
-            attempts++;
-            console.log(`[Intento ${attempts}] Error conectando a mysqldb. Reintentando en 5s...`);
-            // Esperamos 5 segundos antes de volver a intentar
-            await new Promise(resolve => setTimeout(resolve, 5000));
-        }
+const conectarDB = async () => {
+  let retries = 20;
+  while (retries > 0) {
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Conexión a MySQL establecida correctamente.');
+      
+      // Sincroniza las tablas ({ alter: true } actualiza columnas sin borrar datos)
+      await sequelize.sync({ alter: true });
+      console.log('✅ Tablas de YOVI listas.');
+      
+      // Si todo va bien, salimos del bucle
+      break; 
+    } catch (err) {
+      console.error(`❌ Error al conectar con MySQL. Reintentos restantes: ${retries - 1}`);
+      retries -= 1;
+      
+      if (retries === 0) {
+        console.error('❌ No se pudo conectar a la base de datos tras varios intentos:', err);
+      } else {
+        console.log('⏳ Esperando 3 segundos antes de reintentar...');
+        await new Promise(res => setTimeout(res, 3000));
+      }
     }
+  }
+};
 
-    if (connected) {
-        app.listen(port, () => {
-            console.log(`User Service listening at http://localhost:${port}`);
-        });
-    } else {
-        console.error('FATAL: No se pudo conectar a MySQL tras varios intentos. Cerrando servicio.');
-        process.exit(1);
-    }
+conectarDB();
+
+
+if (require.main == module) {
+  app.listen(port, () => {
+    console.log(`User Service listening at http://localhost:${port}`)
+  })
 }
 
-// Ejecutar el arranque si no es un test
-if (require.main === module) {
-    startServer();
-}
-
-module.exports = app;
+module.exports = app
