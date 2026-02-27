@@ -41,8 +41,10 @@ const GamePage: React.FC = () => {
     navigate(ROUTES.HOME);
   };
 
-  const handleStartGame = () => {
-    navigate(ROUTES.PLAY_PATH(username || ''));
+  const handleStartGame = (botId: string) => {
+    if (username) {
+      navigate(`${ROUTES.PLAY_PATH(username)}?bot=${botId}`);
+    }
   };
 
   return (
@@ -98,22 +100,14 @@ const GamePage: React.FC = () => {
           ← Volver
         </button>
 
-        <button
-          onClick={handleStartGame}
-          disabled={gameyStatus !== 'ok'} // Se desactiva si el servidor no está listo
-          style={{
-            padding: '10px 20px',
-            backgroundColor: gameyStatus === 'ok' ? '#3b82f6' : '#9ca3af',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: gameyStatus === 'ok' ? 'pointer' : 'not-allowed',
-            fontSize: '14px',
-            fontWeight: 'bold'
-          }}
-        >
-          Empezar Partida 🚀
-        </button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <button 
+            onClick={() => handleStartGame('random_bot')}
+            style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Jugar contra Aleatorio (Fácil)
+          </button>
+        </div>
       </div>
     </div>
   );
