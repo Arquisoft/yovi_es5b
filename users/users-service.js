@@ -1,103 +1,111 @@
-const express = require('express');
-const app = express();
-const port = 3000;
-const swaggerUi = require('swagger-ui-express');
-const fs = require('node:fs');
-const YAML = require('js-yaml');
-const promBundle = require('express-prom-bundle');
+const { app, port } = require("./config/app.js");
 const { sequelize, Usuario } = require('./models');
+const { registrarUsuario, iniciarSesion } = require("./service/users.js");
+const { validarRegistrarUsuario, validarIniciarSesion } = require("./validator/user-validators.js");
 
-const metricsMiddleware = promBundle({includeMethod: true});
-app.use(metricsMiddleware);
-
-try {
-  const swaggerDocument = YAML.load(fs.readFileSync('./openapi.yaml', 'utf8'));
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-} catch (e) {
-  console.log(e);
-}
-
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
+/**
+ * Ruta para obtener información sobre el usuario actual.
+ * Devuelve:
+ * - 200: información del usuario activo
+ * - 403: error si no hay usuario autenticado
+ **/
+app.get('/getuser', async (req, res) => {
+    res.status(200).json(req.session.user);
 });
 
-app.use(express.json());
+/**
+ * Ruta de registro. Requiere:
+ * - nombre
+ * - nom_usuario
+ * - contrasena
+ *
+ * Devuelve:
+ * - 200: usuario registrado
+ * - 400: objecto con errores del registro
+ **/
+app.post('/register', async (req, res) => {
+    const errores = await validarRegistrarUsuario(req?.body?.nombre, req?.body?.nom_usuario, req?.body?.contrasena);
+    if (Object.keys(errores).length > 0) {
+        res.status(400).json(errores);
+        return;
+    }
 
-app.post('/createuser', async (req, res) => {
-  // 1. Extraemos los nombres exactos que envías desde Swagger
-  const { nombre, nom_usuario, contrasena } = req.body;
-
-  try {
-    // 2. Intentamos guardar en la base de datos real
-    const nuevoUsuario = await Usuario.create({
-      nombre: nombre,
-      nom_usuario: nom_usuario,
-      contrasena: contrasena
-    });
-
-    // 3. Si funciona, devolvemos el nombre real guardado y el ID de la BD
-    res.status(201).json({ 
-      message: `¡Usuario ${nuevoUsuario.nom_usuario} creado con éxito!`,
-      userId: nuevoUsuario.id_usuario 
-    });
-    
-  } catch (err) {
-    console.error('Error en la base de datos:', err.message);
-    // Si el usuario ya existe, Sequelize saltará aquí
-    res.status(400).json({ error: "No se pudo crear el usuario (quizás ya existe)" });
-  }
+    try {
+        const nuevoUsuario = await registrarUsuario(req.body.nombre, req.body.nom_usuario, req.body.contrasena);
+        req.session.user = { id_usuario: nuevoUsuario.id_usuario, nombre: nuevoUsuario.nombre, username: nuevoUsuario.nom_usuario };
+        res.status(200).json(nuevoUsuario);
+    } catch (err) {
+        res.status(400).json({ error: "Ocurrió un error al registrar al usuario." });
+    }
 });
 
-// Ruta para obtener todos los usuarios (para probar que se guardan)
-app.get('/getusers', async (req, res) => {
-  try {
-    const usuarios = await Usuario.findAll({
-      attributes: ['id_usuario', 'nombre', 'nom_usuario'] // No enviamos la contraseña por seguridad
-    });
-    res.json(usuarios);
-  } catch (err) {
-    res.status(500).json({ error: "Error al obtener los usuarios" });
-  }
+/**
+ * Ruta de inicion de sesión. Requiere:
+ * - nom_usuario
+ * - contrasena
+ *
+ * Devuelve:
+ * - 200: usuario con el que se inicia sesión
+ * - 400: objecto con información de error
+ **/
+app.post('/login', async (req, res) => {
+    const errores = await validarIniciarSesion(req?.body?.nom_usuario, req?.body?.contrasena);
+    if (Object.keys(errores).length > 0) {
+        res.status(400).json(errores);
+        return;
+    }
+
+    try {
+        const usuario = await iniciarSesion(req.body.nom_usuario, req.body.contrasena);
+        // Autenticación fallida
+        if (usuario == null) {
+            res.status(400).json({ error: "Error al iniciar sesión. Credenciales no válidas." });
+        }
+
+        // Establecer sesión
+        req.session.user = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, username: usuario.nom_usuario };
+        res.status(200).json(usuario);
+    } catch (err) {
+        res.status(400).json({ error: "Ocurrió un error al iniciar sesión." });
+    }
 });
+
+
 
 const conectarDB = async () => {
-  let retries = 20;
-  while (retries > 0) {
-    try {
-      await sequelize.authenticate();
-      console.log('✅ Conexión a MySQL establecida correctamente.');
-      
-      // Sincroniza las tablas ({ alter: true } actualiza columnas sin borrar datos)
-      await sequelize.sync({ alter: true });
-      console.log('✅ Tablas de YOVI listas.');
-      
-      // Si todo va bien, salimos del bucle
-      break; 
-    } catch (err) {
-      console.error(`❌ Error al conectar con MySQL. Reintentos restantes: ${retries - 1}`);
-      retries -= 1;
-      
-      if (retries === 0) {
-        console.error('❌ No se pudo conectar a la base de datos tras varios intentos:', err);
-      } else {
-        console.log('⏳ Esperando 3 segundos antes de reintentar...');
-        await new Promise(res => setTimeout(res, 3000));
-      }
+    let retries = 20;
+    while (retries > 0) {
+        try {
+            await sequelize.authenticate();
+            console.log('✅ Conexión a MySQL establecida correctamente.');
+
+            // Sincroniza las tablas (force: true las recrea de forma forzosa)
+            await sequelize.sync({ force: true });
+            console.log('✅ Tablas de YOVI listas.');
+
+            break;
+        } catch (err) {
+            console.error(`❌ Error al conectar con MySQL. Reintentos restantes: ${retries - 1}`, err);
+            retries -= 1;
+
+            if (retries === 0) {
+                console.error('❌ No se pudo conectar a la base de datos tras varios intentos:', err);
+            } else {
+                console.log('⏳ Esperando 3 segundos antes de reintentar...');
+                await new Promise(res => setTimeout(res, 3000));
+            }
+        }
     }
-  }
 };
 
-conectarDB();
-
-
+// Método "main" de la aplicación express:
+// 1. Se conecta a la base de datos
+// 2. Lanza la aplicación express para escuchar en el puerto especificado.
 if (require.main == module) {
-  app.listen(port, () => {
-    console.log(`User Service listening at http://localhost:${port}`)
-  })
+    conectarDB().catch((err) => console.error(err));
+    app.listen(port, () => {
+        console.log(`User Service listening at http://localhost:${port}`)
+    })
 }
 
 module.exports = app
