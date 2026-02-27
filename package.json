@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@noble/hashes": "^2.0.1",
-    "express-session": "^1.19.0"
-  }
-}
