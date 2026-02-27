@@ -157,12 +157,14 @@ node "Aplicación web YOVI" as yovi {
     component Gamey #Gray
     component Webapp #LightGray
     component Users #DarkGray
+    component MySQL #DarkGray
 }
 
 Usuario --> yovi : "Se registra en la aplicación y juega partidas"
 Bot --> yovi : "Interactúa con el API para obtener información y jugar"
 Webapp --> Users : "Obtiene información de usuarios e histórico"
 Webapp --> Gamey : "Consulta estado de los juegos en curso"
+Users --> MySQL : "Obtiene datos persistidos de jugadores"
 
 @enduml
 ----
@@ -217,6 +219,7 @@ node "Aplicación web YOVI" as yovi {
     }
     component Webapp #DarkGray
     component Users #DarkGray
+    component MySQL #DarkGray
 }
 
 Core --> Notation
@@ -227,6 +230,7 @@ Usuario --> Webapp
 Bot --> Webapp
 Webapp --> Users : "Gestión de usuarios/información"
 Webapp --> BotServer : "Gestión del juego"
+Users --> MySQL
 
 @enduml
 ----
@@ -273,8 +277,9 @@ node "Aplicación web YOVI" as yovi {
     component Users {
         component "users-service" as users #DarkGray
         component "user-stats-service" as stats #DarkGray
-        database DBUsers as db
-
+    }
+    component MySQL as db{
+        database DBUsers
     }
 }
 
