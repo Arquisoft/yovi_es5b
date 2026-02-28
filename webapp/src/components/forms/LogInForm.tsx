@@ -10,7 +10,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
@@ -20,10 +20,32 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      onLoginSuccess(username);
+
+    try {
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nom_usuario: username, 
+          contrasena: password   
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        onLoginSuccess(data.nom_usuario);
+      } else {
+        setError(data.error || 'Credenciales incorrectas');
+      }
+    } catch (err) {
+      console.error("Error en login:", err);
+      setError('No se pudo conectar con el servidor de usuarios.');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -52,7 +74,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
       {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
 
       <button type="submit" className="submit-button" disabled={loading}>
-        {loading ? 'Iniciando Sesión...' : 'Aceptar Inicio de Sesión'}
+        {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
       </button>
     </form>
   );

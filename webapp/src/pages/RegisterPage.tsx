@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/constants";
-import RegisterForm from "../components/RegisterForm";
+import RegisterForm from "../components/forms/RegisterForm";
 import reactLogo from "../assets/react.svg";
-import LogInForm from "../components/LogInForm";
+import LogInForm from "../components/forms/LogInForm";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
