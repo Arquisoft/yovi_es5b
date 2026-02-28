@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@noble/hashes": "^2.0.1",
     "express": "^5.2.1",
     "express-prom-bundle": "^8.0.0",
+    "express-session": "^1.19.0",
     "js-yaml": "^4.1.0",
     "mysql2": "^3.17.2",
     "sequelize": "^6.37.7",
