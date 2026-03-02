@@ -23,6 +23,7 @@ pub mod choose;
 pub mod error;
 pub mod state;
 pub mod version;
+pub mod play;
 use axum::{
     response::IntoResponse,
     http::header,
@@ -45,6 +46,9 @@ pub fn create_router(state: AppState) -> axum::Router {
         .route(
             "/{api_version}/ybot/choose/{bot_id}",
             axum::routing::post(choose::choose),
+        ).route(
+            "/{api_version}/ybot/play/{bot_id}",
+            axum::routing::post(play::play).options(|| async { "OK" }),
         )
         .with_state(state)
         .layer(axum::middleware::from_fn(add_headers_middleware))
