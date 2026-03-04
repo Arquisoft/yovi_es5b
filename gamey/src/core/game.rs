@@ -5,6 +5,8 @@ use std::collections::HashMap;
 use std::fmt::Write;
 use std::path::Path;
 
+use serde::{Serialize, Deserialize};
+
 /// A Result type alias for game operations that may fail with a `GameYError`.
 pub type Result<T> = std::result::Result<T, crate::GameYError>;
 
@@ -545,7 +547,7 @@ fn apply_player_color(symbol: String, player: Option<PlayerId>) -> String {
 }
 
 /// Represents the current status of a game.
-#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq)]
 pub enum GameStatus {
     /// The game is still in progress with the specified player to move next.
     Ongoing { next_player: PlayerId },

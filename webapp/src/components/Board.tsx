@@ -3,6 +3,28 @@ import { Hexagon } from './Hexagon';
 
 type CellState = 'empty' | 'human' | 'bot';
 
+type Coordinates = {
+    x : number;
+    y : number;
+    z : number;
+};
+
+type GameStatus = {
+    Ongoing: PlayerId | undefined;
+    Finished: PlayerId | undefined;
+};
+
+type PlayerId = {
+    winner: number;
+};
+
+type MoveResponse = {
+    api_version: string;
+    bot_id: string;
+    coords: Coordinates;
+    status: GameStatus;
+};
+
 export const Board: React.FC = () => {
   const size = 30; 
   const boardSize = 5; 
@@ -16,49 +38,11 @@ export const Board: React.FC = () => {
   const [isBotThinking, setIsBotThinking] = useState(false);
   const [winner, setWinner] = useState<CellState | null>(null);
 
-  const checkWin = (board: Record<string, CellState>, player: CellState): boolean => {
-    if (player === 'empty') return false;
-
-    const playerCells = Object.keys(board).filter(id => board[id] === player);
-    const visited = new Set<string>();
-
-    for (const startCell of playerCells) {
-      if (visited.has(startCell)) continue;
-
-      let touchesA = false;
-      let touchesB = false;
-      let touchesC = false;
-
-      const stack = [startCell];
-      visited.add(startCell);
-
-      while (stack.length > 0) {
-        const current = stack.pop()!;
-        const [x, y, z] = current.split('-').map(Number);
-
-        if (x === 0) touchesA = true;
-        if (y === 0) touchesB = true;
-        if (z === 0) touchesC = true;
-
-        // Si este grupo de fichas toca los 3 lados, ¡Ha ganado!
-        if (touchesA && touchesB && touchesC) return true;
-
-        // Calculamos los 6 vecinos posibles en coordenadas baricéntricas
-        const neighbors = [
-          `${x+1}-${y-1}-${z}`, `${x+1}-${y}-${z-1}`,
-          `${x-1}-${y+1}-${z}`, `${x}-${y+1}-${z-1}`,
-          `${x-1}-${y}-${z+1}`, `${x}-${y-1}-${z+1}`
-        ];
-
-        for (const neighbor of neighbors) {
-          if (board[neighbor] === player && !visited.has(neighbor)) {
-            visited.add(neighbor);
-            stack.push(neighbor);
-          }
-        }
+  const handleWinner = (status: GameStatus): void => {
+      if (status.Finished !== undefined) {
+          const winner = status.Finished.winner == 0 ? "human" : "bot";
+          setWinner(winner);
       }
-    }
-    return false;
   };
 
   const generarYEN = (currentBoard: Record<string, CellState>): object => {
@@ -93,7 +77,9 @@ export const Board: React.FC = () => {
       });
 
       if (res.ok) {
-        const data = await res.json();
+        const data : MoveResponse = await res.json();
+          // Comprobamos si hay ganador
+          handleWinner(data.status);
         
         if (data.coords && data.coords.x !== undefined) {
           const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
@@ -101,10 +87,6 @@ export const Board: React.FC = () => {
           const newBoard = { ...currentBoard, [botMoveId]: 'bot' as CellState };
           setBoardState(newBoard);
 
-          // Comprobamos si el bot nos ha ganado
-          if (checkWin(newBoard, 'bot')) {
-            setWinner('bot');
-          }
         } else {
           console.log("El bot no tiene movimientos disponibles (o hay un empate).");
         }
@@ -123,12 +105,6 @@ export const Board: React.FC = () => {
 
     const newBoard: Record<string, CellState> = { ...boardState, [id]: 'human' as CellState };
     setBoardState(newBoard);
-
-    // Comprobamos si el humano ha ganado con este clic
-    if (checkWin(newBoard, 'human')) {
-      setWinner('human');
-      return; // Si el humano gana, el bot ya no tira
-    }
 
     askBotForMove(newBoard);
   };

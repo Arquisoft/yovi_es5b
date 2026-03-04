@@ -1,5 +1,5 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+
 import { ROUTES } from '../routes/constants';
 import { Board } from '../components/Board'; // Importamos el tablero SVG que creamos
 
@@ -8,7 +8,7 @@ const PlayPage: React.FC = () => {
   const navigate = useNavigate();
 
   // Función para volver al Lobby
-  const handleAbandon = () => {
+  const handleAbandon = async () => {
     navigate(ROUTES.GAME_PATH(username || ''));
   };
 
@@ -44,7 +44,7 @@ const PlayPage: React.FC = () => {
         borderRadius: '12px', 
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
       }}>
-        <Board />
+        <Board/>
       </div>
 
     </div>

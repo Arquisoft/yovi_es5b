@@ -1,4 +1,4 @@
-use crate::{Coordinates, GameY, YEN, check_api_version, error::ErrorResponse, state::AppState};
+use crate::{Coordinates, GameY, GameStatus, Movement, PlayerId, YEN, check_api_version, error::ErrorResponse, state::AppState};
 use axum::{
     Json,
     extract::{Path, State},
@@ -26,6 +26,8 @@ pub struct MoveResponse {
     pub bot_id: String,
     /// The coordinates where the bot chooses to place its piece.
     pub coords: Coordinates,
+    /// The status of the current game.
+    pub status: GameStatus,
 }
 
 /// Handler for the bot move selection endpoint.
@@ -49,7 +51,7 @@ pub async fn choose(
     Json(yen): Json<YEN>,
 ) -> Result<Json<MoveResponse>, Json<ErrorResponse>> {
     check_api_version(&params.api_version)?;
-    let game_y = match GameY::try_from(yen) {
+    let mut game_y = match GameY::try_from(yen) {
         Ok(game) => game,
         Err(err) => {
             return Err(Json(ErrorResponse::error(
@@ -84,10 +86,15 @@ pub async fn choose(
             )));
         }
     };
+
+    // Update the game state with the bot chosen move before returning the response
+    let _ = game_y.add_move(Movement::Placement {player: PlayerId::new(1), coords});
+
     let response = MoveResponse {
         api_version: params.api_version,
         bot_id: params.bot_id,
         coords,
+        status: game_y.status().clone()
     };
     Ok(Json(response))
 }
@@ -102,6 +109,7 @@ mod tests {
             api_version: "v1".to_string(),
             bot_id: "random".to_string(),
             coords: Coordinates::new(1, 2, 3),
+            status: GameY::new(3).status().to_owned()
         };
         assert_eq!(response.api_version, "v1");
         assert_eq!(response.bot_id, "random");
@@ -114,6 +122,7 @@ mod tests {
             api_version: "v1".to_string(),
             bot_id: "random".to_string(),
             coords: Coordinates::new(1, 2, 3),
+            status: GameY::new(3).status().to_owned()
         };
         let json = serde_json::to_string(&response).unwrap();
         assert!(json.contains("\"api_version\":\"v1\""));
@@ -122,7 +131,7 @@ mod tests {
 
     #[test]
     fn test_move_response_deserialize() {
-        let json = r#"{"api_version":"v1","bot_id":"test","coords":{"x":0,"y":1,"z":2}}"#;
+        let json = r#"{"api_version":"v1","bot_id":"test","coords":{"x":0,"y":1,"z":2}, "status": {"Ongoing": {"next_player": 1}}}"#;
         let response: MoveResponse = serde_json::from_str(json).unwrap();
         assert_eq!(response.api_version, "v1");
         assert_eq!(response.bot_id, "test");
@@ -134,6 +143,7 @@ mod tests {
             api_version: "v1".to_string(),
             bot_id: "random".to_string(),
             coords: Coordinates::new(0, 0, 0),
+            status: GameY::new(3).status().to_owned()
         };
         let cloned = response.clone();
         assert_eq!(response, cloned);
@@ -145,16 +155,19 @@ mod tests {
             api_version: "v1".to_string(),
             bot_id: "random".to_string(),
             coords: Coordinates::new(1, 1, 1),
+            status: GameY::new(3).status().to_owned()
         };
         let r2 = MoveResponse {
             api_version: "v1".to_string(),
             bot_id: "random".to_string(),
             coords: Coordinates::new(1, 1, 1),
+            status: GameY::new(3).status().to_owned()
         };
         let r3 = MoveResponse {
             api_version: "v2".to_string(),
             bot_id: "random".to_string(),
             coords: Coordinates::new(1, 1, 1),
+            status: GameY::new(3).status().to_owned()
         };
         assert_eq!(r1, r2);
         assert_ne!(r1, r3);
