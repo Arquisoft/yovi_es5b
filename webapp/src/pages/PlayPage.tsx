@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 import { ROUTES } from '../routes/constants';
@@ -7,44 +6,10 @@ import { Board } from '../components/Board'; // Importamos el tablero SVG que cr
 const PlayPage: React.FC = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [isResigning, setIsResigning] = useState(false);
-
-  const queryParams = new URLSearchParams(location.search);
-  const selectedBot = queryParams.get('bot') || 'random_bot';
 
   // Función para volver al Lobby
   const handleAbandon = async () => {
-    setIsResigning(true);
-    try {
-      const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-      
-      // Creamos un YEN inventado solo para que el servidor lo pueda procesar.
-      // Lo importante aquí no es el tablero, sino la acción "Resign".
-      const dummyYen = {
-        size: 5,
-        turn: 0,
-        players: ["B", "R"],
-        layout: "B/../.../..../....." 
-      };
-
-      await fetch(`${GAMEY_URL}/v1/ybot/play/${selectedBot}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          yen: dummyYen,
-          action: "Resign", // Acción de rendirse
-          player: 0         // El jugador 0 (tú) es el que se rinde
-        })
-      });
-
-    } catch (error) {
-      console.error("Error al abandonar la partida:", error);
-    } finally {
-      setIsResigning(false);
-      // Pase lo que pase (incluso si el servidor falla), te sacamos de la partida
-      navigate(ROUTES.GAME_PATH(username || ''));
-    }
+    navigate(ROUTES.GAME_PATH(username || ''));
   };
 
   return (
@@ -56,18 +21,17 @@ const PlayPage: React.FC = () => {
         
         <button 
           onClick={handleAbandon}
-          disabled={isResigning}
           style={{ 
             padding: '8px 16px', 
-            backgroundColor: isResigning ? '#fca5a5' : '#ef4444', 
+            backgroundColor: '#ef4444', 
             color: 'white', 
             border: 'none', 
             borderRadius: '4px', 
-            cursor: isResigning ? 'wait' : 'pointer',
+            cursor: 'pointer',
             fontWeight: 'bold'
           }}
         >
-          {isResigning ? 'Saliendo...' : 'Abandonar Partida'}
+          Abandonar Partida
         </button>
       </div>
       
@@ -80,7 +44,7 @@ const PlayPage: React.FC = () => {
         borderRadius: '12px', 
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
       }}>
-        <Board botId={selectedBot}/>
+        <Board/>
       </div>
 
     </div>
