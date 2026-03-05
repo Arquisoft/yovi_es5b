@@ -41,3 +41,13 @@
   background-color: gray;
   cursor: not-allowed;
 }
+.error-message {
+  color: red;        
+  background-color: white; 
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+}
