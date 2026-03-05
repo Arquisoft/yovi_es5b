@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 
 import { ROUTES } from '../routes/constants';
 import { Board } from '../components/Board'; // Importamos el tablero SVG que creamos
