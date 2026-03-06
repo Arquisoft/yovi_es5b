@@ -60,6 +60,7 @@ app.post('/login', async (req, res) => {
         // Autenticación fallida
         if (usuario == null) {
             res.status(400).json({ error: "Error al iniciar sesión. Credenciales no válidas." });
+            return;
         }
 
         // Establecer sesión
