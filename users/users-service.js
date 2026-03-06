@@ -14,58 +14,62 @@ app.get('/getuser', async (req, res) => {
 });
 
 /**
- * Ruta de registro. Requiere:
- * - nombre
- * - nom_usuario
- * - contrasena
- *
- * Devuelve:
- * - 200: usuario registrado
- * - 400: objecto con errores del registro
+ * Ruta de registro. 
  **/
 app.post('/register', async (req, res) => {
-    const errores = await validarRegistrarUsuario(req?.body?.nombre, req?.body?.nom_usuario, req?.body?.contrasena);
-    if (Object.keys(errores).length > 0) {
-        res.status(400).json(errores);
-        return;
-    }
-
     try {
+        // Movido DENTRO del try para capturar fallos de DB o errores inesperados
+        const errores = await validarRegistrarUsuario(req?.body?.nombre, req?.body?.nom_usuario, req?.body?.contrasena);
+        
+        if (Object.keys(errores).length > 0) {
+            return res.status(400).json(errores); // Usamos return para evitar seguir la ejecución
+        }
+
         const nuevoUsuario = await registrarUsuario(req.body.nombre, req.body.nom_usuario, req.body.contrasena);
-        req.session.user = { id_usuario: nuevoUsuario.id_usuario, nombre: nuevoUsuario.nombre, username: nuevoUsuario.nom_usuario };
+        
+        req.session.user = { 
+            id_usuario: nuevoUsuario.id_usuario, 
+            nombre: nuevoUsuario.nombre, 
+            username: nuevoUsuario.nom_usuario 
+        };
+        
         res.status(200).json(nuevoUsuario);
+
     } catch (err) {
+        // Cualquier error (de validación o de registro) caerá aquí en lugar de lanzar un 500
+        console.error("Error en registro:", err);
         res.status(400).json({ error: "Ocurrió un error al registrar al usuario." });
     }
 });
 
 /**
- * Ruta de inicion de sesión. Requiere:
- * - nom_usuario
- * - contrasena
- *
- * Devuelve:
- * - 200: usuario con el que se inicia sesión
- * - 400: objecto con información de error
+ * Ruta de inicio de sesión.
  **/
 app.post('/login', async (req, res) => {
-    const errores = await validarIniciarSesion(req?.body?.nom_usuario, req?.body?.contrasena);
-    if (Object.keys(errores).length > 0) {
-        res.status(400).json(errores);
-        return;
-    }
-
     try {
-        const usuario = await iniciarSesion(req.body.nom_usuario, req.body.contrasena);
-        // Autenticación fallida
-        if (usuario == null) {
-            res.status(400).json({ error: "Error al iniciar sesión. Credenciales no válidas." });
+        // Movido DENTRO del try
+        const errores = await validarIniciarSesion(req?.body?.nom_usuario, req?.body?.contrasena);
+        
+        if (Object.keys(errores).length > 0) {
+            return res.status(400).json(errores);
         }
 
-        // Establecer sesión
-        req.session.user = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, username: usuario.nom_usuario };
+        const usuario = await iniciarSesion(req.body.nom_usuario, req.body.contrasena);
+
+        if (!usuario) {
+            return res.status(400).json({ error: "Error al iniciar sesión. Credenciales no válidas." });
+        }
+
+        req.session.user = { 
+            id_usuario: usuario.id_usuario, 
+            nombre: usuario.nombre, 
+            username: usuario.nom_usuario 
+        };
+        
         res.status(200).json(usuario);
+
     } catch (err) {
+        console.error("Error en login:", err);
         res.status(400).json({ error: "Ocurrió un error al iniciar sesión." });
     }
 });

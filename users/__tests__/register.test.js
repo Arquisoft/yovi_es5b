@@ -1,79 +1,76 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import request from 'supertest'
-
-// Sustituimos el módulo de modelos por completo antes de importar la app
-vi.mock('../models/index.js', () => ({
-    Usuario: {
-        findOne: vi.fn(),
-        create: vi.fn()
-    },
-    // Mockeamos sequelize para que no intente conectar a una DB real al arrancar
-    sequelize: {
-        authenticate: vi.fn().mockResolvedValue(),
-        sync: vi.fn().mockResolvedValue()
-    }
-}))
-
-// Importamos la app y el modelo mockeado
 import app from '../users-service.js'
-import { Usuario } from '../models/index.js'
+import { Usuario } from '../models'
 
 describe('Pruebas unitarias de registro', () => {
     
     beforeEach(() => {
-        // Limpiamos el historial de llamadas de las funciones mockeadas
-        vi.clearAllMocks()
+        // Obtenemos el mock global para configurar las funciones de búsqueda y creación
+        const mockUsuario = global.mockModels.Usuario
+        // Reiniciamos los mocks de las funciones para cada test
+        mockUsuario.findOne = vi.fn()
+        mockUsuario.create = vi.fn()
     })
 
     it('debería registrar un usuario correctamente', async () => {
-        // Configuramos el comportamiento del mock para este test
-        Usuario.findOne.mockResolvedValue(null)
-        Usuario.create.mockResolvedValue({ id_usuario: 1, nombre: "Test", nom_usuario: "testuser" })
+        // Simulamos que el nick no existe en la base de datos
+        global.mockModels.Usuario.findOne.mockResolvedValue(null)
+        // Simulamos que la creación del usuario devuelve el objeto creado
+        global.mockModels.Usuario.create.mockResolvedValue({ id_usuario: 1, nombre: "Test", nom_usuario: "testuser" })
 
+        // Realizamos la petición POST al endpoint de registro
         const res = await request(app)
             .post('/register')
             .send({ nombre: "Test", nom_usuario: "testuser", contrasena: "password123" })
 
-        // Verificamos que el servidor responde con éxito (200)
+        // Verificamos respuesta exitosa
         expect(res.status).toBe(200)
-        // Comprobamos que el cuerpo de la respuesta es el objeto que definimos en el mock
+        // Verificamos que el JSON devuelto contiene el nick correcto
         expect(res.body.nom_usuario).toBe("testuser")
-        // Verificamos que se llamó a la función de creación del mock
-        expect(Usuario.create).toHaveBeenCalled()
+        // Verificamos que se llamó a la función de guardado en la BD
+        expect(global.mockModels.Usuario.create).toHaveBeenCalled()
     })
 
     it('debería fallar si el nombre es demasiado corto (< 4 caracteres)', async () => {
+        // Enviamos un nombre inválido de 3 caracteres
         const res = await request(app)
             .post('/register')
             .send({ nombre: "abc", nom_usuario: "user123", contrasena: "passwordSegura" })
 
-        // Verificamos el error de validación (400)
+        // Verificamos código de error 400
         expect(res.status).toBe(400)
+        // Validamos el mensaje de error para el campo nombre
         expect(res.body.nombre).toBe("El nombre debe tener entre 4 y 30 caracteres.")
     })
 
     it('debería fallar si el nick ya está en uso', async () => {
-        // Forzamos al mock a decir que el usuario ya existe
-        Usuario.findOne.mockResolvedValue({ nom_usuario: "repetido" })
+        // Simulamos que la BD encuentra un usuario con ese nick
+        global.mockModels.Usuario.findOne.mockResolvedValue({ nom_usuario: "repetido" })
 
+        // Intentamos registrar un usuario con el nick duplicado
         const res = await request(app)
             .post('/register')
             .send({ nombre: "Nombre Valido", nom_usuario: "repetido", contrasena: "passwordSegura" })
 
-        // Comprobamos que el validador detiene el proceso (400)
+        // Verificamos error por nick duplicado
         expect(res.status).toBe(400)
+        // Validamos el mensaje de error específico
         expect(res.body.nom_usuario).toBe("El nick de usuario ya está en uso.")
     })
 
     it('debería fallar si la contraseña es corta', async () => {
-        Usuario.findOne.mockResolvedValue(null)
+        // Simulamos que el nick está libre
+        global.mockModels.Usuario.findOne.mockResolvedValue(null)
 
+        // Enviamos una contraseña de solo 3 caracteres
         const res = await request(app)
             .post('/register')
             .send({ nombre: "Nombre Valido", nom_usuario: "user123", contrasena: "123" })
         
-        // Comprobamos que el validador detiene el proceso (400)
+        // Verificamos error por contraseña corta
         expect(res.status).toBe(400)
+        // Validamos el mensaje de error de seguridad
         expect(res.body.contrasena).toBe("La contraseña debe tener al menos 8 caracteres.")
     })
 })

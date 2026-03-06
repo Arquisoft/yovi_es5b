@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-"scripts": {
-  "test": "vitest --setupFiles ./vitest.setup.js",
-  "test:coverage": "vitest run --coverage --setupFiles ./vitest.setup.js"
-},
+  "scripts": {
+    "start": "node users-service.js",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

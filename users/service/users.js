@@ -38,6 +38,11 @@ const iniciarSesion = async (nom_usuario, contrasena) => {
             },
         });
 
+        // Si el usuario no existe, devolvemos null
+        if (!usuarioExistente) {
+            return null;
+        }
+
         // Comprobar credenciales: 0:sal 1:contraseña
         const secretoScrypt = usuarioExistente.contrasena.split("$");
         const contraseñaCifrada = cifrar_contraseña(contrasena, secretoScrypt[0]).contraseña;
@@ -61,4 +66,4 @@ const cifrar_contraseña = (contraseña, sal = null) => {
 };
 
 
-module.exports = { registrarUsuario, iniciarSesion }
+module.exports = { registrarUsuario, iniciarSesion, cifrar_contraseña }
