@@ -7,7 +7,7 @@
 //! - Server: Run as an HTTP server for bot API
 
 use crate::{
-    Coordinates, GameAction, Movement, RandomBot, RenderOptions, YBot, YBotRegistry, game,
+    Coordinates, GameAction, Movement, RandomBot, PiramidBot, RenderOptions, YBot, YBotRegistry, game,
 };
 use crate::{GameStatus, GameY, PlayerId};
 use anyhow::Result;
@@ -23,7 +23,7 @@ use std::sync::Arc;
 #[command(long_about = "GameY: A command-line implementation of the Game of Y.")]
 pub struct CliArgs {
     /// Size of the triangular board (length of one side).
-    #[arg(short, long, default_value_t = 7)]
+    #[arg(short, long, default_value_t = 5)]
     pub size: u32,
 
     /// Game mode: human (2-player), computer (vs bot), or server (HTTP API).
@@ -69,7 +69,7 @@ pub fn run_cli_game() -> Result<()> {
     let args = CliArgs::parse();
     let mut render_options = crate::RenderOptions::default();
     let mut rl = DefaultEditor::new()?;
-    let bots_registry = YBotRegistry::new().with_bot(Arc::new(RandomBot));
+    let bots_registry = YBotRegistry::new().with_bot(Arc::new(RandomBot)).with_bot(Arc::new(PiramidBot::default()));
     let bot: Arc<dyn YBot> = match bots_registry.find(&args.bot) {
         Some(b) => b,
         None => {
