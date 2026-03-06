@@ -1,4 +1,4 @@
-const { Usuario } = require('../models');
+const { Usuario } = require('../models/index.js');
 /**
  * Validor de registrarUsuario. Comprueba:
  * - Nombre del usuario de al menos 4 caracteres y máximo 30.
