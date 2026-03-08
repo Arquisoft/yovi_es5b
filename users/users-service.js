@@ -1,7 +1,7 @@
-const { app, port } = require("./config/app.js");
-const { sequelize, Usuario } = require('./models');
-const { registrarUsuario, iniciarSesion } = require("./service/users.js");
-const { validarRegistrarUsuario, validarIniciarSesion } = require("./validator/user-validators.js");
+import { app, port } from "./config/app.js";
+import { sequelize, Usuario } from './models/index.js';
+import { registrarUsuario, iniciarSesion } from "./service/users.js";
+import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-validators.js";
 
 /**
  * Ruta para obtener información sobre el usuario actual.
@@ -102,11 +102,9 @@ const conectarDB = async () => {
 // Método "main" de la aplicación express:
 // 1. Se conecta a la base de datos
 // 2. Lanza la aplicación express para escuchar en el puerto especificado.
-if (require.main == module) {
     conectarDB().catch((err) => console.error(err));
     app.listen(port, () => {
         console.log(`User Service listening at http://localhost:${port}`)
     })
-}
 
-module.exports = app
+export {app}

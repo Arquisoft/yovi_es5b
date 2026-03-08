@@ -1,4 +1,4 @@
-const { Usuario } = require('../models');
+import { Usuario } from '../models/index.js';
 /**
  * Validor de registrarUsuario. Comprueba:
  * - Nombre del usuario de al menos 4 caracteres y máximo 30.
@@ -59,4 +59,4 @@ const validarIniciarSesion = async (nom_usuario, contrasena) => {
     return errores;
 }
 
-module.exports = { validarRegistrarUsuario, validarIniciarSesion }
+export { validarRegistrarUsuario, validarIniciarSesion }

@@ -1,6 +1,6 @@
-const { Usuario } = require('../models');
-const { scrypt } = require('@noble/hashes/scrypt.js');
-const { bytesToHex, randomBytes } = require('@noble/hashes/utils.js');
+import { Usuario }  from '../models/index.js';
+import { scrypt } from '@noble/hashes/scrypt.js';
+import { bytesToHex, randomBytes } from '@noble/hashes/utils.js';
 
 /**
  * Registra a un usuario en el sistema. Los datos del usuario ya deberían haberse validado previamente.
@@ -56,9 +56,9 @@ const iniciarSesion = async (nom_usuario, contrasena) => {
 // Ver parámetros de cifrado: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt
 const cifrar_contraseña = (contraseña, sal = null) => {
     const salContraseña = sal === null ? bytesToHex(randomBytes(32)) : sal;
-    const contraseñaCifrada = scrypt(contraseña, salContraseña, { N: 2 ** 18, r: 8, p: 1, dkLen: 32 });
+    const contraseñaCifrada = scrypt(contraseña, salContraseña, { N: 2 ** 15, r: 8, p: 3, dkLen: 32 });
     return { contraseña: bytesToHex(contraseñaCifrada), sal: salContraseña };
 };
 
 
-module.exports = { registrarUsuario, iniciarSesion }
+export  { registrarUsuario, iniciarSesion }

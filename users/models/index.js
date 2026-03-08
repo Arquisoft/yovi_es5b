@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Usuario = sequelize.define('Usuario', {
   id_usuario: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -28,7 +28,7 @@ const Partida = sequelize.define('Partida', {
 Partida.belongsTo(Jugador, { as: 'Jugador1', foreignKey: 'jugador1' });
 Partida.belongsTo(Jugador, { as: 'Jugador2', foreignKey: 'jugador2' });
 
-module.exports = {
+export  {
   sequelize,
   Usuario,
   Robot,
