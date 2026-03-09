@@ -69,7 +69,7 @@ pub fn run_cli_game() -> Result<()> {
     let args = CliArgs::parse();
     let mut render_options = crate::RenderOptions::default();
     let mut rl = DefaultEditor::new()?;
-    let bots_registry = YBotRegistry::new().with_bot(Arc::new(RandomBot)).with_bot(Arc::new(PiramidBot::default()));
+    let bots_registry = YBotRegistry::new().with_bot(Arc::new(PiramidBot::default())).with_bot(Arc::new(RandomBot));
     let bot: Arc<dyn YBot> = match bots_registry.find(&args.bot) {
         Some(b) => b,
         None => {
