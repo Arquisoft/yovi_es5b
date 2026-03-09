@@ -49,7 +49,7 @@ Los requisitos principales del sistema son:
 |===
 |Role/Name|Contact|Expectations
 |Equipo de desarrollo|https://github.com/NachoTS, https://github.com/tonipdd, https://github.com/alonsobayonalejandro-ctrl, https://github.com/Gedepe, https://github.com/UO300475|Responsables de desarrollar la aplicación usando buenas técnicas, trabajar adecuadamente como equipo y lograr una solución lo más mantenible, usable y extensible posible.
-|Usuarios / Jugadores|Correo de los usuarios|Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.
-|Micrati|Correo de la empresa|Espera obtener una aplicación que se alinee con sus ideas y objetivos, que pueda servir como base para futuras extensiones comerciales.
-|Profesor de la asignatura ASW|Pablo González - gonzalezgpablo@uniovi.es|Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.
+|Usuarios / Jugadores| - |Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.
+|Micrati| - |Espera obtener una aplicación que se alinee con sus ideas y objetivos, que pueda servir como base para futuras extensiones comerciales.
+|Profesores de la asignatura ASW| - |Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.
 |===
