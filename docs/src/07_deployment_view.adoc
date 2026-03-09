@@ -75,26 +75,18 @@ node "Contenedor Docker Users" {
 node "Contenedor Docker MySQL" {
 }
 
-component Gamey
-component Users
-Component Webapp
-
-"Contenedor Docker Gamey" -[dashed]-> Gamey : <<manifest>>
-"Contenedor Docker Users" -[dashed]-> Users : <<manifest>>
-"Contenedor Docker Webapp" -[dashed]-> Webapp : <<manifest>>
-
-"Users" -- "Contenedor Docker MySQL"
-"Gamey" -0)- "Contenedor Docker Webapp" : "<<protocol>> TCP 4000"
-"Users" -0)- "Contenedor Docker Webapp" : "<<protocol>> TCP 3000"
+"Contenedor Docker Users" -- "Contenedor Docker MySQL" : <<protocol>> TCP 3306
+"Contenedor Docker Gamey" -- "Contenedor Docker Webapp" : "<<protocol>> TCP 4000"
+"Contenedor Docker Users" -- "Contenedor Docker Webapp" : "<<protocol>> TCP 3000"
 }
 
 node "<<device>> Navegador web"
 
-"Webapp" -- "<<device>> Navegador web" : "<<protocol>> HTTP 80"
+"Contenedor Docker Webapp" -- "<<device>> Navegador web" : "<<protocol>> HTTP 80"
 actor Jugador
 actor Bot
 Jugador -- "<<device>> Navegador web"
-Bot -- "Webapp" : "<<protocol>> HTTP 80"
+Bot -- "Contenedor Docker Webapp" : "<<protocol>> HTTP 80"
 @enduml
 ----
 
