@@ -36,9 +36,28 @@ endif::arc42help[]
 |===
 |Término |Definición
 
-|<Término-1>
-|<Definición-1>
+| Yovi
+| Aplicación web que permite a usuarios jugar al juego Y
 
-|<Término-2>
-|<Definición-2>
+| Juego Y
+| Juego de tablero de dos jugadores que no puede acabar en empate
+
+| Jugador
+| Persona humana que se conecta a la aplicación con el objetivo de jugar al juego Y
+
+| Bot
+| Entidad externa que se conecta al API de Yovi para jugar o ver el registro de partidas o usuarios
+
+| YEN
+| Formato de texto utilizado para representar el estado de una partida del juego Y en Yovi
+
+| gamey
+| Motor del juego Y que sirve a la aplicación Yovi
+
+| users
+| Sistema de gestión de usuarios que se conecta con la base de datos de Yovi
+
+| webapp
+| Cliente de la aplicación web con el que interactúan los jugadores 
+
 |===
