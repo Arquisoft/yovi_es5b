@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/constants";
 import RegisterForm from "../components/forms/RegisterForm";
 import LogInForm from "../components/forms/LogInForm";
-import reactLogo from "../assets/react.svg";
 import "../css/Estilo.css"; 
 
 const RegisterPage = () => {
@@ -18,17 +17,8 @@ const RegisterPage = () => {
 
   return (
     <div className="App">
-      {/* Sección de Logotipos */}
-      <div className="logo-container">
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
 
-      <h2>Welcome to the Software Architecture 2025-2026 course</h2>
+      <h2>Bienvenido a Yovi</h2>
 
       {/* Selector de pestañas: Registro / Login */}
       <div className="auth-selector">
