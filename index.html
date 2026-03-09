@@ -495,14 +495,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_persistencia_de_datos_esquema_de_base_de_datos">8.1. Persistencia de Datos (Esquema de Base de Datos)</a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">9. Decisiones de arquitectura</a></li>
+<li><a href="#section-design-decisions">9. Decisiones de arquitectura</a>
+<ul class="sectlevel2">
+<li><a href="#_selección_de_sistema_gestor_de_base_de_datos">9.1. Selección de sistema gestor de base de datos</a></li>
+<li><a href="#_selección_de_orm">9.2. Selección de ORM</a></li>
+</ul>
+</li>
 <li><a href="#section-quality-scenarios">10. Requisitos de calidad</a>
 <ul class="sectlevel2">
 <li><a href="#_árbol_de_calidad">10.1. Árbol de Calidad</a></li>
 <li><a href="#_escenarios_de_calidad">10.2. Escenarios de Calidad</a></li>
 </ul>
 </li>
-<li><a href="#section-technical-risks">11. Riesgos y deuda técnica</a></li>
+<li><a href="#section-technical-risks">11. Riesgos y deuda técnica</a>
+<ul class="sectlevel2">
+<li><a href="#_dependencia_de_framework_de_react">11.1. Dependencia de framework de React</a></li>
+<li><a href="#_formato_yen">11.2. Formato YEN</a></li>
+</ul>
+</li>
 <li><a href="#section-glossary">12. Glosario</a></li>
 </ul>
 </div>
@@ -552,22 +562,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p>Proporcionar una versión usable y funcional del juego Y.</p>
+<p>Ofrecer una versión clásica del juego Y en la web, donde los usuarios podran registrarse y jugar partidas contra la máquina.</p>
 </li>
 <li>
-<p>Disponible en la web y accesible desde navegadores principales.</p>
+<p>Se podrá jugar con distintas estrategias y con varios modos de dificultad. Se necesitan al menos dos estrategias distintas; los jugadores eligirán contra qué estrategias y dificultades jugar.</p>
 </li>
 <li>
-<p>Ofrecer diferentes estrategias para jugar con distintos niveles de dificultad.</p>
+<p>Los usuarios podrán registrarse en el sistema. Una vez registrados, las partidas que jueguen serán almacenadas en un histórico de partidas (número de juegos realizados, ratio de victorias, etc.) que podrán ser consultado desde su cuenta.</p>
 </li>
 <li>
-<p>Permitir que los usuarios se registren en el sistema con credenciales seguras.</p>
+<p>La aplicación ofrecerá una API que permitirá a los bots obtener información relacionada con los usuarios del sistema usuarios y el histórico de partidas. Se deberá documentar correctamente este API.</p>
 </li>
 <li>
-<p>Permitir que los usuarios consulten su histórico de partidas.</p>
-</li>
-<li>
-<p>Ofrecer la opción de jugar contra un bot mediante una API documentada.</p>
+<p>La aplicación ofrecerá un API que permitirá a los bots jugar contra la aplicación, utilizando un método <strong>play</strong> que especificará su posición del tablero en notación YEN mediante un parámetro <strong>position</strong>. Opcionalmente, también se especificará el ID del bot contra el que jugar mediante un parámetro <strong>bot_id</strong>.</p>
 </li>
 </ul>
 </div>
@@ -592,11 +599,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Accesibilidad</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El juego debería tener en cuenta la usabilidad por parte de personas con problemas de visión o audición.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El juego debería tener en cuenta la usabilidad por parte de personas con problemas de visión o audición para que estas puedan jugar sin problemas.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Rendimiento</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (&lt; 4 segundos) para evitar que abandonen la aplicación y garantizar una experiencia positiva que los anime a volver.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (&lt; 0.5 segundos) para evitar que abandonen la aplicación y garantizar una experiencia fluida en el juego.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mantenibilidad</p></td>
@@ -636,17 +643,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Usuarios / Jugadores</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Correo de los usuarios</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Micrati</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Correo de la empresa</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Espera obtener una aplicación que se alinee con sus ideas y objetivos, que pueda servir como base para futuras extensiones comerciales.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Profesor de la asignatura ASW</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Pablo González - <a href="mailto:gonzalezgpablo@uniovi.es">gonzalezgpablo@uniovi.es</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Profesores de la asignatura ASW</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.</p></td>
 </tr>
 </tbody>
@@ -756,7 +763,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h3 id="_contexto_de_negocio">3.1. Contexto de negocio</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-96cf7b3baa11547caed14bd3f0cf7b15.png" alt="Diagram" width="437" height="144">
+<img src="./images/diag-plantuml-md5-c46880d1e86282bd60c212ace0c4ac4a.png" alt="Diagram" width="781" height="201">
 </div>
 </div>
 <div class="paragraph">
@@ -765,12 +772,15 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="paragraph">
 <p>El actor externo principal del sistema es el <strong>jugador</strong>, que puede registrarse y participar en partidas.</p>
 </div>
+<div class="paragraph">
+<p>Además, existe el actor de <strong>bot externo</strong>, el cual se conectra con el API de la aplicación para jugar y para obtener información de personajes y partidas.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_contexto_técnico">3.2. Contexto técnico</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-ef0ff6b6bca0443b018f6be356ed6488.png" alt="Diagram" width="613" height="140">
+<img src="./images/diag-plantuml-md5-ef0ff6b6bca0443b018f6be356ed6488.png" alt="Diagram" width="649" height="141">
 </div>
 </div>
 <div class="paragraph">
@@ -890,7 +900,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h3 id="_sistema_general_de_caja_blanca">5.1. Sistema General de Caja Blanca</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-1.png" alt="vista bloques 1" width="605" height="94">
+<img src="./images/vista-bloques-1.png" alt="vista bloques 1" width="825" height="87">
 </div>
 </div>
 <div class="dlist">
@@ -942,7 +952,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h4 id="_caja_blanca_aplicación_web_yovi">5.2.1. Caja Blanca Aplicación web YOVI</h4>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-2-yovi.png" alt="vista bloques 2 yovi" width="620" height="441">
+<img src="./images/vista-bloques-2-yovi.png" alt="vista bloques 2 yovi" width="831" height="553">
 </div>
 </div>
 <div class="dlist">
@@ -1000,7 +1010,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h4 id="_caja_blanca_gamey">5.3.1. Caja Blanca Gamey</h4>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-3-gamey.png" alt="vista bloques 3 gamey" width="383" height="533">
+<img src="./images/vista-bloques-3-gamey.png" alt="vista bloques 3 gamey" width="472" height="669">
 </div>
 </div>
 <div class="dlist">
@@ -1078,7 +1088,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </table>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-3-users.png" alt="vista bloques 3 users" width="526" height="446">
+<img src="./images/vista-bloques-3-users.png" alt="vista bloques 3 users" width="608" height="598">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1115,7 +1125,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/registro_usuario.png" alt="registro usuario" width="661" height="365">
+<img src="./images/registro_usuario.png" alt="registro usuario" width="691" height="376">
 </div>
 </div>
 </div>
@@ -1126,7 +1136,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/inicio_sesion_usuario.png" alt="inicio sesion usuario" width="777" height="518">
+<img src="./images/inicio_sesion_usuario.png" alt="inicio sesion usuario" width="819" height="535">
 </div>
 </div>
 </div>
@@ -1137,7 +1147,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/secuencia_partida_juego.png" alt="secuencia partida juego" width="564" height="517">
+<img src="./images/secuencia_partida_juego.png" alt="secuencia partida juego" width="727" height="565">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1151,7 +1161,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h3 id="_nivel_de_infraestructura_1">7.1. Nivel de infraestructura 1</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diagrama-despliegue-1.png" alt="diagrama despliegue 1" width="668" height="361">
+<img src="./images/diagrama-despliegue-1.png" alt="diagrama despliegue 1" width="789" height="415">
 </div>
 </div>
 <div class="dlist">
@@ -1290,7 +1300,73 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="sect1">
 <h2 id="section-design-decisions">9. Decisiones de arquitectura</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Para más decisiones arquitectónicas, véase el punto 4 de esta documentación y el siguiente enlace de la wiki: <a href="https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones">Registro de decisiones</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="_selección_de_sistema_gestor_de_base_de_datos">9.1. Selección de sistema gestor de base de datos</h3>
+<div class="sect3">
+<h4 id="_contexto">9.1.1. Contexto</h4>
+<div class="paragraph">
+<p>Existía la necesidad de seleccionar un sistema de persistencia para la aplicación.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_decisión">9.1.2. Decisión</h4>
+<div class="paragraph">
+<p>Se tomó la decisión entre los desarrolladores de utilizar un SGBD relacional, puesto que el modelo de datos seguía  un modelo entidad-relación.</p>
+</div>
+<div class="paragraph">
+<p>Además, de entre múltiples SGBD relacionales, se decidió utilizar MySQL debido a que los desarrolladores ya conocían la tecnología y a que este SGBD se comporta adecuadamente en entornos concurrentes.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_estado">9.1.3. Estado</h4>
+<div class="paragraph">
+<p><strong>Aceptado</strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_consecuencias">9.1.4. Consecuencias</h4>
+<div class="paragraph">
+<p>El modelo de persistencia de la aplicación queda atado a un modelo entidad relación, lo cual complicaría el cambio a un SGBD no relacional.</p>
+</div>
+<div class="paragraph">
+<p>Por otra parte, cambiar de un SGBD relacional a otro no debería suponer mayor problema.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_selección_de_orm">9.2. Selección de ORM</h3>
+<div class="sect3">
+<h4 id="_contexto_2">9.2.1. Contexto</h4>
+<div class="paragraph">
+<p>Existía la necesidad de facilitar la interacción con el SGBD.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_decisión_2">9.2.2. Decisión</h4>
+<div class="paragraph">
+<p>Se tomó la decisión de utilizar un ORM para facilitar y acelerar el desarrollo. Pese a que inicialmente no se estaba seguro de cuál utilizar por falta de experiencia en el entorno actual (Node.js + Express), se decidió utilizar el  <strong>ORM Sequelize</strong> por ser compatible con <strong>MySQL</strong> y estar bien documentado.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_estado_2">9.2.3. Estado</h4>
+<div class="paragraph">
+<p><strong>Aceptado</strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_consecuencias_2">9.2.4. Consecuencias</h4>
+<div class="paragraph">
+<p>La lógica de de interacción con la persistencia queda atada al API de <strong>Sequelize</strong>. Cambiar este ORM por otro puede incurrir en tiempo de desarrollo adicional.</p>
+</div>
+<div class="paragraph">
+<p>Por otra parte, se espera que el uso de este ORM acelere el desarrollo del módulo <strong>users</strong>.</p>
+</div>
 <div style="page-break-after: always;"></div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1298,10 +1374,236 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_árbol_de_calidad">10.1. Árbol de Calidad</h3>
-
+<div class="imageblock">
+<div class="content">
+<img src="./images/arbol-calidad.png" alt="arbol calidad" width="772" height="320">
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_escenarios_de_calidad">10.2. Escenarios de Calidad</h3>
+<div class="paragraph">
+<p>Usabilidad</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Fuente</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Estímulo</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Entorno</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Respuesta</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Medida de la respuesta</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Intenta acceder a la pantalla de juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaz de usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Número de pasos realizados</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8656; 3 pasos</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Accesibilidad</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Fuente</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Estímulo</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Entorno</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Respuesta</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Medida de la respuesta</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Juega una partida con problemas de visión</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaz de usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Elementos visualizados de forma clara</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt;90% elementos</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Rendimiento</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Fuente</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Estímulo</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Entorno</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Respuesta</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Medida de la respuesta</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Realiza una partida</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaz de usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tiempo de respuesta media por acción</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;0.5 segundos</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con la API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API para bots externos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tiempo de respuesta media por acción</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;1 segundo</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Mantenibilidad</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Fuente</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Estímulo</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Entorno</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Respuesta</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Medida de la respuesta</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stakeholder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Sugiere añadir un nuevo modo de juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Componentes de la aplicación</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación de modificación</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Coste de añadir nuevo modo de juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Proporcional al tiempo usual de desarrollo, sin coste adicional por deuda técnica</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Seguridad</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Fuente</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Estímulo</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Entorno</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Respuesta</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Medida de la respuesta</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Se registra en la aplicación</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaz de registro</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Privacidad de los datos introducidos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datos cifrados y accesibles solo por el propio usuario</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Accede a información de usuarios</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API de usuarios</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Privacidad de los datos solicitados</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Solo mostrar información no sensible</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exactitud</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><strong>Fuente</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Estímulo</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Artefacto</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Entorno</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Respuesta</strong></th>
+<th class="tableblock halign-left valign-top"><strong>Medida de la respuesta</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usuario</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Realiza una jugada</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interfaz de juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consistencia de la operación</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La respuesta debe ser siempre la esperada por las reglas del juego</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Realiza una jugada</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API de juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operación normal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consistencia de la operación</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La respuesta debe ser siempre la esperada por las reglas del juego</p></td>
+</tr>
+</tbody>
+</table>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -1309,7 +1611,22 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="sect1">
 <h2 id="section-technical-risks">11. Riesgos y deuda técnica</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_dependencia_de_framework_de_react">11.1. Dependencia de framework de React</h3>
+<div class="paragraph">
+<p>La parte de la interfaz de juego está implementada en React el cual, a diferencia de otro frameworks como Express, impone una forma de desarrollo muy específica que puede dificultar el cambio a otro framework de front-end.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_formato_yen">11.2. Formato YEN</h3>
+<div class="paragraph">
+<p>El cliente (webapp) posee su propio código para representar el formato YEN y enviarlo de vuelta al servidor. Un cambio en el formato YEN provocará cambios tanto en el código del cliente como el del servidor.</p>
+</div>
+<div class="paragraph">
+<p>Esta duplicación del código del formato YEN facilita en el desarrollo la representación de la partida, pero puede ser problemática si el formato cambia.</p>
+</div>
 <div style="page-break-after: always;"></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1328,12 +1645,36 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Término-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Definición-1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Yovi</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Aplicación web que permite a usuarios jugar al juego Y</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Término-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Definición-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Juego Y</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Juego de tablero de dos jugadores que no puede acabar en empate</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Jugador</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Persona humana que se conecta a la aplicación con el objetivo de jugar al juego Y</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Bot</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Entidad externa que se conecta al API de Yovi para jugar o ver el registro de partidas o usuarios</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>YEN</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Formato de texto utilizado para representar el estado de una partida del juego Y en Yovi</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>gamey</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Motor del juego Y que sirve a la aplicación Yovi</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>users</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Sistema de gestión de usuarios que se conecta con la base de datos de Yovi</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>webapp</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Cliente de la aplicación web con el que interactúan los jugadores</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -1343,7 +1684,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div id="footer">
 <div id="footer-text">
 Version 7.0 ES<br>
-Last updated 2026-03-06 13:03:18 +0100
+Last updated 2026-02-27 18:13:54 +0100
 </div>
 </div>
 </body>
