@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { vi, beforeEach, describe, it, expect } from 'vitest'
 import PlayPage from '../pages/PlayPage'
+import GamePage from '../pages/GamePage'
 import '@testing-library/jest-dom'
 
 // 1. Mockeamos el componente Board para aislar la prueba de PlayPage.
@@ -24,14 +24,9 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     vi.clearAllMocks()
   })
 
-  it('debería extraer el nombre de usuario de la URL y mostrarlo en el título', async () => {
+  it('debería extraer el nombre de usuario de la sesión y mostrarlo en el título', async () => {
     render(
-      // Simulamos que el usuario "Carlos" ha entrado en la URL de la partida
-      <MemoryRouter initialEntries={['/play/Carlos']}>
-        <Routes>
-          <Route path="/play/:username" element={<PlayPage />} />
-        </Routes>
-      </MemoryRouter>
+        <PlayPage user={{id:"1", nombre: "Carlos", nom_usuario:"pepe" }} botId="random_bot" onBackToLobby={()=>{}}/>
     )
 
     // Comprobamos que el nombre aparece en la cabecera
@@ -41,11 +36,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería renderizar el componente Board (Tablero)', async () => {
     render(
-      <MemoryRouter initialEntries={['/play/Carlos']}>
-        <Routes>
-          <Route path="/play/:username" element={<PlayPage />} />
-        </Routes>
-      </MemoryRouter>
+        <PlayPage user={{id:"1", nombre: "Carlos", nom_usuario:"pepe" }} botId="random_bot" onBackToLobby={()=>{}}/>
     )
 
     // Buscamos nuestro tablero "mockeado"
@@ -54,15 +45,13 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería navegar de vuelta al Lobby al pulsar "Abandonar Partida"', async () => {
     render(
-      <MemoryRouter initialEntries={['/play/Carlos']}>
-        <Routes>
-          {/* Ruta actual de la partida */}
-          <Route path="/play/:username" element={<PlayPage />} />
-          {/* Ruta ficticia del Lobby para comprobar si la navegación funciona */}
-          <Route path="/game/:username" element={<div data-testid="lobby-page">Página de Lobby</div>} />
-        </Routes>
-      </MemoryRouter>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
+    //
+    // Buscamos el botón de jugar
+    const playButton = await screen.findByRole('button', { name: /Jugar contra*/i })
+    expect(playButton).toBeTruthy()
+    fireEvent.click(playButton)
 
     // Buscamos el botón de abandonar
     const abandonButton = await screen.findByRole('button', { name: /Abandonar Partida/i })
@@ -73,7 +62,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
     // Esperamos que la URL haya cambiado y ahora estemos viendo el componente ficticio del Lobby
     await waitFor(() => {
-      expect(screen.getByTestId('lobby-page')).toBeTruthy()
+      expect(screen.getByText('🎮 Juego Y')).toBeTruthy()
     })
   })
 })

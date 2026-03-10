@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import GamePage from '../pages/GamePage'
 import { vi, beforeEach, describe, it, expect, afterEach } from 'vitest'
 
@@ -19,11 +18,7 @@ describe('GamePage', () => {
 
   it('should display the game title', async () => {
     render(
-      <MemoryRouter initialEntries={['/game/TestUser']}>
-        <Routes>
-          <Route path="/game/:username" element={<GamePage />} />
-        </Routes>
-      </MemoryRouter>
+        <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
     
     const title = await screen.findByText(/Juego Y/i)
@@ -32,15 +27,11 @@ describe('GamePage', () => {
 
   it('should display welcome message with username from URL', async () => {
     render(
-      <MemoryRouter initialEntries={['/game/Juan']}>
-        <Routes>
-          <Route path="/game/:username" element={<GamePage />} />
-        </Routes>
-      </MemoryRouter>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
     
     const welcome = await screen.findByText(/Bienvenido/i)
-    const username = await screen.findByText('Juan')
+    const username = await screen.findByText('Pepe')
     
     expect(welcome).toBeTruthy()
     expect(username).toBeTruthy()
@@ -48,25 +39,17 @@ describe('GamePage', () => {
 
   it('should check gamey status on mount', async () => {
     render(
-      <MemoryRouter initialEntries={['/game/User']}>
-        <Routes>
-          <Route path="/game/:username" element={<GamePage />} />
-        </Routes>
-      </MemoryRouter>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status')
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status', {credentials: "include"})
     })
   })
 
   it('should display connected status when gamey is OK', async () => {
     render(
-      <MemoryRouter initialEntries={['/game/User']}>
-        <Routes>
-          <Route path="/game/:username" element={<GamePage />} />
-        </Routes>
-      </MemoryRouter>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
 
     const statusText = await screen.findByText(/Conectado/i)
@@ -77,27 +60,19 @@ describe('GamePage', () => {
     global.fetch = vi.fn().mockRejectedValueOnce(new Error('Connection failed'))
 
     render(
-      <MemoryRouter initialEntries={['/game/User']}>
-        <Routes>
-          <Route path="/game/:username" element={<GamePage />} />
-        </Routes>
-      </MemoryRouter>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
 
     const statusText = await screen.findByText(/Desconectado/i)
     expect(statusText).toBeTruthy()
   })
 
-  it('should have a back button', async () => {
+  it('should have a play button', async () => {
     render(
-      <MemoryRouter initialEntries={['/game/User']}>
-        <Routes>
-          <Route path="/game/:username" element={<GamePage />} />
-        </Routes>
-      </MemoryRouter>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
 
-    const backButton = await screen.findByRole('button', { name: /Volver/i })
+    const backButton = await screen.findByRole('button', { name: /Jugar contra*/i })
     expect(backButton).toBeTruthy()
   })
 })

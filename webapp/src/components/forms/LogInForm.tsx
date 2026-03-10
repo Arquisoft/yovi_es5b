@@ -3,8 +3,10 @@ import '../../css/Estilo.css';
 
 interface LogInFormProps {
   //Notificamos al componente padre que las credenciales son válidas
-  onLoginSuccess: (username: string) => void;
+  onLoginSuccess: (data: User) => void;
 }
+
+import type {User} from "../../types/user";
 
 const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
   // Estados para capturar las credenciales del usuario
@@ -31,6 +33,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
     try {
       //Enviamos los datos al puerto 3000 donde corre el microservicio de usuarios.
       const response = await fetch('http://localhost:3000/login', {
+        credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +48,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
 
       if (response.ok) {
         //Las credenciales son correctas y el backend ha generado la sesión.
-        onLoginSuccess(data.nom_usuario);
+        onLoginSuccess(data);
       } else {
         //Credenciales incorrectas o usuario no encontrado.
         setError(data.error || 'Credenciales incorrectas');
