@@ -22,26 +22,26 @@ endif::arc42help[]
 
 === Resumen de requisitos
 
-Los requisitos principales del sistema son:
+Los requisitos del proyecto Yovi son:
 
-- Proporcionar una versión usable y funcional del juego Y.
-- Disponible en la web y accesible desde navegadores principales.
-- Ofrecer diferentes estrategias para jugar con distintos niveles de dificultad.
-- Permitir que los usuarios se registren en el sistema con credenciales seguras.
-- Permitir que los usuarios consulten su histórico de partidas.
-- Ofrecer la opción de jugar contra un bot mediante una API documentada.
+- Un usuario puede registrarse en el sistema y posteriormente iniciar sesión con credenciales seguras.
+- Un usuario puede consultar su histórico de participación, visualizando el número total de juegos realizados y las estadísticas de partidas ganadas/perdidas.
+- Un usuario puede iniciar y jugar a la versión clásica del juego Y enfrentándose a la máquina en un tablero de tamaño variable.
+- Un usuario puede seleccionar qué estrategia algorítmica utilizará el bot rival (pudiendo elegir entre más de una) y seleccionar su nivel de dificultad.
+- La aplicación tendrá un API documentada que permitirá a bots interactuar con ella.
+- La API permitirá acceder y gestionar información de los usuarios y de las partidas
+- La API permitirá que un bot pueda jugar contra la aplicación.
 
 === Objetivos de calidad
 
 [options="header",cols="1,2"]
 |===
 |Objetivo de calidad|Descripción
-|Usabilidad|El sistema debe ser fácil de usar y de aprender para los usuarios finales. Esto fomentará que utilicen la aplicación nuevamente y disfruten la experiencia. Interfaces intuitivas y flujos de usuario simplificados (≤3 pasos para acciones principales).
-|Accesibilidad|El juego debería tener en cuenta la usabilidad por parte de personas con problemas de visión o audición.
-|Rendimiento|La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (< 4 segundos) para evitar que abandonen la aplicación y garantizar una experiencia positiva que los anime a volver.
-|Mantenibilidad|El sistema debe ser fácil de mantener y extender. Esto se logra siguiendo buenas prácticas de programación, manteniendo excelente comunicación dentro del equipo de desarrollo y documentación clara.
-|Seguridad|Los datos privados de los usuarios registrados deben mantenerse seguros.
-|Exactitud|El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.
+|Usabilidad|El sistema debe ser intuitivo y ofrecer una excelente experiencia de juego, fomentando que los usuarios vuelvan a utilizar la aplicación. Se verificará mediante la realización de tests de usabilidad.
+|Rendimiento|La aplicación web debe ser ágil, buscando que los tiempos de respuesta sean lo más cortos posible en las interacciones principales (ej. cálculo de movimiento del bot). Se verificará mediante métricas de observabilidad en tiempo real como Prometheus o Grafana.
+|Mantenibilidad|El sistema debe seguir buenas prácticas arquitectónicas, tener un código limpio y una alta calidad de implementación.
+|Disponibilidad|La aplicación debe estar desplegada, accesible a través de la web to el tiempo posible, además, deberá funcionar correctamente ante cualquier situación.
+|Exactitud|El motor del juego en Rust debe validar los movimientos, calcular las coordenadas en el sistema de ejes (x,y,z) baricéntricos y detectar condiciones de victoria correctamente.
 |===
 
 === Stakeholders
@@ -52,5 +52,5 @@ Los requisitos principales del sistema son:
 |Equipo de desarrollo|https://github.com/NachoTS, https://github.com/tonipdd, https://github.com/alonsobayonalejandro-ctrl, https://github.com/Gedepe, https://github.com/UO300475|Responsables de desarrollar la aplicación usando buenas técnicas, trabajar adecuadamente como equipo y lograr una solución lo más mantenible, usable y extensible posible.
 |Usuarios / Jugadores|Correo de los usuarios|Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.
 |Micrati|Correo de la empresa|Espera obtener una aplicación que se alinee con sus ideas y objetivos, que pueda servir como base para futuras extensiones comerciales.
-|Profesor de la asignatura ASW|Pablo González - gonzalezgpablo@uniovi.es|Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.
+|Profesores de la asignatura ASW| |Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.
 |===
