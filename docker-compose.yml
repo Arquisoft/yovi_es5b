@@ -1,14 +1,14 @@
 services:
 
-  mysql-db:
+  database:
+    container_name: yovi-database
     image: mysql:8.0
-    container_name: yovi_mysql
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=secreta # Contraseña del root
-      - MYSQL_DATABASE=yovi_db      # Docker creará esta base de datos automáticamente
+      - MYSQL_DATABASE=yovi-es5b-dev
+      - MYSQL_ROOT_PASSWORD=ADMSIS123$
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       - monitor-net
     volumes:
@@ -21,12 +21,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DB_NAME=yovi_db
+      # Valores para desarrollo; en producción se utilizan otros
+      - DB_NAME=yovi-es5b-dev
       - DB_USER=root
-      - DB_PASSWORD=secreta
-      - DB_HOST=mysql-db
+      - DB_PASSWORD=ADMSIS123$
+      - DB_HOST=database
     depends_on:
-      - mysql-db
+      - database
     networks:
       - monitor-net
 
