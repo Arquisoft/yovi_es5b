@@ -28,7 +28,7 @@ services:
       - DB_NAME=yovi-es5b-dev
       - DB_USER=root
       - DB_PASSWORD=ADMSIS123$
-      - DB_HOST=mysql-db
+      - DB_HOST=localhost
     depends_on:
       - database
     networks:
