@@ -30,7 +30,8 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
 
     try {
       //Enviamos los datos al puerto 3000 donde corre el microservicio de usuarios.
-      const response = await fetch('http://localhost:3000/login', {
+      const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+      const response = await fetch(`${USERS_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

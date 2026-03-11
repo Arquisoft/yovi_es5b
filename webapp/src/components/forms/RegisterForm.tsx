@@ -31,7 +31,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
 
     try {
       //Enviamos los datos al puerto 3000 donde corre el microservicio de usuarios.
-      const response = await fetch('http://localhost:3000/register', {
+      const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+      const response = await fetch(`${USERS_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
