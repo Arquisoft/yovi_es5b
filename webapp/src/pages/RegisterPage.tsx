@@ -31,16 +31,14 @@ const RegisterPage = () => {
       <h2>Welcome to the Software Architecture 2025-2026 course</h2>
 
       {/* Selector de pestañas: Registro / Login */}
-      <div className="auth-selector">
+      <div>
         <button
           onClick={() => setIsLogin(false)}
-          className={`selector-button ${!isLogin ? "active" : ""}`}
         >
           Registrarse
         </button>
         <button
           onClick={() => setIsLogin(true)}
-          className={`selector-button ${isLogin ? "active" : ""}`}
         >
           Iniciar Sesión
         </button>
@@ -48,12 +46,12 @@ const RegisterPage = () => {
 
       {/* Renderizado condicional basado en el estado isLogin */}
       {isLogin ? (
-        <div className="card">
+        <div>
           <h3>Inicio de Sesión</h3>
           <LogInForm onLoginSuccess={handleAuthSuccess} />
         </div>
       ) : (
-        <div className="card">
+        <div>
           <h3>Registro de Usuario</h3>
           <RegisterForm onRegisterSuccess={handleAuthSuccess} />
         </div>
