@@ -49,6 +49,33 @@ In any case the tree should include links to the scenarios of the following sect
 
 ****
 endif::arc42help[]
+[plantuml,"arbol-calidad",png]
+----
+@startmindmap
++ Yovi
+++ Efectividad
+++ Calidad del producto
++++_ Exactitud
+++ Rendimiento
++++_ Comportamiento temporal
+++ Compatibilidad
++++_ Coexistencia
+++ Usabilidad
++++_ Aprendizaje
++++_ Estética de IU
++++_ Accesibilidad
+-- Confiabilidad
+---_ Disponibilidad
+-- Seguridad
+---_ Confidencialidad
+-- Mantibilidad
+---_ Modularidad
+-- Portabilidad
+---_ Adaptabilidad
+---_ Reemplazabilidad
+@endmindmap
+----
+
 
 === Escenarios de Calidad
 
@@ -77,3 +104,49 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 Tabular or free form text.
 ****
 endif::arc42help[]
+
+Usabilidad
+[cols="1,1,1,1,1,1" options="header"]
+|===
+| **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**
+| Usuario | Intenta acceder a la pantalla de juego | Interfaz de usuario | Operación normal | Número de pasos realizados | <= 3 pasos
+|===
+
+Accesibilidad
+[cols="1,1,1,1,1,1" options="header"]
+|===
+| **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**
+| Usuario | Juega una partida con problemas de visión |  Interfaz de usuario | Operación normal | Elementos visualizados de forma clara | >90% elementos
+|===
+
+Rendimiento
+[cols="1,1,1,1,1,1" options="header"]
+|===
+| **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**
+| Usuario | Realiza una partida|  Interfaz de usuario | Operación normal | Tiempo de respuesta media por acción| <0.5 segundos
+| Bot | Interactúa con la API |  API para bots externos | Operación normal | Tiempo de respuesta media por acción| <1 segundo
+|===
+
+Mantenibilidad
+[cols="1,1,1,1,1,1" options="header"]
+|===
+| **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**
+| Stakeholder | Sugiere añadir un nuevo modo de juego | Componentes de la aplicación | Operación de modificación | Coste de añadir nuevo modo de juego| Proporcional al tiempo usual de desarrollo, sin coste adicional por deuda técnica
+|===
+
+Seguridad
+[cols="1,1,1,1,1,1" options="header"]
+|===
+| **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**
+| Usuario | Se registra en la aplicación | Interfaz de registro | Operación normal | Privacidad de los datos introducidos | Datos cifrados y accesibles solo por el propio usuario
+| Bot | Accede a información de usuarios | API de usuarios | Operación normal | Privacidad de los datos solicitados | Solo mostrar información no sensible
+|===
+
+Exactitud
+[cols="1,1,1,1,1,1" options="header"]
+|===
+| **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**
+| Usuario | Realiza una jugada| Interfaz de juego | Operación normal | Consistencia de la operación | La respuesta debe ser siempre la esperada por las reglas del juego
+| Bot | Realiza una jugada| API de juego| Operación normal | Consistencia de la operación | La respuesta debe ser siempre la esperada por las reglas del juego
+|===
+

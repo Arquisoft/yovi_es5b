@@ -25,3 +25,13 @@ See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 do
 
 ****
 endif::arc42help[]
+
+=== Dependencia de framework de React
+
+La parte de la interfaz de juego está implementada en React el cual, a diferencia de otro frameworks como Express, impone una forma de desarrollo muy específica que puede dificultar el cambio a otro framework de front-end.
+
+=== Formato YEN
+
+El cliente (webapp) posee su propio código para representar el formato YEN y enviarlo de vuelta al servidor. Un cambio en el formato YEN provocará cambios tanto en el código del cliente como el del servidor.
+
+Esta duplicación del código del formato YEN facilita en el desarrollo la representación de la partida, pero puede ser problemática si el formato cambia.
