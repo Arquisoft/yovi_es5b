@@ -3,7 +3,7 @@ use crate::YBot;
 use rand::prelude::IndexedRandom;
 
 #[derive(Debug, Default)]
-pub struct PiramidBot;
+pub struct MediumBot;
 
 fn are_neighbors(c1: &Coordinates, c2: &Coordinates) -> bool {
     let dx = (c1.x() as i32 - c2.x() as i32).abs();
@@ -12,9 +12,9 @@ fn are_neighbors(c1: &Coordinates, c2: &Coordinates) -> bool {
     dx + dy + dz == 2
 }
 
-impl YBot for PiramidBot {
+impl YBot for MediumBot {
     fn name(&self) -> &str {
-        "piramid_bot"
+        "mediumbot"
     }
 
     fn choose_move(&self, board: &GameY) -> Option<Coordinates> {
