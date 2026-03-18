@@ -10,8 +10,8 @@ const PlayPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Leemos la URL al cargar. Si dice piramid_bot, empezamos en medio.
-  const initialDifficulty = searchParams.get('bot') === 'piramid_bot' ? 'medium' : 'easy';
+  // Leemos la URL al cargar. Si dice medium_bot, empezamos en medio.
+  const initialDifficulty = searchParams.get('bot') === 'mediumbot' ? 'medium' : 'easy';
   const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(initialDifficulty);
   const [gameKey, setGameKey] = useState(0);
 
@@ -21,7 +21,7 @@ const PlayPage: React.FC = () => {
 
   const handleChangeDifficulty = () => {
     const newDifficulty = difficulty === 'easy' ? 'medium' : 'easy';
-    const newBot = newDifficulty === 'easy' ? 'random_bot' : 'piramid_bot';
+    const newBot = newDifficulty === 'easy' ? 'random_bot' : 'mediumbot';
 
     setDifficulty(newDifficulty);
     setGameKey(gameKey + 1); 
