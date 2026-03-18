@@ -35,3 +35,48 @@ There you will find links and examples about ADR.
 
 ****
 endif::arc42help[]
+[cols="1,2" options="header"]
+
+Para más decisiones arquitectónicas, véase el punto 4 de esta documentación y el siguiente enlace de la wiki: https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones[Registro de decisiones].
+
+=== Selección de sistema gestor de base de datos
+
+==== Contexto
+
+Existía la necesidad de seleccionar un sistema de persistencia para la aplicación.
+
+==== Decisión
+
+Se tomó la decisión entre los desarrolladores de utilizar un SGBD relacional, puesto que el modelo de datos seguía  un modelo entidad-relación.
+
+Además, de entre múltiples SGBD relacionales, se decidió utilizar MySQL debido a que los desarrolladores ya conocían la tecnología y a que este SGBD se comporta adecuadamente en entornos concurrentes.
+
+==== Estado
+
+*Aceptado*
+
+==== Consecuencias
+
+El modelo de persistencia de la aplicación queda atado a un modelo entidad relación, lo cual complicaría el cambio a un SGBD no relacional.
+
+Por otra parte, cambiar de un SGBD relacional a otro no debería suponer mayor problema.
+
+=== Selección de ORM
+
+==== Contexto
+
+Existía la necesidad de facilitar la interacción con el SGBD.
+
+==== Decisión
+
+Se tomó la decisión de utilizar un ORM para facilitar y acelerar el desarrollo. Pese a que inicialmente no se estaba seguro de cuál utilizar por falta de experiencia en el entorno actual (Node.js + Express), se decidió utilizar el  *ORM Sequelize* por ser compatible con *MySQL* y estar bien documentado.
+
+==== Estado
+
+*Aceptado*
+
+==== Consecuencias
+
+La lógica de de interacción con la persistencia queda atada al API de **Sequelize**. Cambiar este ORM por otro puede incurrir en tiempo de desarrollo adicional.
+
+Por otra parte, se espera que el uso de este ORM acelere el desarrollo del módulo *users*.

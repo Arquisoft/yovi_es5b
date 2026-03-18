@@ -14,16 +14,27 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 left to right direction
 skinparam rectangleStyle rounded
 title YOVI - Diagrama de contexto de negocio
+
 actor Jugador
-rectangle "Sistema YOVI"
-Jugador --> "Sistema YOVI" : Se registra y juega
-"Sistema YOVI" --> Jugador : Muestra estado del juego y estadísticas
+rectangle "Sistema YOVI" as system
+actor Bot
+
+' === Enlaces ocultos para forzar la posición central ===
+Jugador -[hidden]right- system
+system -[hidden]right- Bot
+
+Jugador --> system : Se registra y juega
+system --> Jugador : Muestra estado del juego y estadísticas
+Bot --> system : Juega mediante la API
+system --> Bot: Provee info. de partidas y jugadores
 @enduml
 ----
 
 El *sistema YOVI* proporciona al jugador información sobre el estado del juego y diferentes estadísticas.
 
 El actor externo principal del sistema es el *jugador*, que puede registrarse y participar en partidas.
+
+Además, existe el actor de *bot externo*, el cual se conectra con el API de la aplicación para jugar y para obtener información de personajes y partidas.
 
 === Contexto técnico
 
