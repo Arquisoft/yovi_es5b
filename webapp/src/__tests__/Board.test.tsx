@@ -102,24 +102,27 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     consoleSpy.mockRestore()
   })
 
-  it('debería manejar el caso en el que el bot no devuelve coordenadas', async () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  it('debería detectar la victoria del humano cuando llena el tablero con el último movimiento', async () => {
+    // Simulamos que el backend devuelve status Finished con winner 0 (humano)
+    // y coords vacías porque el tablero está lleno y el bot no puede mover
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
         bot_id: 'random_bot',
-        coords: {}, // Sin coordenadas (x undefined)
-        status: { Ongoing: { next_player: 0 } }
+        coords: { x: 0, y: 0, z: 0 },
+        status: { Finished: { winner: 0 } } // 0 = Humano ganó con la última casilla
       }),
     } as Response)
 
     const { container } = render(<Board />)
-    fireEvent.click(container.querySelectorAll('polygon')[0])
+    const hexagons = container.querySelectorAll('polygon')
+
+    fireEvent.click(hexagons[0])
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("El bot no tiene movimientos disponibles (o hay un empate).")
+      expect(screen.getByText(/¡HAS GANADO LA PARTIDA!/i)).toBeTruthy()
+      expect(screen.getByRole('button', { name: /Volver a jugar/i })).toBeTruthy()
     })
-    consoleSpy.mockRestore()
   })
 })
