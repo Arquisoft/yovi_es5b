@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Hexagon } from './Hexagon';
+
+type BoardProps = {
+    botId: string;
+};
 
 type CellState = 'empty' | 'human' | 'bot';
 
@@ -25,7 +29,7 @@ type MoveResponse = {
     status: GameStatus;
 };
 
-export const Board: React.FC = () => {
+export const Board = ({botId}: BoardProps) => {
   const size = 30; 
   const boardSize = 5; 
   
@@ -70,7 +74,7 @@ export const Board: React.FC = () => {
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
       const yenPayload = generarYEN(currentBoard); 
 
-      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/random_bot`, {
+      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/${botId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(yenPayload)

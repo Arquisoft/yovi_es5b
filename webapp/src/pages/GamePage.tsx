@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ROUTES } from '../routes/constants';
+import { useState, useEffect } from 'react';
+import PlayPage from "../pages/PlayPage";
 
-const GamePage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
+import type {User} from "../types/user";
+
+type GamePageProps = {
+    user: User;
+};
+
+const GamePage = ({user}: GamePageProps) => {
   const [gameyStatus, setGameyStatus] = useState<'checking' | 'ok' | 'error'>('checking');
+  const [playGame, setPlayGame] = useState(false);
+  const [botId, setBotId] = useState("random_bot");
 
   useEffect(() => {
     const checkGameyStatus = async () => {
       try {
         const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-        const res = await fetch(`${GAMEY_URL}/status`);
+        const res = await fetch(`${GAMEY_URL}/status`, {credentials: "include"});
         const data = await res.text();
         
         if (res.ok && data.trim() === 'OK') {
@@ -37,15 +42,18 @@ const GamePage: React.FC = () => {
   const statusColor = gameyStatus === 'ok' ? '#22c55e' : gameyStatus === 'error' ? '#ef4444' : '#f59e0b';
   const statusText = gameyStatus === 'ok' ? '✓ Conectado' : gameyStatus === 'error' ? '✗ Desconectado' : '⏳ Verificando...';
 
-  const handleBack = () => {
-    navigate(ROUTES.HOME);
+  const handleStartGame = (botId: string) => {
+      setPlayGame(true);
+      setBotId(botId);
   };
 
-  const handleStartGame = (botId: string) => {
-    if (username) {
-      navigate(`${ROUTES.PLAY_PATH(username)}?bot=${botId}`);
-    }
+  const handleBackToLobby = () => {
+    setPlayGame(false);
   };
+
+  if (playGame) {
+      return <PlayPage botId={botId} user={user} onBackToLobby={handleBackToLobby}/>;
+  }
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
@@ -53,7 +61,7 @@ const GamePage: React.FC = () => {
       
       <div style={{ marginBottom: '40px' }}>
         <p style={{ fontSize: '18px', marginBottom: '10px' }}>
-          Bienvenido, <strong>{username}</strong>
+          Bienvenido, <strong>{user.nombre}</strong>
         </p>
       </div>
 
@@ -85,21 +93,6 @@ const GamePage: React.FC = () => {
       </div>
 
       <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '30px' }}>
-        <button
-          onClick={handleBack}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#6b7280', // He puesto un color grisáceo para el botón de volver
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px',
-          }}
-        >
-          ← Volver
-        </button>
-
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
           <button 
             onClick={() => handleStartGame('random_bot')}

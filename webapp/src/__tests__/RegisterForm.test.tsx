@@ -105,6 +105,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/register', {
+          credentials: "include",
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -113,8 +114,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
             contrasena: 'Contraseña123!',
           }),
         })
-        expect(mockOnSuccess).toHaveBeenCalledWith('chema1')
-      })
+        expect(mockOnSuccess).toHaveBeenCalledWith({"nom_usuario": "chema1"})})
     })
   })
 

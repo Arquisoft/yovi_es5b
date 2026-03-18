@@ -88,13 +88,14 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/login', {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             nom_usuario: 'f.alonso',
             contrasena: 'Renault123$',
           }),
         })
-        expect(mockOnSuccess).toHaveBeenCalledWith('f.alonso')
+        expect(mockOnSuccess).toHaveBeenCalledWith({"nom_usuario": "f.alonso"})
       })
     })
 

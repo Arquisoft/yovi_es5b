@@ -1,19 +1,24 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "../routes/constants";
+import GamePage from "../pages/GamePage";
 import RegisterForm from "../components/forms/RegisterForm";
 import LogInForm from "../components/forms/LogInForm";
 import "../css/Estilo.css"; 
 
+import type {User} from "../types/user";
+
 const RegisterPage = () => {
-  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
   // Estado para alternar entre la vista de Registro e Inicio de Sesión
   const [isLogin, setIsLogin] = useState(false);
 
   //Manejador único para el éxito de ambos formularios, redirige al usuario a la ruta del juego pasando su nombre de usuario.
-  const handleAuthSuccess = (username: string) => {
-    navigate(ROUTES.GAME_PATH(username));
+  const handleAuthSuccess = (data: User) => {
+    setUser(data);
   };
+
+  if (user !== null) {
+      return <GamePage user={user}/>;
+  }
 
   return (
     <div className="App">

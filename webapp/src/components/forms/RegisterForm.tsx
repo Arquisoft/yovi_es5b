@@ -3,8 +3,10 @@ import '../../css/Estilo.css'; // Importación de los estilos relegados al fiche
 
 interface RegisterFormProps {
   // Callback para comunicar al componente padre que el registro fue exitoso
-  onRegisterSuccess: (username: string) => void;
+  onRegisterSuccess: (data: User) => void;
 }
+
+import type {User} from "../../types/user";
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   //Estados del formulario
@@ -34,6 +36,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
       const response = await fetch(`${USERS_URL}/register`, {
         method: 'POST',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json',
         },
@@ -49,7 +52,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
 
       if (response.ok) {
         //Si se ha registrado correctamente, informamos al componente padre del éxito del registro.
-        onRegisterSuccess(data.nom_usuario);
+        onRegisterSuccess(data);
       } else {
         //El backend rechazó la petición
         const errorMsg = data.error || Object.values(data)[0] || 'Error en el registro';

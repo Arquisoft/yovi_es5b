@@ -22,7 +22,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería renderizar el tablero inicial correctamente', () => {
-    const { container } = render(<Board />)
+    const { container } = render(<Board botId="random_bot" />)
     
     expect(screen.getByText(/Tu turno \(Juegas con Azul\)/i)).toBeTruthy()
     // Tablero tamaño 5 = 15 hexágonos
@@ -31,7 +31,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería llamar a la API y cambiar el estado al hacer clic en un hexágono', async () => {
-    const { container } = render(<Board />)
+    const { container } = render(<Board botId="random_bot" />)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -56,7 +56,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board />)
+    const { container } = render(<Board botId="random_bot" />)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -78,7 +78,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board />)
+    const { container } = render(<Board botId="random_bot" />)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -93,7 +93,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     global.fetch = vi.fn().mockRejectedValueOnce(new Error('Bot server down'))
 
-    const { container } = render(<Board />)
+    const { container } = render(<Board botId="random_bot" />)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -114,7 +114,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board />)
+    const { container } = render(<Board botId="random_bot" />)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
