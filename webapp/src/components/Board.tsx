@@ -78,18 +78,14 @@ export const Board: React.FC = () => {
 
       if (res.ok) {
         const data : MoveResponse = await res.json();
-          // Comprobamos si hay ganador
-          handleWinner(data.status);
         
         if (data.coords && data.coords.x !== undefined) {
           const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
-          
           const newBoard = { ...currentBoard, [botMoveId]: 'bot' as CellState };
           setBoardState(newBoard);
-
-        } else {
-          console.log("El bot no tiene movimientos disponibles (o hay un empate).");
         }
+
+        handleWinner(data.status);
       }
     } catch (error) {
       console.error("Error al contactar con el bot:", error);
