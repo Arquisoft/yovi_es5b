@@ -3,6 +3,7 @@ import { Hexagon } from './Hexagon';
 
 type BoardProps = {
     botId: string;
+    boardSize?: number;
 };
 
 type CellState = 'empty' | 'human' | 'bot';
@@ -29,9 +30,8 @@ type MoveResponse = {
     status: GameStatus;
 };
 
-export const Board = ({botId}: BoardProps) => {
-  const size = 30; 
-  const boardSize = 5; 
+export const Board = ({botId, boardSize = 5}: BoardProps) => {
+  const size = 30;
   
   const hexWidth = Math.sqrt(3) * size;
   const yOffset = 1.5 * size;
