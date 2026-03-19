@@ -108,7 +108,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       alert(`Error en el servidor al pedir movimiento al bot: ${botEndpoint}. Revisa la consola.`);
     }
   } catch (error) {
-    console.error("Error de red al contactar con el bot:", error);
+    console.error("Error al contactar con el bot:", error);
   } finally {
     setIsBotThinking(false);
   }
