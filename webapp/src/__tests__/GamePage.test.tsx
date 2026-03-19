@@ -43,7 +43,7 @@ describe('GamePage', () => {
     )
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status', {credentials: "include"})
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status', {})
     })
   })
 

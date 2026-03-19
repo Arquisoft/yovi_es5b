@@ -16,7 +16,7 @@ const GamePage = ({user}: GamePageProps) => {
     const checkGameyStatus = async () => {
       try {
         const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-        const res = await fetch(`${GAMEY_URL}/status`, {credentials: "include"});
+        const res = await fetch(`${GAMEY_URL}/status`, {});
         const data = await res.text();
         
         if (res.ok && data.trim() === 'OK') {
