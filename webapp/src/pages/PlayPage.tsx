@@ -6,10 +6,11 @@ import type {User} from "../types/user";
 type PlayPageProps = {
     user: User;
     botId: string;
+    boardSize?: number;
     onBackToLobby: any;
 };
 
-const PlayPage = ({user, botId, onBackToLobby}: PlayPageProps) => {
+const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
   // Función para volver al Lobby
   const handleAbandon = async () => {
       onBackToLobby();
@@ -47,7 +48,7 @@ const PlayPage = ({user, botId, onBackToLobby}: PlayPageProps) => {
         borderRadius: '12px', 
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
       }}>
-        <Board botId={botId}/>
+        <Board botId={botId} boardSize={boardSize}/>
       </div>
 
     </div>
