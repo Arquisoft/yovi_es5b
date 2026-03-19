@@ -37,6 +37,8 @@ export const Board = ({botId, boardSize = 5}: BoardProps) => {
   const yOffset = 1.5 * size;
   const startX = 300;
   const startY = 50;
+  const svgWidth = startX + boardSize * hexWidth + 50;
+  const svgHeight = startY + boardSize * yOffset + 50;
 
   const [boardState, setBoardState] = useState<Record<string, CellState>>({});
   const [isBotThinking, setIsBotThinking] = useState(false);
@@ -158,8 +160,7 @@ export const Board = ({botId, boardSize = 5}: BoardProps) => {
       <p style={{ height: '24px', fontWeight: 'bold', color: statusColor, marginBottom: '10px', fontSize: winner ? '20px' : '16px' }}>
         {statusMessage}
       </p>
-      
-      <svg width="600" height="400" style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
+      <svg width={svgWidth} height={svgHeight} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
         {renderHexagons()}
       </svg>
 
