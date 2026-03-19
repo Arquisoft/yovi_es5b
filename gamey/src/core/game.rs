@@ -82,11 +82,6 @@ impl GameY {
         (self.board_size * (self.board_size + 1)) / 2
     }
 
-    /// Devuelve el ID del jugador que ocupa unas coordenadas específicas, si existe.
-    pub fn player_at(&self, coords: &Coordinates) -> Option<PlayerId> {
-        self.board_map.get(coords).map(|(_, player)| *player)
-    }
-
     /// Checks if the movement is made by the correct player.
     ///
     /// Returns an error if it's not the specified player's turn.

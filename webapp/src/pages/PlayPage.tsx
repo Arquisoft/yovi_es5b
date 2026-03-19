@@ -1,38 +1,19 @@
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { useState } from 'react';
+import { Board } from '../components/Board'; // Importamos el tablero SVG que creamos
+
+import type {User} from "../types/user";
 
 
-import { ROUTES } from '../routes/constants';
-import { Board } from '../components/Board';
+type PlayPageProps = {
+    user: User;
+    botId: string;
+    onBackToLobby: any;
+};
 
-const PlayPage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Leemos la URL al cargar. Si dice medium_bot, empezamos en medio.
-  const initialDifficulty = searchParams.get('bot') === 'mediumbot' ? 'medium' : 'easy';
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(initialDifficulty);
-  const [gameKey, setGameKey] = useState(0);
-
-  const handleAbandon = () => {
-    navigate(ROUTES.GAME_PATH(username || ''));
+const PlayPage = ({user, botId, onBackToLobby}: PlayPageProps) => {
+  // Función para volver al Lobby
+  const handleAbandon = async () => {
+      onBackToLobby();
   };
-
-  const handleChangeDifficulty = () => {
-    const newDifficulty = difficulty === 'easy' ? 'medium' : 'easy';
-    const newBot = newDifficulty === 'easy' ? 'random_bot' : 'mediumbot';
-
-    setDifficulty(newDifficulty);
-    setGameKey(gameKey + 1); 
-
-    // Esto actualiza la URL inmediatamente sin recargar la página
-    setSearchParams({ bot: newBot });
-  };
-
-  const difficultyText = difficulty === 'easy' ? 'Fácil' : 'Medio';
-
-  // ... (el resto del return se queda exactamente igual)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
@@ -41,37 +22,20 @@ const PlayPage: React.FC = () => {
       <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
         <h2>Partida de: <strong>{user.nombre}</strong></h2>
         
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button 
-            onClick={handleChangeDifficulty}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#3b82f6', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            {difficultyText}
-          </button>
-          
-          <button 
-            onClick={handleAbandon}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#ef4444', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            Abandonar Partida
-          </button>
-        </div>
+        <button 
+          onClick={handleAbandon}
+          style={{ 
+            padding: '8px 16px', 
+            backgroundColor: '#ef4444', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px', 
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          Abandonar Partida
+        </button>
       </div>
       
       <p style={{ marginBottom: '30px', fontSize: '18px' }}>Es tu turno. Selecciona una casilla del tablero.</p>
@@ -83,7 +47,7 @@ const PlayPage: React.FC = () => {
         borderRadius: '12px', 
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
       }}>
-        <Board key={gameKey} difficulty={difficulty} />
+        <Board botId={botId}/>
       </div>
 
     </div>
