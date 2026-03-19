@@ -123,4 +123,12 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       expect(screen.getByRole('button', { name: /Volver a jugar/i })).toBeTruthy()
     })
   })
+
+  it('debería renderizar el número correcto de hexágonos para un tamaño de tablero personalizado', () => {
+    // Tablero tamaño 3 = 3*4/2 = 6 hexágonos
+    const { container } = render(<Board botId="random_bot" boardSize={3} />)
+
+    const hexagons = container.querySelectorAll('polygon')
+    expect(hexagons.length).toBe(6)
+  })
 })
