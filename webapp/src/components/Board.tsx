@@ -51,6 +51,8 @@ export const Board = ({botId, difficulty}: BoardProps) => {
       }
   };
 
+  console.debug(botId);
+
   const generarYEN = (currentBoard: Record<string, CellState>): object => {
     const filas: string[] = [];
     for (let r = 0; r < boardSize; r++) {
