@@ -71,7 +71,7 @@ export const Board: React.FC<BoardProps> = ({ difficulty }) => {
   // Diccionario de bots
 const BOT_ENDPOINTS: Record<string, string> = {
   easy: 'random_bot',
-  medium: 'piramid_bot',
+  medium: 'mediumbot',
   // hard: 'attack_bot' 
 };
 
