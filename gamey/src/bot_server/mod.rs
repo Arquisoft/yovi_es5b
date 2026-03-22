@@ -20,6 +20,7 @@
 //! ```
 
 pub mod choose;
+pub mod next_move;
 pub mod error;
 pub mod state;
 pub mod version;

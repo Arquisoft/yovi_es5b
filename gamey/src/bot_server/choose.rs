@@ -1,4 +1,4 @@
-use crate::{Coordinates, GameY, GameStatus, Movement, PlayerId, YEN, check_api_version, error::ErrorResponse, state::AppState};
+use crate::{Coordinates, GameStatus, YEN, check_api_version, error::ErrorResponse, state::AppState, next_move::choose_next_move, next_move::NextMove};
 use axum::{
     Json,
     extract::{Path, State},
@@ -51,60 +51,23 @@ pub async fn choose(
     Json(yen): Json<YEN>,
 ) -> Result<Json<MoveResponse>, Json<ErrorResponse>> {
     check_api_version(&params.api_version)?;
-    let mut game_y = match GameY::try_from(yen) {
-        Ok(game) => game,
-        Err(err) => {
-            return Err(Json(ErrorResponse::error(
-                &format!("Invalid YEN format: {}", err),
-                Some(params.api_version),
-                Some(params.bot_id),
-            )));
-        }
-    };
-    let bot = match state.bots().find(&params.bot_id) {
-        Some(bot) => bot,
-        None => {
-            let available_bots = state.bots().names().join(", ");
-            return Err(Json(ErrorResponse::error(
-                &format!(
-                    "Bot not found: {}, available bots: [{}]",
-                    params.bot_id, available_bots
-                ),
-                Some(params.api_version),
-                Some(params.bot_id),
-            )));
-        }
-    };
 
-    let coords = match bot.choose_move(&game_y) {
-        Some(coords) => coords,
-        None => {
-            // El tablero está lleno: devolvemos el status actual del juego sin mover
-            let response = MoveResponse {
-                api_version: params.api_version,
-                bot_id: params.bot_id,
-                coords: Coordinates::new(0, 0, 0), // coords vacías, el frontend debe ignorarlas
-                status: game_y.status().clone(),
-            };
-            return Ok(Json(response));
-        }
+    // Calcular el siguiente movimiento y devolverlo como JSON
+    let next_move = NextMove {
+        api_version: params.api_version.to_owned(),
+        bot_id: params.bot_id.to_owned(),
+        yen: yen.to_owned(),
+        state: &state
     };
+    let move_result = choose_next_move(next_move);
+    return move_result.map(|r| Json(r)).map_err(|r| Json(r));
 
-    // Update the game state with the bot chosen move before returning the response
-    let _ = game_y.add_move(Movement::Placement {player: PlayerId::new(1), coords});
-
-    let response = MoveResponse {
-        api_version: params.api_version,
-        bot_id: params.bot_id,
-        coords,
-        status: game_y.status().clone()
-    };
-    Ok(Json(response))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::GameY;
 
     #[test]
     fn test_move_response_creation() {
