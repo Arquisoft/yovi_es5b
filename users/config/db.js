@@ -5,7 +5,7 @@ const sequelize = new Sequelize(
   process.env.DB_USER ?? "root",
   process.env.DB_PASSWORD ?? "ADMSIS123$",
   {
-    host: "172.17.0.1", // dirección interna de host de docker
+    host: process.env.DB_HOST, // dirección interna de host de docker
     dialect: 'mysql',
     logging: false
   }
