@@ -5,8 +5,7 @@ const sequelize = new Sequelize(
   process.env.DB_USER ?? "root",
   process.env.DB_PASSWORD ?? "ADMSIS123$",
   {
-    //Azure:172.17.0.1      Local:127.0.0.1
-    host: "127.0.0.1", 
+    host: "172.17.0.1", // dirección interna de host de docker
     dialect: 'mysql',
     logging: false
   }

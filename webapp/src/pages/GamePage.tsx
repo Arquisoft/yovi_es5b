@@ -1,49 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ROUTES } from '../routes/constants';
-import '../css/Estilo.css'; 
+import { useState, useEffect } from 'react';
+import PlayPage from "../pages/PlayPage";
 
-const GamePage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
-  
-  // Estados existentes: comprobando, todo correcto o ha ocurrido un error. Comprobando por defecto
+import type {User} from "../types/user";
+
+type GamePageProps = {
+    user: User;
+};
+
+const GamePage = ({user}: GamePageProps) => {
   const [gameyStatus, setGameyStatus] = useState<'checking' | 'ok' | 'error'>('checking');
-  
-  const [mode, setMode] = useState('bot'); // Se juega contra bot o jugador?
-  const [strategy, setStrategy] = useState('random'); // DIficultad del bot
-  const [size, setSize] = useState('15'); // Tamaño del tablero
+  const [playGame, setPlayGame] = useState(false);
+  const [botId, setBotId] = useState("random_bot");
 
   useEffect(() => {
-    // Función que pregunta al microservicio de juego si está activo
     const checkGameyStatus = async () => {
       try {
-        //Enviamos los datos al puerto 4000 donde corre el microservicio de juego.
         const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
         const res = await fetch(`${GAMEY_URL}/status`, {});
         const data = await res.text();
-        setGameyStatus(res.ok && data.trim() === 'OK' ? 'ok' : 'error'); //Cambia el gameyStatus en función de la conexión
+        
+        if (res.ok && data.trim() === 'OK') {
+          setGameyStatus('ok');
+        } else {
+          setGameyStatus('error');
+        }
       } catch (err) {
-            // En caso de caída de red o servidor, marcamos error
-            console.error('Error checking Gamey status:', err); 
-            setGameyStatus('error');
+        console.error('Error checking Gamey status:', err);
+        setGameyStatus('error');
       }
     };
+
+    // Check immediately
     checkGameyStatus();
-    // Vigilamos la conexión cada 5 segundos por si el servidor se cae
+
+    // Check every 5 seconds
     const interval = setInterval(checkGameyStatus, 5000);
-    // Limpiamos el intervalo al salir de la página para no saturar el navegador
+
     return () => clearInterval(interval);
   }, []);
 
-  // Función para volver al inicio borrando el rastro de la partida
-  const handleLogout = () => navigate(ROUTES.HOME);
-  
-  // Enviamos al usuario a la partida con sus preferencias vía URL
-  const handleStartGame = () => {
-    if (username) {
-      navigate(`${ROUTES.PLAY_PATH(username)}?bot=${strategy}&size=${size}`);
-    }
+  const statusColor = gameyStatus === 'ok' ? '#22c55e' : gameyStatus === 'error' ? '#ef4444' : '#f59e0b';
+  const statusText = gameyStatus === 'ok' ? '✓ Conectado' : gameyStatus === 'error' ? '✗ Desconectado' : '⏳ Verificando...';
+
+  const handleStartGame = (botId: string) => {
+      setPlayGame(true);
+      setBotId(botId);
+  };
+
+  const handleBackToLobby = () => {
+    setPlayGame(false);
   };
 
   if (playGame) {
@@ -51,58 +56,52 @@ const GamePage: React.FC = () => {
   }
 
   return (
-    <div className="lobby-container">
-      {/* Cabecera con estado de conexión y acciones */}
-      <header className="lobby-header">
-        <div className={`status-badge ${gameyStatus}`}>
-          {gameyStatus === 'ok' ? 'Conectado' : 'Desconectado'}
+    <div style={{ padding: '40px', textAlign: 'center' }}>
+      <h1>🎮 Juego Y</h1>
+      
+      <div style={{ marginBottom: '40px' }}>
+        <p style={{ fontSize: '18px', marginBottom: '10px' }}>
+          Bienvenido, <strong>{user.nombre}</strong>
+        </p>
+      </div>
+
+      {/* Status Indicator Rectangle */}
+      <div
+        style={{
+          width: '200px',
+          height: '100px',
+          margin: '0 auto 40px',
+          backgroundColor: statusColor,
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          boxShadow: `0 4px 6px rgba(0, 0, 0, 0.1)`,
+          transition: 'background-color 0.3s ease'
+        }}
+      >
+        <span>{statusText}</span>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <p style={{ fontSize: '14px', color: '#666' }}>
+          Estado del servidor Gamey: <strong>{gameyStatus === 'ok' ? 'En línea' : gameyStatus === 'error' ? 'Fuera de línea' : 'Verificando...'}</strong>
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '30px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <button 
+            onClick={() => handleStartGame('random_bot')}
+            style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Jugar contra Aleatorio (Fácil)
+          </button>
         </div>
-        <div className="header-actions">
-          <button className="btn-secondary">Hist</button>
-          <button onClick={handleLogout} className="btn-logout">← Logout</button>
-        </div>
-      </header>
-
-      <main className="lobby-main">
-        {/* Identificador visual del usuario */}
-        <div className="avatar-circle">
-          <img 
-            src="/../Logo.jpeg" 
-            alt="Logo Juego Y" 
-          />
-        </div>
-        <p>Bienvenido, <strong>{username}</strong></p>
-
-        {/* Selectores para configurar la partida */}
-        <div className="selectors-container">
-          <select value={mode} onChange={(e) => setMode(e.target.value)} className="lobby-select">
-            <option value="bot">Contra Bot</option>
-            <option value="player">Contra Jugador</option>
-          </select>
-
-          <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
-            <option value="random_bot">Bot Aleatorio (Fácil)</option>
-            <option value="smart_bot">Bot Inteligente (Difícil)</option>
-          </select>
-
-          <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
-            <option value="15">Tamaño: 15 casillas</option>
-            <option value="30 casillas">Tamaño: 30</option>
-          </select>
-        </div>
-
-        {/* Solo permitimos jugar si el servidor Gamey responde */}
-        <button 
-          onClick={handleStartGame} 
-          className="btn-play"
-          disabled={gameyStatus !== 'ok'}
-        >
-          JUGAR
-        </button>
-      </main>
-
-      {/* Pie de página con la versión del proyecto */}
-      <footer className="lobby-footer">YGV15 B</footer>
+      </div>
     </div>
   );
 };

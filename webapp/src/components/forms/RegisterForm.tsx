@@ -71,9 +71,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     <form onSubmit={handleSubmit} className="register-form">
       {/*Nombre Completo */}
       <div className="form-group">
-        <label>Nombre Completo:</label>
+        <label htmlFor="fullName">Nombre Completo:</label>
         <input
           type="text"
+          id="fullName"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           className="form-input"
@@ -82,9 +83,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
 
       {/*Nombre de Usuario */}
       <div className="form-group">
-        <label>Nombre de Usuario:</label>
+        <label htmlFor="username">Nombre de Usuario:</label>
         <input
           type="text"
+          id="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="form-input"
@@ -93,9 +95,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
 
       {/*Contraseña */}
       <div className="form-group">
-        <label>Contraseña:</label>
+        <label htmlFor="password">Contraseña:</label>
         <input
           type="password"
+          id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="form-input"
