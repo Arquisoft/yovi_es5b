@@ -17,7 +17,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
+   //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Evita la recarga de la página
     setError(null);         // Limpia intentos anteriores
@@ -67,9 +67,10 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
     <form onSubmit={handleSubmit} className="register-form">
       {/* Campo de entrada para el usuario */}
       <div className="form-group">
-        <label>Nombre de Usuario:</label>
+        <label htmlFor="login-username">Nombre de Usuario:</label>
         <input
           type="text"
+          id="login-username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="form-input"
@@ -78,9 +79,10 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
 
       {/* Campo de entrada para la contraseña */}
       <div className="form-group">
-        <label>Contraseña:</label>
+        <label htmlFor="login-password">Contraseña:</label>
         <input
           type="password"
+          id="login-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="form-input"
