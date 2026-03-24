@@ -1,54 +1,116 @@
-/* estilo.css */
-
+/* --- FORMULARIOS (Login/Registro) --- */
 .register-form {
   max-width: 400px;
-  min-width: 400px;
   margin: 2rem auto;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #fff;
 }
 
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-weight: 600; }
 
 .form-input {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   box-sizing: border-box; 
 }
 
 .submit-button {
   width: 100%;
   padding: 10px;
-  background-color: green;
-  color: white;
+  background: green;
+  color: #fff;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
 }
 
-.submit-button:disabled {
-  background-color: gray;
-  cursor: not-allowed;
+.error-message { color: red; text-align: center; margin-top: 10px; }
+
+/* --- LOBBY (El del dibujo) --- */
+.lobby-container {
+  max-width: 450px;
+  margin: 20px auto;
+  border: 2px solid #333; /* El borde gordo de tu boceto */
+  padding: 15px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
 }
-.error-message {
-  color: red;        
-  background-color: white; 
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 15px;
-  font-size: 14px;
-  text-align: center;
+
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.status-badge.ok { color: #22c55e; font-weight: bold; }
+.status-badge.error { color: #ef4444; font-weight: bold; }
+
+.avatar-circle {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selectors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 30px 0;
+}
+
+.lobby-select {
+  padding: 0.625rem; /* Equivalente a 10px */
+  border: 0.125rem solid #333; 
+}
+
+.avatar-circle {
+  /* Usamos aspect-ratio para asegurar que sea un círculo perfecto */
+  width: 5rem; 
+  aspect-ratio: 1 / 1; 
+  
+  border: 0.125rem solid #333;
+  border-radius: 50%;
+  margin: 2rem auto 0.6rem; /* Márgenes proporcionales */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+.logo-img {
+  width: 85%; /* Ligeramente más grande para que luzca mejor */
+  height: auto; /* Mantiene la proporción natural */
+  object-fit: contain;
+}
+
+.btn-play {
+  padding: 0.75rem 1.5rem;
+  background: #333;
+  color: #fff;
+  border-radius: 2rem; /* Valor alto para mantener el efecto píldora */
+  width: 60%; /* Un poco más ancho para mejor legibilidad */
+  margin: 1rem auto;
+  cursor: pointer;
+  border: none;
   font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.lobby-footer {
+  margin-top: auto;
+  font-size: 0.7rem; /* Texto pequeño relativo */
+  border-top: 0.063rem solid #ccc;
+  padding-top: 0.5rem;
+  width: 100%;
+  text-align: center;
 }
