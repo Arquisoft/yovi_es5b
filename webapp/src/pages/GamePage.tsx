@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ROUTES } from '../routes/constants';
+const ROUTES = {
+  HOME: '/',
+  PLAY_PATH: (username: string) => `/play/${username}`
+};
 import '../css/Estilo.css'; 
 
 const GamePage: React.FC = () => {
@@ -46,9 +49,9 @@ const GamePage: React.FC = () => {
     }
   };
 
-  if (playGame) {
+  /*if (playGame) {
       return <PlayPage botId={botId} user={user} onBackToLobby={handleBackToLobby}/>;
-  }
+  }*/
 
   return (
     <div className="lobby-container">
