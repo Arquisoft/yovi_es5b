@@ -9,7 +9,9 @@ type PlayPageProps = {
 };
 
 const PlayPage = ({ user, botId, onBackToLobby }: PlayPageProps) => {
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>('easy');
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(
+    botId === 'mediumbot' ? 'medium' : 'easy'
+  );
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = async () => {
