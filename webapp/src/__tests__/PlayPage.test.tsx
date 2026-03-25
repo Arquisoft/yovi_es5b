@@ -47,14 +47,14 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
-    //
+    
     // Buscamos el botón de jugar
-    const playButton = await screen.findByRole('button', { name: /Jugar contra*/i })
+    const playButton = await screen.findByRole('button', { name: /Jugar/i })
     expect(playButton).toBeTruthy()
     fireEvent.click(playButton)
 
-    // Buscamos el botón de abandonar
-    const abandonButton = await screen.findByRole('button', { name: /Abandonar Partida/i })
+    // Buscamos el botón de salir
+    const abandonButton = await screen.findByRole('button', { name: /Salir/i })
     expect(abandonButton).toBeTruthy()
 
     // Hacemos clic en el botón
@@ -62,7 +62,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
     // Esperamos que la URL haya cambiado y ahora estemos viendo el componente ficticio del Lobby
     await waitFor(() => {
-      expect(screen.getByText('🎮 Juego Y')).toBeTruthy()
+      expect(screen.getByText('Juego Y')).toBeTruthy()
     })
   })
 })
