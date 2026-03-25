@@ -1,54 +1,184 @@
-/* estilo.css */
+/* --- Variables Globales y Reset --- */
+:root {
+  --primary-color: #3b82f6;      /* Azul principal */
+  --primary-hover: #2563eb;
+  --success-color: #22c55e;      /* Verde conectado */
+  --error-color: #ef4444;        /* Rojo desconectado */
+  --bg-dark: #212121;            /* Fondo gris muy oscuro */
+  --card-bg: #2d2d2d;            /* Fondo de las tarjetas */
+  --text-main: #ffffff;
+  --text-muted: #a0a0a0;
+}
 
-.register-form {
-  max-width: 400px;
-  min-width: 400px;
-  margin: 2rem auto;
-  padding: 20px;
-  border: 1px solid #ddd;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* --- Contenedor Principal (Lobby/Register) --- */
+.lobby-container {
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  text-align: center;
+  background-color: transparent;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+  font-weight: 700;
+}
+
+/* --- Cabecera y Estados --- */
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.status-badge.ok {
+  background-color: var(--success-color);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+.status-badge.error, .status-badge.checking {
+  background-color: var(--error-color);
+}
+
+/* --- Tarjetas (Cards) de Login/Registro --- */
+.card {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  margin-top: 20px;
+}
+
+/* --- Inputs y Selects --- */
+.lobby-select, input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
   border-radius: 8px;
-  background-color: #fff;
+  border: 1px solid #444;
+  background-color: #1a1a1a;
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
-.form-group {
-  margin-bottom: 1rem;
+.selectors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 25px 0;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.form-input {
+/* --- Botones --- */
+.btn-play {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box; 
-}
-
-.submit-button {
-  width: 100%;
-  padding: 10px;
-  background-color: green;
+  padding: 15px;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
   cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.submit-button:disabled {
-  background-color: gray;
-  cursor: not-allowed;
+.btn-play:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
 }
-.error-message {
-  color: red;        
-  background-color: white; 
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 15px;
+
+.btn-play:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn-secondary {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
   font-size: 14px;
-  text-align: center;
+}
+
+.btn-secondary.active {
+  background-color: var(--primary-color);
+}
+
+.btn-logout {
+  background: transparent;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
   font-weight: bold;
+}
+
+.btn-logout:hover {
+  background-color: var(--error-color);
+  color: white;
+}
+
+/* --- Avatar y Logo --- */
+.avatar-circle {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-circle img {
+  width: 100%;
+  height: auto;
+}
+
+/* --- Footer --- */
+.lobby-footer {
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+/* --- Animaciones --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lobby-main {
+  animation: fadeIn 0.5s ease-out;
 }
