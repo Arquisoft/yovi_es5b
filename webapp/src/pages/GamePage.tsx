@@ -44,7 +44,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   };
 
   if (playGame) {
-      return <PlayPage botId={botId} user={user} onBackToLobby={handleBackToLobby}/>;
+      return <PlayPage botId={botId} user={user} boardSize={Number(size)} onBackToLobby={handleBackToLobby}/>;
   }
 
   return (
