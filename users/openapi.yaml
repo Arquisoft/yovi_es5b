@@ -3,52 +3,436 @@ info:
   title: User Service API
   version: 1.0.0
   description: API for managing users
+servers:
+  - url: http://localhost:4000
 paths:
-  /createuser:
+  /bot/register:
+    servers:
+      - url: http://localhost:3000
     post:
-      summary: Creates a new user
-      description: Creates a new user with the given username.
+      tags:
+        - API para bots - users
+      summary: Registra un usuario
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - username
               properties:
-                username:
+                nom_usuario:
                   type: string
-                  example: "testuser"
+                  description: Nombre del usuario que se verá dentro de la aplicación
+                  required: true
+                  example: pepe
+                nombre:
+                  type: string
+                  description: Nombre completo del usuario
+                  required: true
+                  example: Pedro
+                contrasena:
+                  type: string
+                  description: Contraseña del usuario a registrar
+                  example: ADMSIS123$
+      security: []
       responses:
-        '200':
-          description: User created successfully
+        200:
+          description: Datos del usuario creado
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: Cookie de autenticación utilizada para gestión de usuarios
+                example: JSESSIONID=abcde12345;
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  id_usuario:
+                    type: integer
+                    description: ID del usuario
+                    required: true
+                    example: 1
+                  nom_usuario:
                     type: string
-                    example: "Hello testuser! welcome to the course!"
-        '400':
-          description: Error creating user
-  /getusers:
-    get:
-      summary: Get all users
-      responses:
-        200:
-          description: A list of users
+                    description: Nombre del usuario que se verá dentro de la aplicación
+                    required: true
+                    example: pepe
+                  nombre:
+                    type: string
+                    description: Nombre completo del usuario
+                    required: true
+                    example: Pedro
+        400:
+          description: Error ocurrido al pasar algún parámetro no válido u omitir algún parámetro requerido (contraseña demasiado corta, usuario ya existente, etc.)
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id_usuario:
-                      type: integer
-                    nombre:
-                      type: string
-                    nom_usuario:
-                      type: string
+                type: object
+                properties:
+                  nom_usuario:
+                    type: string
+                    description: Error asociado a nom_usuario
+                  nombre:
+                    type: string
+                    description: Error asociado a nombre
+                  contrasena:
+                    type: string
+                    description: Error asociado a contrasena
+  /bot/login:
+    servers:
+      - url: http://localhost:3000
+    post:
+      tags:
+        - API para bots - users
+      summary: Inicia sesión con un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom_usuario:
+                  type: string
+                  description: Nombre del usuario
+                  required: true
+                  example: pepe
+                contrasena:
+                  type: string
+                  description: Contraseña del usuario
+                  example: ADMSIS123$
+      security: []
+      responses:
+        200:
+          description: Datos del usuario con el que se inicia sesión
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: Cookie de autenticación utilizada para gestión de usuarios
+                example: JSESSIONID=abcde12345;
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_usuario:
+                    type: integer
+                    description: ID del usuario
+                    required: true
+                    example: 1
+                  nom_usuario:
+                    type: string
+                    description: Nombre del usuario que se verá dentro de la aplicación
+                    required: true
+                    example: pepe
+                  nombre:
+                    type: string
+                    description: Nombre completo del usuario
+                    required: true
+                    example: Pedro
+        400:
+          description: Error ocurrido al pasar algún parámetro no válido u omitir algún parámetro requerido (contraseña no válida, usuario no existente, etc.)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nom_usuario:
+                    type: string
+                    description: Error asociado a nom_usuario
+                  nombre:
+                    type: string
+                    description: Error asociado a nombre
+                  contrasena:
+                    type: string
+                    description: Error asociado a contrasena
+  /bot/getuser:
+    servers:
+      - url: http://localhost:3000
+    get:
+      tags:
+        - API para bots - users
+      summary: Obtiene información del usuario actual
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: Datos del usuario con el que se ha iniciado sesión
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: Cookie de autenticación utilizada para gestión de usuarios
+                example: JSESSIONID=abcde12345;
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_usuario:
+                    type: integer
+                    description: ID del usuario
+                    required: true
+                    example: 1
+                  nom_usuario:
+                    type: string
+                    description: Nombre del usuario que se verá dentro de la aplicación
+                    required: true
+                    example: pepe
+                  nombre:
+                    type: string
+                    description: Nombre completo del usuario
+                    required: true
+                    example: Pedro
+        403:
+          description: Error ocurrido si no se ha iniciado sesión con ningún usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nom_usuario:
+                    type: string
+                    description: Error asociado a nom_usuario
+                  nombre:
+                    type: string
+                    description: Error asociado a nombre
+                  contrasena:
+                    type: string
+                    description: Error asociado a contrasena
+  /{api_version}/play:
+    get:
+      tags:
+        - API play
+      summary: Devuelve el resultado de una jugada. Se debería usar esta ruta si un bot quiere jugar contra la aplicación.
+      parameters:
+        - name: position
+          in: query
+          required: true
+          description: Jugada realizada en formato YEN y codificada correctamente para la URL
+          schema:
+            type: string
+          example: { "size": 3, "turn": 1, "players": ["B", "R"], "layout": "B/R./..." }
+        - name: bot_id
+          in: query
+          required: false
+          description: ID del bot contra el que jugar (por defecto, random_bot)
+          default: random_bot
+          schema:
+            type: string
+        - name: strategy
+          in: query
+          required: false
+          description: Estrategia utilizada por el bot contra el que se juega (por defecto, normal)
+          default: normal
+          schema:
+            type: string
+        - name: api_version
+          in: path
+          required: true
+          description: Versión de la API a utilizar
+          example: v1
+          schema:
+            type: string
+      responses:
+        200:
+          description: Estado del último movimiento en el formato YEN, o error si la propiedad message está presente en la respuesta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_version:
+                    type: string
+                    description: Versión de la API utilizada
+                    example: v1
+                  bot_id:
+                    type: string
+                    description: ID del bot contra el que se juega
+                    example: random_bot
+                  message:
+                    type: string
+                    description: Mensaje de error. Solo presente si existe algún error
+                  coords:
+                    type: object
+                    description: Coordenadas bariocéntricas de la última jugada
+                    properties:
+                      x:
+                        type: integer
+                        description: Punto x de la jugada en coordenadas bariocéntricas
+                        example: 0
+                      y:
+                        type: integer
+                        description: Punto y de la jugada en coordenadas bariocéntricas
+                        example: 1
+                      z:
+                        type: integer
+                        description: Punto z de la jugada en coordenadas bariocéntricas
+                        example: 2
+                  status:
+                    type: object
+                    description: Estado actual del juego
+                    properties:
+                      Ongoing:
+                        type: object
+                        description: Valor solo presente si el juego sigue en curso
+                        properties:
+                          next_player:
+                            type: integer
+                            description: ID del siguiente jugador (0 el jugador que realiza la petición, 1 el servidor)
+                            example: 0
+                      Finished:
+                        type: object
+                        description: Valor solo presente si el juego ha finalizado
+                        properties:
+                          winner:
+                            type: integer
+                            description: ID del ganador de la partida (0 el jugador que realiza la petición, 1 el servidor)
+                            example: 0
+        400:
+          description: Error ocurrido al pasar algún parámetro no válido u omitir algún parámetro requerido
+          content:
+            application/text:
+              schema:
+                type: string
+                description: Texto del error
+  /{api_version}/ybot/choose/{bot_id}:
+    post:
+      tags:
+        - API para bots - gamey
+      summary: Devuelve el resultado de una jugada para un bot y versión específicas. 
+      parameters:
+        - name: bot_id
+          in: path
+          required: true
+          description: ID del bot contra el que jugar
+          example: random_bot
+          schema:
+            type: string
+        - name: api_version
+          in: path
+          required: true
+          description: Versión de la API a utilizar
+          example: v1
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                size:
+                  type: integer
+                  description: Tamaño del tablero, size x size
+                  required: true
+                  example: 5
+                turn:
+                  type: integer
+                  description: Turno actual de la partida
+                  required: true
+                  example: 1
+                players:
+                  type: array
+                  items:
+                    type: string
+                    description: Jugador de la partida, representado como cadena de texto
+                  minItems: 2
+                  description: Lista de jugadores de la partida, representados cada uno por una cadena de texto
+                  example: ["B", "R"]
+                layout:
+                  type: string
+                  description: Representación actual del tablero en formato YEN
+                  required: true
+                  example: ./BB/.RR/RBB./RBB.R
+      responses:
+        200:
+          description: Estado del último movimiento en el formato YEN, o error si la propiedad message está presente en la respuesta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_version:
+                    type: string
+                    description: Versión de la API utilizada
+                    example: v1
+                  bot_id:
+                    type: string
+                    description: ID del bot contra el que se juega
+                    example: random_bot
+                  message:
+                    type: string
+                    description: Mensaje de error. Solo presente si existe algún error
+                  coords:
+                    type: object
+                    description: Coordenadas bariocéntricas de la última jugada
+                    properties:
+                      x:
+                        type: integer
+                        description: Punto x de la jugada en coordenadas bariocéntricas
+                        example: 0
+                      y:
+                        type: integer
+                        description: Punto y de la jugada en coordenadas bariocéntricas
+                        example: 1
+                      z:
+                        type: integer
+                        description: Punto z de la jugada en coordenadas bariocéntricas
+                        example: 2
+                  status:
+                    type: object
+                    description: Estado actual del juego
+                    properties:
+                      Ongoing:
+                        type: object
+                        description: Valor solo presente si el juego sigue en curso
+                        properties:
+                          next_player:
+                            type: integer
+                            description: ID del siguiente jugador (0 el jugador que realiza la petición, 1 el servidor)
+                            example: 0
+                      Finished:
+                        type: object
+                        description: Valor solo presente si el juego ha finalizado
+                        properties:
+                          winner:
+                            type: integer
+                            description: ID del ganador de la partida (0 el jugador que realiza la petición, 1 el servidor)
+                            example: 0
+        400:
+          description: Error ocurrido al pasar algún parámetro no válido u omitir algún parámetro requerido
+          content:
+            application/text:
+              schema:
+                type: string
+                description: Texto del error
+  /status:
+    get:
+      tags:
+        - API para bots - gamey
+      summary: Indica si el servicio de juego (gamey) se encuentra operativo.
+      responses:
+        200:
+          description: Indica que el juego se encuentra operativo
+          content:
+            text/plain:
+              type: string 
+              example: OK
+        500:
+          description: Indica que existe algún error a la hora de comunicarse con el servicio.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Texto del error
+components:
+  securitySchemes:
+    cookieAuth: # arbitrary name for the security scheme; will be used in the "security" key later
+      type: apiKey
+      in: cookie
+      name: JSESSIONID # cookie name
