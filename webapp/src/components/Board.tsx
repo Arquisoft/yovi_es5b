@@ -4,7 +4,7 @@ import { Hexagon } from './Hexagon';
 type BoardProps = {
     botId: string;
     difficulty: 'easy' | 'medium';
-    boardSize?: number;
+    boardSize: number;
 };
 
 type CellState = 'empty' | 'human' | 'bot';
@@ -31,15 +31,31 @@ type MoveResponse = {
     status: GameStatus;
 };
 
-export const Board = ({botId, difficulty, boardSize = 5}: BoardProps) => {
-  const size = 30; 
-  const hexWidth = Math.sqrt(3) * size;
-  const yOffset = 1.5 * size;
-  const startX = 300;
-  const startY = 50;
-  const svgWidth = startX + boardSize * hexWidth + 50;
-  const svgHeight = startY + boardSize * yOffset + 50;
+export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
+  // ── Viewport SVG fijo ────────────────────────────────────────────────────
+  const SVG_W = 600;
+  const SVG_H = 560;
+  const PADDING = 30;
 
+  //   Fila más ancha  = boardSize hexágonos → ancho total = boardSize * sqrt(3)*size
+  //   Número de filas = boardSize           → alto total  = (boardSize-1)*1.5*size + 2*size
+  const maxSizeByWidth  = (SVG_W - 2 * PADDING) / (boardSize * Math.sqrt(3));
+  const maxSizeByHeight = (SVG_H - 2 * PADDING) / ((boardSize - 1) * 1.5 + 2);
+  const size = Math.floor(Math.min(maxSizeByWidth, maxSizeByHeight));
+
+  const hexWidth = Math.sqrt(3) * size;   // distancia horizontal entre centros de columna
+  const yOffset  = 1.5 * size;            // distancia vertical entre filas
+  
+  // Altura total del triángulo
+  const totalH = (boardSize - 1) * yOffset + 2 * size;
+
+  // Centro horizontal del SVG
+  const svgCenterX = SVG_W / 2;
+
+  // Punto Y desde el que empieza la primera fila, para centrar verticalmente
+  const boardTop = (SVG_H - totalH) / 2 + size;
+  // ─────────────────────────────────────────────────────────────────────────
+ 
   const [boardState, setBoardState] = useState<Record<string, CellState>>({});
   const [isBotThinking, setIsBotThinking] = useState(false);
   const [winner, setWinner] = useState<CellState | null>(null);
@@ -141,8 +157,8 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
         const z = (boardSize - 1) - x - y;
         const id = `${x}-${y}-${z}`;
 
-        const cx = startX + (c - r / 2) * hexWidth;
-        const cy = startY + r * yOffset;
+        const cx = svgCenterX - (r * hexWidth) / 2 + c * hexWidth;
+        const cy = boardTop + r * yOffset;
         
         let color = '#eeeeee'; 
         if (boardState[id] === 'human') color = '#3b82f6';
@@ -176,7 +192,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       <p style={{ height: '24px', fontWeight: 'bold', color: statusColor, marginBottom: '10px', fontSize: winner ? '20px' : '16px' }}>
         {statusMessage}
       </p>
-      <svg width={svgWidth} height={svgHeight} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
+      <svg width={SVG_W} height={SVG_H} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
         {renderHexagons()}
       </svg>
 

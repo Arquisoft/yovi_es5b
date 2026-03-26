@@ -5,7 +5,7 @@ import type { User } from "../types/user";
 type PlayPageProps = {
     user: User;
     botId: string;
-    boardSize?: number;
+    boardSize: number;
     onBackToLobby: any;
 };
 
