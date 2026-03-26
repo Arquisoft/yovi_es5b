@@ -30,7 +30,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     )
 
     // Comprobamos que el nombre aparece en la cabecera
-    expect(await screen.findByText('Carlos')).toBeTruthy()
+    expect(await screen.findByText('pepe')).toBeTruthy()
     expect(await screen.findByText(/Partida de:/i)).toBeTruthy()
   })
 
@@ -49,12 +49,12 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     )
     //
     // Buscamos el botón de jugar
-    const playButton = await screen.findByRole('button', { name: /Jugar contra*/i })
+    const playButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(playButton).toBeTruthy()
     fireEvent.click(playButton)
 
     // Buscamos el botón de abandonar
-    const abandonButton = await screen.findByRole('button', { name: /Abandonar Partida/i })
+    const abandonButton = await screen.findByRole('button', { name: /Salir/i })
     expect(abandonButton).toBeTruthy()
 
     // Hacemos clic en el botón
@@ -62,7 +62,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
     // Esperamos que la URL haya cambiado y ahora estemos viendo el componente ficticio del Lobby
     await waitFor(() => {
-      expect(screen.getByText('🎮 Juego Y')).toBeTruthy()
+      expect(screen.getByText('Juego Y')).toBeTruthy()
     })
   })
 })

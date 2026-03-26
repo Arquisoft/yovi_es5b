@@ -43,7 +43,7 @@ describe('GamePage', () => {
     )
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status', {})
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status')
     })
   })
 
@@ -72,7 +72,7 @@ describe('GamePage', () => {
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
 
-    const backButton = await screen.findByRole('button', { name: /Jugar contra*/i })
+    const backButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(backButton).toBeTruthy()
   })
 })
