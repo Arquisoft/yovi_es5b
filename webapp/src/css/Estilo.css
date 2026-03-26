@@ -182,3 +182,177 @@ h1, h2, h3 {
 .lobby-main {
   animation: fadeIn 0.5s ease-out;
 }
+/* --- Mejoras para la Cabecera (Botones agrupados) --- */
+.header-actions {
+  display: flex;
+  gap: 10px; /* Espacio entre Estadísticas y Salir */
+}
+
+/* --- Estilos específicos para la vista de Estadísticas --- */
+.stats-card {
+  background-color: var(--card-bg);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  margin: 20px 0;
+  text-align: left; /* Alineación para que los datos se lean mejor */
+}
+
+.stats-line {
+  font-size: 1.1rem;
+  margin: 15px 0;
+  display: flex;
+  justify-content: space-between; /* Alinea el texto a la izquierda y el número a la derecha */
+  border-bottom: 1px solid #444; /* Línea divisoria sutil */
+  padding-bottom: 8px;
+}
+
+.stats-line:last-child {
+  border-bottom: none;
+}
+
+.stats-label {
+  color: var(--text-muted);
+}
+
+.stats-value {
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace; /* Estilo retro para números */
+}
+
+/* Colores específicos para los resultados */
+.val-win { color: var(--success-color); }
+.val-lose { color: var(--error-color); }
+.val-total { color: var(--primary-color); }
+
+/* --- Ajuste para que la animación funcione también en estadísticas --- */
+.stats-container {
+  animation: fadeIn 0.5s ease-out;
+}
+/* --- VISTA DE ESTADÍSTICAS --- */
+
+.stats-title {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.stats-card {
+    background-color: var(--card-bg); /* Usa tus variables globales */
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.stats-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.stats-item:last-child {
+    border-bottom: none;
+}
+
+.stats-icon {
+    margin-right: 15px;
+    font-size: 1.4rem;
+}
+
+.stats-label {
+    flex-grow: 1;
+    color: var(--text-muted);
+}
+
+.stats-value {
+    font-size: 1.2rem;
+}
+
+.stats-item.win .stats-value {
+    color: var(--success-color); /* #22c55e */
+}
+
+.stats-item.lose .stats-value {
+    color: var(--error-color); /* #ef4444 */
+}
+
+.btn-back {
+    margin-top: 25px;
+    padding: 12px 24px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.btn-back:hover {
+    background-color: var(--primary-hover);
+}
+
+.loading-spinner {
+    padding: 40px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+/* --- Estilos para Estadísticas --- */
+
+.stats-view {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.stats-title {
+  margin-bottom: 25px;
+  color: var(--text-main);
+}
+
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #444;
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stats-label {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.stats-number {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.win-text {
+  color: var(--success-color);
+}
+
+.lose-text {
+  color: var(--error-color);
+}
+
+.stats-back-btn {
+  margin-top: 30px;
+}

@@ -49,11 +49,11 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     )
     
     // Buscamos el botón de jugar
-    const playButton = await screen.findByRole('button', { name: /Jugar/i })
+    const playButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(playButton).toBeTruthy()
     fireEvent.click(playButton)
 
-    // Buscamos el botón de salir
+    // Buscamos el botón de abandonar
     const abandonButton = await screen.findByRole('button', { name: /Salir/i })
     expect(abandonButton).toBeTruthy()
 
