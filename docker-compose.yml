@@ -24,7 +24,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DB_HOST=host.docker.internal
+      - DB_NAME=yovi-es5b-dev
+      - DB_USER=root
+      - DB_PASSWORD=ADMSIS123$
+      - DB_HOST=yovi-database
+      - CORS_ORIGIN=http://localhost
     depends_on:
       - database
     networks:

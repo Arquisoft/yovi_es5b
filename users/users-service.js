@@ -9,7 +9,7 @@ import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-v
  * - 200: información del usuario activo
  * - 403: error si no hay usuario autenticado
  **/
-app.get('/getuser', async (req, res) => {
+app.get(['/getuser', '/bot/getuser'], async (req, res) => {
     res.status(200).json(req.session.user);
 });
 
@@ -23,7 +23,7 @@ app.get('/getuser', async (req, res) => {
  * - 200: usuario registrado
  * - 400: objecto con errores del registro
  **/
-app.post('/register', async (req, res) => {
+app.post(['/register', '/bot/register'], async (req, res) => {
     const errores = await validarRegistrarUsuario(req?.body?.nombre, req?.body?.nom_usuario, req?.body?.contrasena);
     if (Object.keys(errores).length > 0) {
         res.status(400).json(errores);
@@ -48,7 +48,7 @@ app.post('/register', async (req, res) => {
  * - 200: usuario con el que se inicia sesión
  * - 400: objecto con información de error
  **/
-app.post('/login', async (req, res) => {
+app.post(['/login', '/bot/login'], async (req, res) => {
     const errores = await validarIniciarSesion(req?.body?.nom_usuario, req?.body?.contrasena);
     if (Object.keys(errores).length > 0) {
         res.status(400).json(errores);

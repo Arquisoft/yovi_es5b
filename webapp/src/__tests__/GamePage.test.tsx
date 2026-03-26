@@ -18,7 +18,7 @@ describe('GamePage', () => {
 
   it('should display the game title', async () => {
     render(
-        <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+        <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
     
     const title = await screen.findByText(/Juego Y/i)
@@ -27,7 +27,7 @@ describe('GamePage', () => {
 
   it('should display welcome message with username from URL', async () => {
     render(
-      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
     
     const welcome = await screen.findByText(/Bienvenido/i)
@@ -39,7 +39,7 @@ describe('GamePage', () => {
 
   it('should check gamey status on mount', async () => {
     render(
-      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
 
     await waitFor(() => {
@@ -49,7 +49,7 @@ describe('GamePage', () => {
 
   it('should display connected status when gamey is OK', async () => {
     render(
-      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
 
     const statusText = await screen.findByText(/Conectado/i)
@@ -60,7 +60,7 @@ describe('GamePage', () => {
     global.fetch = vi.fn().mockRejectedValueOnce(new Error('Connection failed'))
 
     render(
-      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
 
     const statusText = await screen.findByText(/Desconectado/i)
