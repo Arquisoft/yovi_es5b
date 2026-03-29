@@ -35,3 +35,10 @@ La parte de la interfaz de juego está implementada en React el cual, a diferenc
 El cliente (webapp) posee su propio código para representar el formato YEN y enviarlo de vuelta al servidor. Un cambio en el formato YEN provocará cambios tanto en el código del cliente como el del servidor.
 
 Esta duplicación del código del formato YEN facilita en el desarrollo la representación de la partida, pero puede ser problemática si el formato cambia.
+
+
+=== Programación de bots basados en jugadas concretas
+
+Por cómo se ha realizado la arquitectura de comunicación con el motor de juego, se complica el programa bots que necesiten el historial de jugadas concretas de una partida dada para calcular sus respuestas.
+
+Dar soporte a este tipo de bots requeriría modificar la arquitectura o complicar la implementación de un bot concreto de este tipo.

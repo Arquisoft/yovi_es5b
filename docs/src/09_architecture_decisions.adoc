@@ -80,3 +80,25 @@ Se tomó la decisión de utilizar un ORM para facilitar y acelerar el desarrollo
 La lógica de de interacción con la persistencia queda atada al API de **Sequelize**. Cambiar este ORM por otro puede incurrir en tiempo de desarrollo adicional.
 
 Por otra parte, se espera que el uso de este ORM acelere el desarrollo del módulo *users*.
+
+=== Arquitectura de comunicación con gamey
+
+==== Contexto
+
+Se debía decidir cómo comunicar el estado de la partida con el motor de juego (gamey).
+
+==== Decisión
+
+Se tomó la decisión de utilizar una arquitectura cliente servidor sin estado; de esta forma, a gamey se le envía un movimiento a realizar y este responde su movimiento independientemente de jugadas anteriores en la partida.
+
+
+==== Estado
+
+*Aceptado*
+
+==== Consecuencias
+
+No tener que gestionar el estado de la partida en gamey ayuda al desacoplamiento entre gamey y el cliente, pues gamey no necesita conocer el estado de movimientos de la partida para poder responder a las peticiones de juego.
+También facilita la programación de bots, puesto que estos no necesitan acceder al estado de movimientos previos de la partida para dar su respuesta.
+
+Sin embargo, esto limita qué tipo de bots pueden programarse, ya que dificulta la programación de bots que se basen en jugadas previas concretas para calcular su respuesta.
