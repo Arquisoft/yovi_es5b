@@ -21,7 +21,7 @@ Then('Debería mostrarme un error que indique claramente que no he podido inicia
   const page = this.page
   if (!page) throw new Error('Page not initialized')
 
-  // Buscar que el nombre de usuario aparece en el texto de bienvenida
+  // Buscar que el mensaje de error de credenciales incorrectas
   const lobby = page.locator('.error-message');
   await expect(lobby).toHaveText("Error al iniciar sesión. Credenciales no válidas.");
 })
