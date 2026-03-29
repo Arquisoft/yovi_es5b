@@ -35,7 +35,7 @@ const RegisterPage = () => {
         </button>
         <button
           onClick={() => setIsLogin(true)}
-          className={`selector-button ${isLogin ? "active" : ""}`}
+          className={`login-page-button selector-button ${isLogin ? "active" : ""}`}
         >
           Iniciar Sesión
         </button>
