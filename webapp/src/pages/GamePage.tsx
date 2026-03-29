@@ -58,7 +58,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
   // Renderizado condicional: Prioridad 1 - La pantalla de juego
   if (playGame) {
-      return <PlayPage botId={botId} user={user} onBackToLobby={handleBackToLobby}/>;
+      return <PlayPage botId={botId} user={user} boardSize={Number(size)} onBackToLobby={handleBackToLobby}/>;
   }
 
   // Renderizado condicional: Prioridad 2 - La pantalla de estadísticas
