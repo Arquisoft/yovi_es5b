@@ -10,8 +10,9 @@ type PlayPageProps = {
 };
 
 const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
-  // Función para volver al Lobby
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>('easy');
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(
+    botId === 'mediumbot' ? 'medium' : 'easy'
+  );
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = async () => {

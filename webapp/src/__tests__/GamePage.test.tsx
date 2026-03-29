@@ -31,7 +31,7 @@ describe('GamePage', () => {
     )
     
     const welcome = await screen.findByText(/Bienvenido/i)
-    const username = await screen.findByText('pepe123')
+    const username = await screen.findByText('Pepe')
     
     expect(welcome).toBeTruthy()
     expect(username).toBeTruthy()
@@ -72,7 +72,7 @@ describe('GamePage', () => {
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
 
-    const backButton = await screen.findByRole('button', { name: /Jugar/i })
+    const backButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(backButton).toBeTruthy()
   })
 })
