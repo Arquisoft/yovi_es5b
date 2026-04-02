@@ -89,7 +89,7 @@ Se debía decidir cómo comunicar el estado de la partida con el motor de juego 
 
 ==== Decisión
 
-Se tomó la decisión de utilizar una arquitectura cliente servidor sin estado; de esta forma, a gamey se le envía un movimiento a realizar y este responde su movimiento independientemente de jugadas anteriores en la partida.
+Se tomó la decisión de utilizar una arquitectura cliente servidor sin estado; de esta forma, no se envía un movimiento como tal, sino la disposición actual de las fichas en el tablero. A partir de esta información, Gamey calcula y devuelve su jugada sin depender de acciones previas en la partida.
 
 
 ==== Estado
