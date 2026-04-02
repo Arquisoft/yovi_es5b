@@ -39,6 +39,6 @@ Esta duplicación del código del formato YEN facilita en el desarrollo la repre
 
 === Programación de bots basados en jugadas concretas
 
-Por cómo se ha realizado la arquitectura de comunicación con el motor de juego, se complica el programa bots que necesiten el historial de jugadas concretas de una partida dada para calcular sus respuestas.
+Por cómo se ha realizado la arquitectura de comunicación con el motor de juego, se complica el programar bots que necesiten el historial de jugadas concretas de una partida dada para calcular sus respuestas.
 
 Dar soporte a este tipo de bots requeriría modificar la arquitectura o complicar la implementación de un bot concreto de este tipo.
