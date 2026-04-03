@@ -2,6 +2,7 @@ import { app, port } from "./config/app.js";
 import { sequelize, Usuario } from './models/index.js';
 import { registrarUsuario, iniciarSesion } from "./service/users.js";
 import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-validators.js";
+import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas } from "./service/stats.js";
 
 /**
  * Ruta para obtener información sobre el usuario actual.
@@ -71,28 +72,95 @@ app.post(['/login', '/bot/login'], async (req, res) => {
     }
 });
 
+/**
+ * Ruta para obtener el número de partidas jugadas por el usuario autenticado.
+ * Requiere autenticación.
+ * 
+ * Devuelve:
+ * - 200: objeto con el número de partidas jugadas
+ * - 403: error si no hay usuario autenticado
+ * - 500: error al obtener las estadísticas
+**/
+app.get('/stats/jugadas', async (req, res) => {
+    if (!req.session.user) {
+        res.status(403).json({ error: "No hay usuario autenticado." });
+        return;
+    }
 
+    try {
+        const partidasJugadas = await obtenerPartidasJugadas(req.session.user.id_usuario);
+        res.status(200).json({ partidasJugadas });
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener estadísticas." });
+    }
+});
+
+/**
+ * Ruta para obtener el número de partidas ganadas por el usuario autenticado.
+ * Requiere autenticación.
+ * 
+ * Devuelve:
+ * - 200: objeto con el número de partidas ganadas
+ * - 403: error si no hay usuario autenticado
+ * - 500: error al obtener estadísticas
+**/
+app.get('/stats/ganadas', async (req, res) => {
+    if (!req.session.user) {
+        res.status(403).json({ error: "No hay usuario autenticado." });
+        return;
+    }
+
+    try {
+        const partidasGanadas = await obtenerPartidasGanadas(req.session.user.id_usuario);
+        res.status(200).json({ partidasGanadas });
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener estadísticas." });
+    }
+});
+
+/**
+ * Ruta para obtener el número de partidas perdidas por el usuario autenticado.
+ * Requiere autenticación.
+ * 
+ * Devuelve:
+ * - 200: objeto con el número de partidas perdidas
+ * - 403: error si no hay usuario autenticado
+ * - 500: error si ocurre un problema al obtener las estadísticas
+**/
+app.get('/stats/perdidas', async (req, res) => {
+    if (!req.session.user) {
+        res.status(403).json({ error: "No hay usuario autenticado." });
+        return;
+    }
+
+    try {
+        const partidasPerdidas = await obtenerPartidasPerdidas(req.session.user.id_usuario);
+        res.status(200).json({ partidasPerdidas });
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener estadísticas." });
+    }
+});
 
 const conectarDB = async () => {
     let retries = 20;
     while (retries > 0) {
         try {
             await sequelize.authenticate();
-            console.log('✅ Conexión a MySQL establecida correctamente.');
+            console.log('Conexión a MySQL establecida correctamente.');
 
             // Sincroniza las tablas (force: true las recrea de forma forzosa)
             await sequelize.sync({ force: true });
-            console.log('✅ Tablas de YOVI listas.');
+            console.log('Tablas de YOVI listas.');
 
             break;
         } catch (err) {
-            console.error(`❌ Error al conectar con MySQL. Reintentos restantes: ${retries - 1}`, err);
+            console.error(`Error al conectar con MySQL. Reintentos restantes: ${retries - 1}`, err);
             retries -= 1;
 
             if (retries === 0) {
-                console.error('❌ No se pudo conectar a la base de datos tras varios intentos:', err);
+                console.error('No se pudo conectar a la base de datos tras varios intentos:', err);
             } else {
-                console.log('⏳ Esperando 3 segundos antes de reintentar...');
+                console.log('Esperando 3 segundos antes de reintentar...');
                 await new Promise(res => setTimeout(res, 3000));
             }
         }

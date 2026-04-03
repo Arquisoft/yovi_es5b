@@ -8,30 +8,21 @@ const Usuario = sequelize.define('Usuario', {
   contrasena: { type: DataTypes.STRING, allowNull: false }
 }, { timestamps: false });
 
-const Robot = sequelize.define('Robot', {
-  id_robot: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  behaviour_type: { type: DataTypes.STRING, allowNull: false }
-}, { timestamps: false });
-
-const Jugador = sequelize.define('Jugador', {
-  id_player: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  behaviour_Type: { type: DataTypes.ENUM('usuario', 'robot'), allowNull: false },
-  id_externo: { type: DataTypes.INTEGER, allowNull: false }
-}, { timestamps: false });
-
 const Partida = sequelize.define('Partida', {
   id_partida: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  puntuacion: { type: DataTypes.INTEGER, defaultValue: 0 },
-  turnos: { type: DataTypes.INTEGER, defaultValue: 0 }
+  id_usuario: { type: DataTypes.INTEGER, allowNull: false },
+  oponente: { type: DataTypes.STRING, allowNull: false },
+  ganada: { type: DataTypes.BOOLEAN, allowNull: false } // true si el usuario ganó, false si perdió
 }, { timestamps: false });
 
-Partida.belongsTo(Jugador, { as: 'Jugador1', foreignKey: 'jugador1' });
-Partida.belongsTo(Jugador, { as: 'Jugador2', foreignKey: 'jugador2' });
+// Un Usuario tiene muchas Partidas
+Usuario.hasMany(Partida, { as: 'Partidas', foreignKey: 'id_usuario' });
+
+// Una Partida pertenece a un Usuario
+Partida.belongsTo(Usuario, { as: 'Usuario', foreignKey: 'id_usuario' });
 
 export  {
   sequelize,
   Usuario,
-  Robot,
-  Jugador,
   Partida
 };
