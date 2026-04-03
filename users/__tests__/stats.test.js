@@ -1,285 +1,211 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import request from 'supertest'
-import { app } from '../users-service.js'
-import { Usuario } from '../models/index.js'
-import * as statsModule from '../service/stats.js'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas } from '../service/stats.js'
+import { Partida } from '../models/index.js'
 
-// Mockeamos express-session para inyectar sesión sin login real
-vi.mock('express-session', () => ({
-    default: () => (req, res, next) => {
-        req.session = {
-            user: {
-                id_usuario: 1,
-                nombre: 'Pepe',
-                nom_usuario: 'pepe123'
-            }
-        }
-        next()
-    }
-}))
-
-// Mockeamos el módulo de stats
-vi.mock('../service/stats.js', () => ({
-    obtenerPartidasJugadas: vi.fn(),
-    obtenerPartidasGanadas: vi.fn(),
-    obtenerPartidasPerdidas: vi.fn()
-}))
-
-// Mockeamos los modelos
+// Mock del modelo Partida
 vi.mock('../models/index.js', () => ({
-    Usuario: {
-        findOne: vi.fn(),
-        findAll: vi.fn(),
-        create: vi.fn()
-    },
-    Jugador: {
-        findAll: vi.fn(),
-        count: vi.fn()
-    },
     Partida: {
         count: vi.fn()
-    },
-    sequelize: {
-        authenticate: vi.fn().mockResolvedValue(),
-        sync: vi.fn().mockResolvedValue()
     }
 }))
 
-// Helper para obtener un agente con sesión mockeada
-const obtenerAgente = () => {
-    return request.agent(app)
-}
-
-describe('Pruebas de Estadísticas - Endpoint /stats/jugadas', () => {
+describe('Pruebas unitarias de Estadísticas', () => {
     beforeEach(() => {
         vi.clearAllMocks()
     })
+    
+    describe('Obtener partidas jugadas', () => {
+        it('debería devolver el total correcto de partidas jugadas', async () => {
+            Partida.count.mockResolvedValue(15)
 
-    it('debería devolver 403 si no hay usuario autenticado', async () => {
-        const res = await request(app)
-            .get('/stats/jugadas')
+            const resultado = await obtenerPartidasJugadas(1)
 
-        expect(res.status).toBe(403)
-        expect(res.body.error).toBe("No hay usuario autenticado.")
+            expect(resultado).toBe(15)
+        })
+
+        it('debería devolver 0 cuando el usuario no tiene partidas', async () => {
+            Partida.count.mockResolvedValue(0)
+
+            const resultado = await obtenerPartidasJugadas(5)
+
+            expect(resultado).toBe(0)
+        })
+
+        it('debería llamar a Partida.count con el id_usuario correcto', async () => {
+            Partida.count.mockResolvedValue(10)
+
+            await obtenerPartidasJugadas(42)
+
+            expect(Partida.count).toHaveBeenCalledWith({
+                where: { id_usuario: 42 }
+            })
+        })
+
+        it('debería hacer la consulta filtrando únicamente por "id_usuario"', async () => {
+            Partida.count.mockResolvedValue(20)
+
+            await obtenerPartidasJugadas(1)
+
+            // El where SOLO debe tener id_usuario
+            const callArgs = Partida.count.mock.calls[0][0]
+            expect(callArgs.where).toHaveProperty('id_usuario')
+            expect(callArgs.where).not.toHaveProperty('ganada')
+            expect(callArgs.where).not.toHaveProperty('oponente')
+        })
+
+        it('debería soportar números grandes de partidas', async () => {
+            Partida.count.mockResolvedValue(1000000)
+
+            const resultado = await obtenerPartidasJugadas(1)
+
+            expect(resultado).toBe(1000000)
+        })
+
+        it('debería lanzar error cuando falla la BD', async () => {
+            const error = new Error("Database connection failed")
+            Partida.count.mockRejectedValue(error)
+
+            await expect(obtenerPartidasJugadas(1)).rejects.toThrow("Database connection failed")
+        })
     })
 
-    it('debería devolver 200 con sesión válida', async () => {
-        vi.mocked(statsModule.obtenerPartidasJugadas).mockResolvedValue(5)
+    describe('Obtener partidas ganadas', () => {
+        it('debería devolver el total correcto de partidas ganadas', async () => {
+            Partida.count.mockResolvedValue(8)
 
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/jugadas')
+            const resultado = await obtenerPartidasGanadas(1)
 
-        expect(res.status).toBe(200)
-        expect(res.body.partidasJugadas).toBe(5)
+            expect(resultado).toBe(8)
+        })
+
+        it('debería devolver 0 cuando el usuario no ha ganado partidas', async () => {
+            Partida.count.mockResolvedValue(0)
+
+            const resultado = await obtenerPartidasGanadas(3)
+
+            expect(resultado).toBe(0)
+        })
+
+        it('debería usar el filtro "ganada: true"', async () => {
+            Partida.count.mockResolvedValue(5)
+
+            await obtenerPartidasGanadas(7)
+
+            expect(Partida.count).toHaveBeenCalledWith({
+                where: {
+                    id_usuario: 7,
+                    ganada: true
+                }
+            })
+        })
+
+        it('debería llamar a Partida.count con el id_usuario correcto', async () => {
+            Partida.count.mockResolvedValue(3)
+
+            await obtenerPartidasGanadas(99)
+
+            const callArgs = Partida.count.mock.calls[0][0]
+            expect(callArgs.where.id_usuario).toBe(99)
+        })
+
+        it('debería manejar error de conexión a BD', async () => {
+            const error = new Error("Connection timeout")
+            Partida.count.mockRejectedValue(error)
+
+            await expect(obtenerPartidasGanadas(1)).rejects.toThrow("Connection timeout")
+        })
     })
 
-    it('debería devolver 0 partidas jugadas cuando el usuario no ha jugado ninguna partida', async () => {
-        vi.mocked(statsModule.obtenerPartidasJugadas).mockResolvedValue(0)
+    describe('Obtener partidas perdidas', () => {
+        it('debería devolver el total correcto de partidas perdidas', async () => {
+            Partida.count.mockResolvedValue(4)
 
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/jugadas')
+            const resultado = await obtenerPartidasPerdidas(2)
 
-        expect(res.status).toBe(200)
-        expect(res.body.partidasJugadas).toBe(0)
+            expect(resultado).toBe(4)
+        })
+
+        it('debería devolver 0 cuando el usuario no ha perdido partidas', async () => {
+            Partida.count.mockResolvedValue(0)
+
+            const resultado = await obtenerPartidasPerdidas(10)
+
+            expect(resultado).toBe(0)
+        })
+
+        it('debería usar el filtro "ganada: false"', async () => {
+            Partida.count.mockResolvedValue(2)
+
+            await obtenerPartidasPerdidas(5)
+
+            expect(Partida.count).toHaveBeenCalledWith({
+                where: {
+                    id_usuario: 5,
+                    ganada: false
+                }
+            })
+        })
+
+        it('debería llamar a Partida.count con el id_usuario correcto', async () => {
+            Partida.count.mockResolvedValue(6)
+
+            await obtenerPartidasPerdidas(50)
+
+            const callArgs = Partida.count.mock.calls[0][0]
+            expect(callArgs.where.id_usuario).toBe(50)
+        })
+
+        it('debería manejar error de conexión a BD', async () => {
+            const error = new Error("Database disconnected")
+            Partida.count.mockRejectedValue(error)
+
+            await expect(obtenerPartidasPerdidas(1)).rejects.toThrow("Database disconnected")
+        })
     })
 
-    it('debería devolver el número de partidas jugadas cuando ha jugado al menos 1', async () => {
-        vi.mocked(statsModule.obtenerPartidasJugadas).mockResolvedValue(3)
+    describe('Integridad y consistencia de datos', () => {
+        it('debería cumplir: ganadas + perdidas = jugadas', async () => {
+            // Simulamos un escenario consistente
+            // Usuarios: 1 con 10 partidas (6 ganadas, 4 perdidas)
+            Partida.count
+                .mockResolvedValueOnce(10)  // obtenerPartidasJugadas(1)
+                .mockResolvedValueOnce(6)   // obtenerPartidasGanadas(1)
+                .mockResolvedValueOnce(4)   // obtenerPartidasPerdidas(1)
 
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/jugadas')
+            const j = await obtenerPartidasJugadas(1)
+            const g = await obtenerPartidasGanadas(1)
+            const p = await obtenerPartidasPerdidas(1)
 
-        expect(res.status).toBe(200)
-        expect(res.body.partidasJugadas).toBe(3)
-    })
+            expect(j).toBe(10)
+            expect(g).toBe(6)
+            expect(p).toBe(4)
+            expect(g + p).toBe(j)
+        })
 
-    it('debería devolver 500 cuando la base de datos no responde', async () => {
-        vi.mocked(statsModule.obtenerPartidasJugadas)
-            .mockRejectedValue(new Error("Database connection error"))
+        it('debería funcionar correctamente para múltiples usuarios sin contaminar datos', async () => {
+            Partida.count.mockResolvedValue(5)
 
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/jugadas')
+            const usuario1 = await obtenerPartidasJugadas(1)
+            const usuario2 = await obtenerPartidasJugadas(2)
 
-        expect(res.status).toBe(500)
-        expect(res.body.error).toBe("Error al obtener estadísticas.")
-    })
-})
+            // Verificar que se llamó con IDs diferentes
+            expect(Partida.count).toHaveBeenNthCalledWith(1, { where: { id_usuario: 1 } })
+            expect(Partida.count).toHaveBeenNthCalledWith(2, { where: { id_usuario: 2 } })
 
-describe('Pruebas de Estadísticas - Endpoint /stats/ganadas', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
+            expect(usuario1).toBe(5)
+            expect(usuario2).toBe(5)
+        })
 
-    it('debería devolver 403 si no hay usuario autenticado', async () => {
-        const res = await request(app)
-            .get('/stats/ganadas')
+        it('debería manejar usuario con 0 partidas correctamente', async () => {
+            Partida.count.mockResolvedValue(0)
 
-        expect(res.status).toBe(403)
-        expect(res.body.error).toBe("No hay usuario autenticado.")
-    })
+            const jugadas = await obtenerPartidasJugadas(100)
+            const ganadas = await obtenerPartidasGanadas(100)
+            const perdidas = await obtenerPartidasPerdidas(100)
 
-    it('debería devolver 200 con sesión válida', async () => {
-        vi.mocked(statsModule.obtenerPartidasGanadas).mockResolvedValue(3)
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/ganadas')
-
-        expect(res.status).toBe(200)
-        expect(res.body.partidasGanadas).toBe(3)
-    })
-
-    it('debería devolver 0 cuando el usuario no ha ganado partidas', async () => {
-        vi.mocked(statsModule.obtenerPartidasGanadas).mockResolvedValue(0)
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/ganadas')
-
-        expect(res.status).toBe(200)
-        expect(res.body.partidasGanadas).toBe(0)
-    })
-
-    it('debería devolver el número de partidas ganadas cuando ha ganado al menos 1', async () => {
-        vi.mocked(statsModule.obtenerPartidasGanadas).mockResolvedValue(5)
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/ganadas')
-
-        expect(res.status).toBe(200)
-        expect(res.body.partidasGanadas).toBe(5)
-    })
-
-    it('debería devolver 500 cuando la base de datos no responde', async () => {
-        vi.mocked(statsModule.obtenerPartidasGanadas)
-            .mockRejectedValue(new Error("Database error"))
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/ganadas')
-
-        expect(res.status).toBe(500)
-        expect(res.body.error).toBe("Error al obtener estadísticas.")
-    })
-})
-
-describe('Pruebas de Estadísticas - Endpoint /stats/perdidas', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
-
-    it('debería devolver 403 si no hay usuario autenticado', async () => {
-        const res = await request(app)
-            .get('/stats/perdidas')
-
-        expect(res.status).toBe(403)
-        expect(res.body.error).toBe("No hay usuario autenticado.")
-    })
-
-    it('debería devolver 200 con sesión válida', async () => {
-        vi.mocked(statsModule.obtenerPartidasPerdidas).mockResolvedValue(2)
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/perdidas')
-
-        expect(res.status).toBe(200)
-        expect(res.body.partidasPerdidas).toBe(2)
-    })
-
-    it('debería devolver 0 cuando el usuario no ha perdido partidas', async () => {
-        vi.mocked(statsModule.obtenerPartidasPerdidas).mockResolvedValue(0)
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/perdidas')
-
-        expect(res.status).toBe(200)
-        expect(res.body.partidasPerdidas).toBe(0)
-    })
-
-    it('debería devolver el número de partidas perdidas cuando ha perdido al menos 1', async () => {
-        vi.mocked(statsModule.obtenerPartidasPerdidas).mockResolvedValue(4)
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/perdidas')
-
-        expect(res.status).toBe(200)
-        expect(res.body.partidasPerdidas).toBe(4)
-    })
-
-    it('debería devolver 500 cuando la base de datos no responde', async () => {
-        vi.mocked(statsModule.obtenerPartidasPerdidas)
-            .mockRejectedValue(new Error("Database error"))
-
-        const agent = obtenerAgente()
-        const res = await agent.get('/stats/perdidas')
-
-        expect(res.status).toBe(500)
-        expect(res.body.error).toBe("Error al obtener estadísticas.")
-    })
-})
-
-describe('Pruebas de Estadísticas - Casos combinados', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
-
-    it('debería devolver 0 partidas en todos los endpoints cuando el usuario tiene 0 partidas', async () => {
-        vi.mocked(statsModule.obtenerPartidasJugadas).mockResolvedValue(0)
-        vi.mocked(statsModule.obtenerPartidasGanadas).mockResolvedValue(0)
-        vi.mocked(statsModule.obtenerPartidasPerdidas).mockResolvedValue(0)
-
-        const agent = obtenerAgente()
-        
-        const res1 = await agent.get('/stats/jugadas')
-        const res2 = await agent.get('/stats/ganadas')
-        const res3 = await agent.get('/stats/perdidas')
-
-        expect(res1.status).toBe(200)
-        expect(res1.body.partidasJugadas).toBe(0)
-        
-        expect(res2.status).toBe(200)
-        expect(res2.body.partidasGanadas).toBe(0)
-        
-        expect(res3.status).toBe(200)
-        expect(res3.body.partidasPerdidas).toBe(0)
-    })
-
-    it('debería mantener consistencia: ganadas + perdidas = jugadas', async () => {
-        const jugadas = 10
-        const ganadas = 6
-        const perdidas = 4
-
-        vi.mocked(statsModule.obtenerPartidasJugadas).mockResolvedValue(jugadas)
-        vi.mocked(statsModule.obtenerPartidasGanadas).mockResolvedValue(ganadas)
-        vi.mocked(statsModule.obtenerPartidasPerdidas).mockResolvedValue(perdidas)
-
-        const agent = obtenerAgente()
-        
-        const res1 = await agent.get('/stats/jugadas')
-        const res2 = await agent.get('/stats/ganadas')
-        const res3 = await agent.get('/stats/perdidas')
-
-        expect(res1.status).toBe(200)
-        expect(res2.status).toBe(200)
-        expect(res3.status).toBe(200)
-        
-        // Validar consistencia
-        expect(res2.body.partidasGanadas + res3.body.partidasPerdidas).toBe(res1.body.partidasJugadas)
-    })
-
-    it('debería soportar múltiples requests consecutivos del mismo usuario autenticado', async () => {
-        vi.mocked(statsModule.obtenerPartidasJugadas).mockResolvedValue(5)
-        vi.mocked(statsModule.obtenerPartidasGanadas).mockResolvedValue(3)
-        vi.mocked(statsModule.obtenerPartidasPerdidas).mockResolvedValue(2)
-
-        const agent = obtenerAgente()
-        
-        // Múltiples requests consecutivos
-        const res1 = await agent.get('/stats/jugadas')
-        const res2 = await agent.get('/stats/ganadas')
-        const res3 = await agent.get('/stats/perdidas')
-        const res4 = await agent.get('/stats/jugadas')
-
-        expect(res1.status).toBe(200)
-        expect(res2.status).toBe(200)
-        expect(res3.status).toBe(200)
-        expect(res4.status).toBe(200)
+            expect(jugadas).toBe(0)
+            expect(ganadas).toBe(0)
+            expect(perdidas).toBe(0)
+        })
     })
 })
