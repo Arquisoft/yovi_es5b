@@ -51,8 +51,9 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   // Función callback para que PlayPage pueda volver al menú principal
   const handleBackToLobby = () => setPlayGame(false);
 
-  // Forza la recarga al inicio para resetear la sesión del usuario
+  // Eliminar cookie de sesión
   const handleLogout = () => {
+    document.cookie = "JSESSIONID="
     window.location.href = '/'; 
   };
 
