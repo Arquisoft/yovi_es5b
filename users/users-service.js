@@ -92,8 +92,8 @@ const conectarDB = async () => {
             if (retries === 0) {
                 console.error('❌ No se pudo conectar a la base de datos tras varios intentos:', err);
             } else {
-                console.log('⏳ Esperando 3 segundos antes de reintentar...');
-                await new Promise(res => setTimeout(res, 3000));
+                console.log('⏳ Esperando 1 segundo antes de reintentar...');
+                await new Promise(res => setTimeout(res, 1000));
             }
         }
     }
