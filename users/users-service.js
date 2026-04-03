@@ -2,7 +2,7 @@ import { app, port } from "./config/app.js";
 import { sequelize, Usuario } from './models/index.js';
 import { registrarUsuario, iniciarSesion } from "./service/users.js";
 import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-validators.js";
-import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas } from "./service/stats.js";
+import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida } from "./service/stats.js";
 
 /**
  * Ruta para obtener información sobre el usuario actual.
@@ -95,6 +95,41 @@ app.get('/stats/:nom_usuario', async (req, res) => {
         res.status(200).json({ jugadas, ganadas, perdidas });
     } catch (err) {
         res.status(500).json({ error: "Error al obtener estadísticas." });
+    }
+});
+
+/**
+ * Ruta para guardar una partida finalizada.
+ * Requiere autenticación.
+ * 
+ * Body:
+ * - oponente: nombre del bot/oponente
+ * - ganada: boolean indicando si el usuario ganó
+ * 
+ * Devuelve:
+ * - 200: partida guardada exitosamente
+ * - 400: error si faltan parámetros
+ * - 403: error si no hay usuario autenticado
+ * - 500: error al guardar la partida
+**/
+app.post('/guardar-partida', async (req, res) => {
+    if (!req.session.user) {
+        res.status(403).json({ error: "No hay usuario autenticado." });
+        return;
+    }
+
+    const { oponente, ganada } = req.body;
+
+    if (!oponente || ganada === undefined) {
+        res.status(400).json({ error: "Faltan parámetros: oponente y ganada son requeridos." });
+        return;
+    }
+
+    try {
+        const partida = await guardarPartida(req.session.user.id_usuario, oponente, ganada);
+        res.status(200).json({ message: "Partida guardada correctamente.", partida });
+    } catch (err) {
+        res.status(500).json({ error: "Error al guardar la partida." });
     }
 });
 

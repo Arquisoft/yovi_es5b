@@ -62,8 +62,12 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
 
   const handleWinner = (status: GameStatus): void => {
       if (status.Finished !== undefined) {
-          const winner = status.Finished.winner == 0 ? "human" : "bot";
+          const userWon = status.Finished.winner == 0;
+          const winner = userWon ? "human" : "bot";
           setWinner(winner);
+          
+          // Guardar la partida en la base de datos
+          salvarPartidaEnBD(userWon);
       }
   };
 
@@ -135,6 +139,31 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     setIsBotThinking(false);
   }
 };
+
+  const salvarPartidaEnBD = async (userWon: boolean) => {
+    try {
+      const USERS_URL = import.meta.env.VITE_USERS_URL ?? 'http://localhost:3000';
+      
+      const res = await fetch(`${USERS_URL}/guardar-partida`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          oponente: difficulty === 'easy' ? 'random_bot' : 'mediumbot',
+          ganada: userWon
+        })
+      });
+
+      if (res.ok) {
+        console.log('Partida guardada en la base de datos correctamente.');
+      } else {
+        const errorText = await res.text();
+        console.error(`Error al guardar la partida (${res.status}):`, errorText);
+      }
+    } catch (error) {
+      console.error("Error al guardar la partida en BD:", error);
+    }
+  };
 
   const handleHexClick = (x: number, y: number, z: number) => {
     const id = `${x}-${y}-${z}`;
