@@ -73,69 +73,26 @@ app.post(['/login', '/bot/login'], async (req, res) => {
 });
 
 /**
- * Ruta para obtener el número de partidas jugadas por el usuario autenticado.
+ * Ruta para obtener las estadísticas completas del usuario autenticado.
  * Requiere autenticación.
  * 
  * Devuelve:
- * - 200: objeto con el número de partidas jugadas
- * - 403: error si no hay usuario autenticado
- * - 500: error al obtener las estadísticas
-**/
-app.get('/stats/jugadas', async (req, res) => {
-    if (!req.session.user) {
-        res.status(403).json({ error: "No hay usuario autenticado." });
-        return;
-    }
-
-    try {
-        const partidasJugadas = await obtenerPartidasJugadas(req.session.user.id_usuario);
-        res.status(200).json({ partidasJugadas });
-    } catch (err) {
-        res.status(500).json({ error: "Error al obtener estadísticas." });
-    }
-});
-
-/**
- * Ruta para obtener el número de partidas ganadas por el usuario autenticado.
- * Requiere autenticación.
- * 
- * Devuelve:
- * - 200: objeto con el número de partidas ganadas
+ * - 200: objeto con partidas jugadas, ganadas y perdidas
  * - 403: error si no hay usuario autenticado
  * - 500: error al obtener estadísticas
 **/
-app.get('/stats/ganadas', async (req, res) => {
+app.get('/stats/:nom_usuario', async (req, res) => {
     if (!req.session.user) {
         res.status(403).json({ error: "No hay usuario autenticado." });
         return;
     }
 
     try {
-        const partidasGanadas = await obtenerPartidasGanadas(req.session.user.id_usuario);
-        res.status(200).json({ partidasGanadas });
-    } catch (err) {
-        res.status(500).json({ error: "Error al obtener estadísticas." });
-    }
-});
-
-/**
- * Ruta para obtener el número de partidas perdidas por el usuario autenticado.
- * Requiere autenticación.
- * 
- * Devuelve:
- * - 200: objeto con el número de partidas perdidas
- * - 403: error si no hay usuario autenticado
- * - 500: error si ocurre un problema al obtener las estadísticas
-**/
-app.get('/stats/perdidas', async (req, res) => {
-    if (!req.session.user) {
-        res.status(403).json({ error: "No hay usuario autenticado." });
-        return;
-    }
-
-    try {
-        const partidasPerdidas = await obtenerPartidasPerdidas(req.session.user.id_usuario);
-        res.status(200).json({ partidasPerdidas });
+        const jugadas = await obtenerPartidasJugadas(req.session.user.id_usuario);
+        const ganadas = await obtenerPartidasGanadas(req.session.user.id_usuario);
+        const perdidas = await obtenerPartidasPerdidas(req.session.user.id_usuario);
+        
+        res.status(200).json({ jugadas, ganadas, perdidas });
     } catch (err) {
         res.status(500).json({ error: "Error al obtener estadísticas." });
     }
