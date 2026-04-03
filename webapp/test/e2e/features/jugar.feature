@@ -2,7 +2,7 @@ Feature: Jugar una partida
   Jugar partidas del juego Y contra el bot
 
   Scenario: Iniciar una partida correctamente
-    Given Me he registrado con nombre "Ana", usuario "ana_test" y contraseña "test123..." y accedo al lobby
+    Given Me he registrado con nombre "Ana Test", usuario "ana_test" y contraseña "test123..." y accedo al lobby
     When Selecciono la estrategia "Bot Aleatorio" y pulso en JUGAR
     Then Debería ver el tablero de juego con el mensaje de turno
 

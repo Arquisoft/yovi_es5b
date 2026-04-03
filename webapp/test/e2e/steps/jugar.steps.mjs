@@ -8,7 +8,15 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
   await page.click('.submit-button')
-  // Esperamos a que aparezca el lobby tras el registro
+  await page.waitForSelector('.lobby-main')
+}
+
+async function loginYAccederAlLobby(page, nom_usuario, password) {
+  await page.goto('http://localhost:5173')
+  await page.click('.login-page-button')
+  await page.fill('#login-username', nom_usuario)
+  await page.fill('#login-password', password)
+  await page.click('.submit-button')
   await page.waitForSelector('.lobby-main')
 }
 
@@ -60,7 +68,7 @@ Given('Estoy en una partida en curso como {string}', async function (nom_usuario
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Registramos al usuario y arrancamos una partida directamente
-  await registrarYAccederAlLobby(page, 'Ana', nom_usuario, 'test123...')
+  await loginYAccederAlLobby(page, nom_usuario, 'test123...')
   await page.click('.btn-play')
   await page.waitForSelector('svg')
 })
@@ -68,11 +76,11 @@ Given('Estoy en una partida en curso como {string}', async function (nom_usuario
 When('Hago clic en una casilla vacía del tablero', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
-  // Hacemos clic en el primer polígono del SVG (primera casilla del tablero)
-  const primeraCasilla = page.locator('svg polygon').first()
-  await primeraCasilla.click()
-  // Guardamos la referencia en el contexto para poder verificarla en el Then
-  this.primeraCasilla = primeraCasilla
+  // Primera casilla gris (vacía) del tablero
+  const casilla = page.locator('svg polygon[fill="#eeeeee"]').first()
+  // Guardamos su atributo points para poder volver a localizarla en el Then
+  this.puntosCasilla = await casilla.getAttribute('points')
+  await casilla.click()
 })
 
 Then('Debería aparecer mi pieza en azul en esa casilla y el bot debería responder', async function () {
@@ -98,18 +106,14 @@ Then('Debería aparecer mi pieza en azul en esa casilla y el bot debería respon
 When('Pulso el botón de Abandonar Partida', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
-  await page.click('button', { hasText: 'Abandonar Partida' })
+  await page.locator('button', { hasText: 'Abandonar Partida' }).click()
+  await page.waitForSelector('.lobby-container')
 })
 
 Then('Debería volver al lobby con el botón JUGAR visible', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
-  // Debe volver a aparecer el lobby
-  const lobby = page.locator('.lobby-main')
-  await expect(lobby).toBeVisible()
-  // El botón de JUGAR debe estar presente
-  const botonJugar = page.locator('.btn-play')
-  await expect(botonJugar).toHaveText('JUGAR')
+  await expect(page.locator('.btn-play')).toHaveText('JUGAR')
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -125,7 +129,7 @@ Given('Estoy en una partida en curso como {string} con el servidor de juego simu
   const page = this.page
   if (!page) throw new Error('Page not initialized')
 
-  await registrarYAccederAlLobby(page, 'Ana', nom_usuario, 'test123...')
+  await loginYAccederAlLobby(page, nom_usuario, 'test123...')
 
   // Interceptamos todas las peticiones al endpoint de gamey antes de entrar al juego
   await page.route('**/v1/ybot/choose/**', async route => {
