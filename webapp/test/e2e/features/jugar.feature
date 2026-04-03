@@ -15,3 +15,14 @@ Feature: Jugar una partida
     Given Estoy en una partida en curso como "ana_test"
     When Pulso el botón de Abandonar Partida
     Then Debería volver al lobby con el botón JUGAR visible
+
+  Scenario: Detectar la victoria del jugador
+    Given Estoy en una partida en curso como "ana_test" con el servidor de juego simulado que devuelve victoria
+    When Hago clic en una casilla vacía del tablero
+    Then Debería mostrarse el mensaje de victoria y el botón de volver a jugar
+
+  Scenario: Intentar seleccionar una casilla ya ocupada
+    Given Estoy en una partida en curso como "ana_test" con el servidor de juego simulado que devuelve victoria
+    When Hago clic en una casilla vacía del tablero
+    And Intento hacer clic de nuevo en esa misma casilla
+    Then El número de piezas azules en el tablero no debería haber aumentado

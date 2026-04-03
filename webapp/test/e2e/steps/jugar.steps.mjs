@@ -12,6 +12,15 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.waitForSelector('.lobby-main')
 }
 
+// Respuesta mock que devuelve el servidor de gamey cuando el jugador gana.
+// winner: 0 → jugador B (humano) ha ganado.
+const MOCK_VICTORIA = {
+  api_version: 'v1',
+  bot_id: 'random_bot',
+  coords: { x: 0, y: 1, z: 0 },
+  status: { Finished: { winner: 0 } }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Scenario: Iniciar una partida correctamente
 // ─────────────────────────────────────────────────────────────────────────────
@@ -101,4 +110,72 @@ Then('Debería volver al lobby con el botón JUGAR visible', async function () {
   // El botón de JUGAR debe estar presente
   const botonJugar = page.locator('.btn-play')
   await expect(botonJugar).toHaveText('JUGAR')
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scenario: Detectar la victoria del jugador
+// Scenario: Intentar seleccionar una casilla ya ocupada
+//
+// Ambos usan page.route() para interceptar la llamada al servidor Rust y
+// devolver directamente un estado Finished, sin depender de la red ni de
+// jugar una partida entera.
+// ─────────────────────────────────────────────────────────────────────────────
+
+Given('Estoy en una partida en curso como {string} con el servidor de juego simulado que devuelve victoria', async function (nom_usuario) {
+  const page = this.page
+  if (!page) throw new Error('Page not initialized')
+
+  await registrarYAccederAlLobby(page, 'Ana', nom_usuario, 'test123...')
+
+  // Interceptamos todas las peticiones al endpoint de gamey antes de entrar al juego
+  await page.route('**/v1/ybot/choose/**', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(MOCK_VICTORIA)
+    })
+  })
+
+  await page.click('.btn-play')
+  await page.waitForSelector('svg')
+})
+
+Then('Debería mostrarse el mensaje de victoria y el botón de volver a jugar', async function () {
+  const page = this.page
+  if (!page) throw new Error('Page not initialized')
+  // El párrafo de estado debe mostrar el mensaje de victoria del jugador
+  const mensajeVictoria = page.locator('p', { hasText: '¡HAS GANADO LA PARTIDA!' })
+  await expect(mensajeVictoria).toBeVisible()
+  // Debe aparecer el botón para reiniciar la partida
+  const botonVolver = page.locator('button', { hasText: 'Volver a jugar' })
+  await expect(botonVolver).toBeVisible()
+})
+
+// ─── Step compartido del escenario de casilla ocupada ────────────────────────
+
+Then('And Intento hacer clic de nuevo en esa misma casilla', async function () {
+  const page = this.page
+  if (!page) throw new Error('Page not initialized')
+  // Localizamos de nuevo la casilla por sus puntos (ahora tendrá fill azul o rojo)
+  const casillaOcupada = page.locator(`svg polygon[points="${this.puntosCasilla}"]`)
+  // Guardamos cuántas piezas azules hay antes del segundo clic
+  this.azulesAntes = await page.locator('svg polygon[fill="#3b82f6"]').count()
+  await casillaOcupada.click()
+})
+
+When('Intento hacer clic de nuevo en esa misma casilla', async function () {
+  const page = this.page
+  if (!page) throw new Error('Page not initialized')
+  const casillaOcupada = page.locator(`svg polygon[points="${this.puntosCasilla}"]`)
+  this.azulesAntes = await page.locator('svg polygon[fill="#3b82f6"]').count()
+  await casillaOcupada.click()
+})
+
+Then('El número de piezas azules en el tablero no debería haber aumentado', async function () {
+  const page = this.page
+  if (!page) throw new Error('Page not initialized')
+  // Esperamos un momento por si el clic hubiera disparado alguna llamada asíncrona
+  await page.waitForTimeout(500)
+  const azulesDespues = await page.locator('svg polygon[fill="#3b82f6"]').count()
+  expect(azulesDespues).toBe(this.azulesAntes)
 })
