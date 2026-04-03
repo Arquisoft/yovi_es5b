@@ -112,13 +112,17 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     if (res.ok) {
       const data: MoveResponse = await res.json();
       
-      if (data.coords && data.coords.x !== undefined) {
+      // Comprobar primero si la partida ya terminó (el humano ganó con su último movimiento)
+      // Si hay ganador, no colocamos la ficha del bot
+      if (data.status.Finished !== undefined) {
+        handleWinner(data.status);
+      } else if (data.coords && data.coords.x !== undefined) {
         const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
         setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
+        handleWinner(data.status);
       } else {
         console.warn("El bot devolvió una respuesta válida pero sin coordenadas.");
       }
-      handleWinner(data.status);
     } else {
       // AQUÍ evitamos el fallo silencioso
       const errorText = await res.text();
