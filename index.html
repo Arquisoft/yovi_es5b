@@ -492,13 +492,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#section-concepts">8. Conceptos Transversales (Cross-cutting)</a>
 <ul class="sectlevel2">
-<li><a href="#_persistencia_de_datos_esquema_de_base_de_datos">8.1. Persistencia de Datos (Esquema de Base de Datos)</a></li>
+<li><a href="#_tecnología_utilizada">8.1. Tecnología utilizada</a></li>
+<li><a href="#_entidades_y_esquema_relacional">8.2. Entidades y esquema relacional</a></li>
+<li><a href="#_decisiones_de_diseño_relevantes">8.3. Decisiones de diseño relevantes</a></li>
 </ul>
 </li>
 <li><a href="#section-design-decisions">9. Decisiones de arquitectura</a>
 <ul class="sectlevel2">
 <li><a href="#_selección_de_sistema_gestor_de_base_de_datos">9.1. Selección de sistema gestor de base de datos</a></li>
 <li><a href="#_selección_de_orm">9.2. Selección de ORM</a></li>
+<li><a href="#_arquitectura_de_comunicación_con_gamey">9.3. Arquitectura de comunicación con gamey</a></li>
 </ul>
 </li>
 <li><a href="#section-quality-scenarios">10. Requisitos de calidad</a>
@@ -511,6 +514,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_dependencia_de_framework_de_react">11.1. Dependencia de framework de React</a></li>
 <li><a href="#_formato_yen">11.2. Formato YEN</a></li>
+<li><a href="#_programación_de_bots_basados_en_jugadas_concretas">11.3. Programación de bots basados en jugadas concretas</a></li>
 </ul>
 </li>
 <li><a href="#section-glossary">12. Glosario</a></li>
@@ -1242,57 +1246,125 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h2 id="section-concepts">8. Conceptos Transversales (Cross-cutting)</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_persistencia_de_datos_esquema_de_base_de_datos">8.1. Persistencia de Datos (Esquema de Base de Datos)</h3>
+<h3 id="_tecnología_utilizada">8.1. Tecnología utilizada</h3>
 <div class="paragraph">
-<p>Para la gestión de la información del <strong>Juego Y</strong>, se ha diseñado un esquema relacional que permite tratar de forma uniforme a los jugadores humanos y a los bots.</p>
+<p>La persistencia de datos se gestiona mediante una base de datos <strong>MySQL</strong>, accedida a través del ORM <strong>Sequelize</strong> en el backend Node.js. Sequelize se encarga de la creación y sincronización de las tablas, así como de la gestión de las relaciones entre entidades.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Modelo de Herencia:</strong> Se utiliza la entidad <strong>Jugador</strong> como una abstracción que vincula a un <strong>Usuario</strong> (humano) o a un <strong>Robot</strong> mediante un atributo <code>behaviour_Type</code> y un <code>id_externo</code>.</p>
-</li>
-<li>
-<p><strong>Gestión de Partidas:</strong> La entidad <strong>Partida</strong> registra el enfrentamiento entre dos jugadores, almacenando la puntuación final y el número de turnos transcurridos.</p>
-</li>
-<li>
-<p><strong>Tecnología:</strong> El sistema utiliza <strong>MySQL</strong> para la persistencia, permitiendo una gestión ágil de los datos en un entorno local de desarrollo mediante un motor de base de datos sin servidor y basado en múltiples archivos para asegurar el princpio de responsabilidad única.</p>
-</li>
-</ul>
 </div>
-<div class="imageblock text-center">
-<div class="content">
-<img src="./images/DiagramaBD.png" alt="Esquema de la Base de Datos" width="800">
+<div class="sect2">
+<h3 id="_entidades_y_esquema_relacional">8.2. Entidades y esquema relacional</h3>
+<div class="paragraph">
+<p>El modelo de datos está compuesto por dos tablas: <strong>Usuarios</strong> y <strong>Partidas</strong>. La relación entre ellas es de <strong>uno a muchos</strong>: un usuario puede tener asociadas múltiples partidas, pero cada partida pertenece exactamente a un usuario. La integridad referencial se gestiona mediante la clave foránea <code>id_usuario</code> en la tabla <code>Partidas</code>.</p>
 </div>
-<div class="title">Figure 1. Diagrama del Modelo de Datos para el Juego Y</div>
+<div class="sect3">
+<h4 id="_tabla_usuarios">8.2.1. Tabla Usuarios</h4>
+<div class="paragraph">
+<p>Almacena los datos de registro y autenticación de cada jugador registrado en el sistema.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 25%;">
-<col style="width: 75%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
 </colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Campo</th>
+<th class="tableblock halign-left valign-top">Tipo</th>
+<th class="tableblock halign-left valign-top">Restricciones</th>
+<th class="tableblock halign-left valign-top">Descripción</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Entidad</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Descripción</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id_usuario</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INTEGER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PK, AUTO_INCREMENT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identificador único del usuario</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usuario</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Almacena los datos personales y credenciales de acceso (nombre, usuario, contraseña).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nombre</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nombre real del usuario</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Robot</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Define los diferentes tipos de comportamiento o algoritmos de IA disponibles.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nom_usuario</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL, UNIQUE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nombre de usuario para login</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Jugador</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tabla intermedia que unifica a humanos y robots para participar en partidas.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Partida</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Registra el resultado de un juego, incluyendo puntuación, turnos y los dos jugadores implicados.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>contrasena</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contraseña del usuario (hash)</p></td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="_tabla_partidas">8.2.2. Tabla Partidas</h4>
+<div class="paragraph">
+<p>Registra el historial de partidas jugadas, asociando cada partida a un usuario y al bot oponente.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Campo</th>
+<th class="tableblock halign-left valign-top">Tipo</th>
+<th class="tableblock halign-left valign-top">Restricciones</th>
+<th class="tableblock halign-left valign-top">Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id_partida</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INTEGER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PK, AUTO_INCREMENT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identificador único de la partida</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id_usuario</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INTEGER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL, FK</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Referencia al usuario que jugó la partida</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>oponente</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identificador del bot oponente</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ganada</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BOOLEAN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code> si el usuario ganó, <code>false</code> si perdió</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_decisiones_de_diseño_relevantes">8.3. Decisiones de diseño relevantes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Resultado de la partida</strong>: se almacena como un valor booleano (true si el usuario gana y false si el usuario pierde) porque los empates no son posibles en el juego Y.</p>
+</li>
+<li>
+<p><strong>Almacenamiento de contraseñas</strong>: El campo <code>contrasena</code> debe almacenar exclusivamente el hash de la contraseña. La responsabilidad del hasheo recae en la capa de servicio, no en el modelo.</p>
+</li>
+</ul>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -1363,6 +1435,37 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="paragraph">
 <p>Por otra parte, se espera que el uso de este ORM acelere el desarrollo del módulo <strong>users</strong>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_arquitectura_de_comunicación_con_gamey">9.3. Arquitectura de comunicación con gamey</h3>
+<div class="sect3">
+<h4 id="_contexto_3">9.3.1. Contexto</h4>
+<div class="paragraph">
+<p>Se debía decidir cómo comunicar el estado de la partida con el motor de juego (gamey).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_decisión_3">9.3.2. Decisión</h4>
+<div class="paragraph">
+<p>Se tomó la decisión de utilizar una arquitectura cliente servidor sin estado; de esta forma, no se envía un movimiento como tal, sino la disposición actual de las fichas en el tablero. A partir de esta información, Gamey calcula y devuelve su jugada sin depender de acciones previas en la partida.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_estado_3">9.3.3. Estado</h4>
+<div class="paragraph">
+<p><strong>Aceptado</strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_consecuencias_3">9.3.4. Consecuencias</h4>
+<div class="paragraph">
+<p>No tener que gestionar el estado de la partida en gamey ayuda al desacoplamiento entre gamey y el cliente, pues gamey no necesita conocer el estado de movimientos de la partida para poder responder a las peticiones de juego.
+También facilita la programación de bots, puesto que estos no necesitan acceder al estado de movimientos previos de la partida para dar su respuesta.</p>
+</div>
+<div class="paragraph">
+<p>Sin embargo, esto limita qué tipo de bots pueden programarse, ya que dificulta la programación de bots que se basen en jugadas previas concretas para calcular su respuesta.</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -1624,6 +1727,15 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="paragraph">
 <p>Esta duplicación del código del formato YEN facilita en el desarrollo la representación de la partida, pero puede ser problemática si el formato cambia.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_programación_de_bots_basados_en_jugadas_concretas">11.3. Programación de bots basados en jugadas concretas</h3>
+<div class="paragraph">
+<p>Por cómo se ha realizado la arquitectura de comunicación con el motor de juego, se complica el programar bots que necesiten el historial de jugadas concretas de una partida dada para calcular sus respuestas.</p>
+</div>
+<div class="paragraph">
+<p>Dar soporte a este tipo de bots requeriría modificar la arquitectura o complicar la implementación de un bot concreto de este tipo.</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
