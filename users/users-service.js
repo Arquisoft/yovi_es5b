@@ -73,12 +73,14 @@ app.post(['/login', '/bot/login'], async (req, res) => {
 });
 
 /**
- * Ruta para obtener las estadísticas completas del usuario autenticado.
- * Requiere autenticación.
+ * Ruta para obtener las estadísticas completas del usuario especificado en la ruta.
+ * Se requiere autenticación para ver las estadísticas de cualquier usuario.
+ * Cualquier usuario puede ver las estadísticas de los demás usuarios.
  * 
  * Devuelve:
  * - 200: objeto con partidas jugadas, ganadas y perdidas
  * - 403: error si no hay usuario autenticado
+ * - 404: error si el usuario no existe
  * - 500: error al obtener estadísticas
 **/
 app.get('/stats/:nom_usuario', async (req, res) => {
@@ -88,9 +90,15 @@ app.get('/stats/:nom_usuario', async (req, res) => {
     }
 
     try {
-        const jugadas = await obtenerPartidasJugadas(req.session.user.id_usuario);
-        const ganadas = await obtenerPartidasGanadas(req.session.user.id_usuario);
-        const perdidas = await obtenerPartidasPerdidas(req.session.user.id_usuario);
+        const usuario = await Usuario.findOne({ where: { nom_usuario: req.params.nom_usuario } });
+        if (!usuario) {
+            res.status(404).json({ error: "Usuario no encontrado." });
+            return;
+        }
+        
+        const jugadas = await obtenerPartidasJugadas(usuario.id_usuario);
+        const ganadas = await obtenerPartidasGanadas(usuario.id_usuario);
+        const perdidas = await obtenerPartidasPerdidas(usuario.id_usuario);
         
         res.status(200).json({ jugadas, ganadas, perdidas });
     } catch (err) {
@@ -120,7 +128,7 @@ app.post('/guardar-partida', async (req, res) => {
 
     const { oponente, ganada } = req.body;
 
-    if (!oponente || ganada === undefined) {
+    if (!oponente || ganada === undefined || ganada === null) {
         res.status(400).json({ error: "Faltan parámetros: oponente y ganada son requeridos." });
         return;
     }
