@@ -254,7 +254,34 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "No hay usuario autenticado."
+        404:
+          description: Error ocurrido si no se encuentra el usuario del que se quieren obtener las estadísticas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "Usuario no encontrado."
+        500:
+          description: Error ocurrido al obtener las estadísticas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "Error al obtener estadísticas."
   /bot/guardar-partida:
     servers:
       - url: http://localhost:3000
@@ -328,6 +355,28 @@ paths:
                     type: string
                     description: Descripción del error
                     example: "Faltan parámetros: oponente y ganada son requeridos."
+        403:
+          description: Error ocurrido si no se ha iniciado sesión con ningún usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "No hay usuario autenticado."
+        500:
+          description: Error al guardar la partida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "Error al guardar la partida."
   /{api_version}/play:
     get:
       tags:
