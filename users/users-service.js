@@ -33,7 +33,7 @@ app.post(['/register', '/bot/register'], async (req, res) => {
 
     try {
         const nuevoUsuario = await registrarUsuario(req.body.nombre, req.body.nom_usuario, req.body.contrasena);
-        req.session.user = { id_usuario: nuevoUsuario.id_usuario, nombre: nuevoUsuario.nombre, username: nuevoUsuario.nom_usuario };
+        req.session.user = { id_usuario: nuevoUsuario.id_usuario, nombre: nuevoUsuario.nombre, nom_usuario: nuevoUsuario.nom_usuario };
         res.status(200).json(nuevoUsuario);
     } catch (err) {
         res.status(400).json({ error: "Ocurrió un error al registrar al usuario." });
@@ -65,7 +65,7 @@ app.post(['/login', '/bot/login'], async (req, res) => {
         }
 
         // Establecer sesión
-        req.session.user = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, username: usuario.nom_usuario };
+        req.session.user = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, nom_usuario: usuario.nom_usuario };
         res.status(200).json(usuario);
     } catch (err) {
         res.status(400).json({ error: "Ocurrió un error al iniciar sesión." });
