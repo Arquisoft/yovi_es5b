@@ -22,7 +22,7 @@ try {
 
 // Cabeceras CORS
 app.use((req, res, next) => {
-  const origin = req.header('Origin');
+  const origin = req.header('Origin') ?? req.header("Host");
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
