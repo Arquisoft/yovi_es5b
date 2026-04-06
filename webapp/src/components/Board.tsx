@@ -142,7 +142,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
   const salvarPartidaEnBD = async (userWon: boolean) => {
     try {
-      const USERS_URL = import.meta.env.VITE_USERS_URL ?? 'http://localhost:3000';
+      const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
       
       const res = await fetch(`${USERS_URL}/guardar-partida`, {
         method: 'POST',
