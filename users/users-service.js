@@ -142,7 +142,7 @@ app.post(['/guardar-partida', '/bot/guardar-partida'], async (req, res) => {
 });
 
 const conectarDB = async () => {
-    let retries = 20;
+    let retries = 300;
     while (retries > 0) {
         try {
             await sequelize.authenticate();
