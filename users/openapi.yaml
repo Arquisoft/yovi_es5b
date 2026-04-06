@@ -203,6 +203,180 @@ paths:
                   contrasena:
                     type: string
                     description: Error asociado a contrasena
+  /bot/stats/{nom_usuario}:
+    servers:
+      - url: http://localhost:3000
+    get:
+      tags:
+        - API para bots - users
+      summary: Obtiene estadísticas del usuario
+      parameters:
+        - name: nom_usuario
+          in: path
+          required: true
+          description: Nombre del usuario del que se quieren ver las estadísticas
+          example: pepe
+          schema:
+            type: string
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: Estadísticas del usuario con el que se ha iniciado sesión
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: Cookie de autenticación utilizada para gestión de usuarios
+                example: JSESSIONID=abcde12345;
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jugadas:
+                    type: integer
+                    description: Número de partidas jugadas del usuario
+                    required: true
+                    example: 2
+                  ganadas:
+                    type: integer
+                    description: Número de partidas ganadas del usuario
+                    required: true
+                    example: 1
+                  perdidas:
+                    type: integer
+                    description: Número de partidas perdidas del usuario
+                    required: true
+                    example: 1
+        403:
+          description: Error ocurrido si no se ha iniciado sesión con ningún usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "No hay usuario autenticado."
+        404:
+          description: Error ocurrido si no se encuentra el usuario del que se quieren obtener las estadísticas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "Usuario no encontrado."
+        500:
+          description: Error ocurrido al obtener las estadísticas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "Error al obtener estadísticas."
+  /bot/guardar-partida:
+    servers:
+      - url: http://localhost:3000
+    post:
+      tags:
+        - API para bots - users
+      summary: Guarda el registro de una partida del usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ganada:
+                  type: boolean
+                  description: true si la partida fue ganada por el usuario, false en otro caso
+                  required: true
+                  example: true
+                oponente:
+                  type: string
+                  description: Identificador del oponente contra el que se ha jugado la partida
+                  required: true
+                  example: random_bot
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: Partida guardada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Mensaje de respuesta de la llamada
+                    required: true
+                    example: Partida guardada correctamente.
+                  partida:
+                    type: object
+                    properties:
+                      id_partida:
+                        type: integer
+                        description: ID de la partida
+                        required: true
+                        example: 1
+                      id_usuario:
+                        type: integer
+                        description: ID del usuario de la partida
+                        required: true
+                        example: 1
+                      oponente:
+                        type: string
+                        description: Identificador del oponente contra el que se ha jugado la partida
+                        required: true
+                        example: random_bot
+                      ganada:
+                        type: boolean
+                        description: true si la partida fue ganada por el usuario, false en otro caso
+                        required: true
+                        example: true
+        400:
+          description: Error ocurrido al omitir algún parámetro requerido (oponente, ganada)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Descripción del error
+                    example: "Faltan parámetros: oponente y ganada son requeridos."
+        403:
+          description: Error ocurrido si no se ha iniciado sesión con ningún usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "No hay usuario autenticado."
+        500:
+          description: Error al guardar la partida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensaje de error
+                    example: "Error al guardar la partida."
   /{api_version}/play:
     get:
       tags:

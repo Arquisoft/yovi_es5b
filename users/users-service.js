@@ -83,7 +83,7 @@ app.post(['/login', '/bot/login'], async (req, res) => {
  * - 404: error si el usuario no existe
  * - 500: error al obtener estadísticas
 **/
-app.get('/stats/:nom_usuario', async (req, res) => {
+app.get(['/stats/:nom_usuario', '/bot/stats/:nom_usuario'], async (req, res) => {
     if (!req.session.user) {
         res.status(403).json({ error: "No hay usuario autenticado." });
         return;
@@ -120,7 +120,7 @@ app.get('/stats/:nom_usuario', async (req, res) => {
  * - 403: error si no hay usuario autenticado
  * - 500: error al guardar la partida
 **/
-app.post('/guardar-partida', async (req, res) => {
+app.post(['/guardar-partida', '/bot/guardar-partida'], async (req, res) => {
     if (!req.session.user) {
         res.status(403).json({ error: "No hay usuario autenticado." });
         return;
