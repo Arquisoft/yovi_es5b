@@ -71,6 +71,13 @@ jobs:
         run: |
           cd webapp
           npm ci
+      - name: Install gamey dependencies
+        run: |
+          cd gamey
+          cargo build
+      - name: Install database dependencies
+        run: |
+          docker compose -f docker-compose.yml build database
       - name: Install Playwright browsers
         run: |
           cd webapp
