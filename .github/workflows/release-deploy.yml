@@ -78,6 +78,7 @@ jobs:
       - name: Install database dependencies
         run: |
           docker compose -f docker-compose.yml build database
+          docker compose -f docker-compose.yml up database -d
       - name: Install Playwright browsers
         run: |
           cd webapp
