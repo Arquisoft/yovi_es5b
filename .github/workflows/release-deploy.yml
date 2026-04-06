@@ -120,7 +120,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
           workdir: users
-          buildargs: DB_NAME=${{ secrets.DEPLOY_DB_NAME }},DB_USER=${{ secrets.DEPLOY_DB_USER }},DB_PASSWORD=${{ secrets.DEPLOY_DB_PASSWORD }},DB_HOST=172.17.0.1,CORS_ORIGIN=${{ secrets.DEPLOY_HOST }}
+          buildargs: DB_NAME=${{ secrets.DEPLOY_DB_NAME }},DB_USER=${{ secrets.DEPLOY_DB_USER }},DB_PASSWORD=${{ secrets.DEPLOY_DB_PASSWORD }},DB_HOST=172.17.0.1,CORS_ORIGIN=http://${{ secrets.DEPLOY_HOST }}
 
   docker-push-webapp:
     name: Publish webapp image
