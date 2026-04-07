@@ -3,56 +3,49 @@ import GamePage from "../pages/GamePage";
 import RegisterForm from "../components/forms/RegisterForm";
 import LogInForm from "../components/forms/LogInForm";
 import "../css/Estilo.css"; 
-
-import type {User} from "../types/user";
+import type { User } from "../types/user";
 
 const RegisterPage = () => {
-  const [user, setUser] = useState<User | null>(null);
-  // Estado para alternar entre la vista de Registro e Inicio de Sesión
-  const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState<User | null>(null); // Almacena el usuario tras autenticarse
+  const [isLogin, setIsLogin] = useState(false); // Falso para mostrar registro, verdadero para login
 
-  //Manejador único para el éxito de ambos formularios, redirige al usuario a la ruta del juego pasando su nombre de usuario.
+  // Función que se ejecuta cuando el login o el registro van bien
   const handleAuthSuccess = (data: User) => {
-    setUser(data);
+    setUser(data); // Guarda los datos del usuario en el estado
   };
 
+  // Si ya hay un usuario logueado, muestra la página del juego
   if (user !== null) {
-      return <GamePage user={user}/>;
+    return <GamePage user={user}/>;
   }
 
   return (
-    <div className="App">
-
+    <div>
       <h2>Bienvenido a Yovi</h2>
 
-      {/* Selector de pestañas: Registro / Login */}
-      <div className="auth-selector">
+      <div className="auth-selector"> {/* Fila de botones para elegir entre registro o login */}
         <button
-          onClick={() => setIsLogin(false)}
-          className={`selector-button ${!isLogin ? "active" : ""}`}
+          onClick={() => setIsLogin(false)} // Cambia el estado para mostrar el formulario de registro
+          className={`selector-button ${!isLogin ? "active" : ""}`} // Se ilumina si NO estamos en login
         >
           Registrarse
         </button>
         <button
-          onClick={() => setIsLogin(true)}
-          className={`login-page-button selector-button ${isLogin ? "active" : ""}`}
+          onClick={() => setIsLogin(true)} // Cambia el estado para mostrar el inicio de sesión
+          className={`selector-button ${isLogin ? "active" : ""}`} // Se ilumina si  SÍ estamos en modo login
         >
           Iniciar Sesión
         </button>
       </div>
 
-      {/* Renderizado condicional basado en el estado isLogin */}
-      {isLogin ? (
-        <div className="card">
-          <h3>Inicio de Sesión</h3>
-          <LogInForm onLoginSuccess={handleAuthSuccess} />
-        </div>
-      ) : (
-        <div className="card">
-          <h3>Registro de Usuario</h3>
-          <RegisterForm onRegisterSuccess={handleAuthSuccess} />
-        </div>
-      )}
+      <div className="card">
+        <h3>{isLogin ? "Inicio de Sesión" : "Registro de Usuario"}</h3> {/* Título dinámico */}
+        {isLogin ? (
+          <LogInForm onLoginSuccess={handleAuthSuccess} /> // Muestra formulario de login
+        ) : (
+          <RegisterForm onRegisterSuccess={handleAuthSuccess} /> // Muestra formulario de registro
+        )}
+      </div>
     </div>
   );
 };

@@ -1,83 +1,74 @@
 import { useState } from 'react';
 import { Board } from '../components/Board'; 
 import type { User } from "../types/user";
+import '../css/Estilo.css';
 
 type PlayPageProps = {
-    user: User;
-    botId: string;
-    boardSize: number;
-    onBackToLobby: any;
+  user: User;
+  botId: string;
+  boardSize: number;
+  onBackToLobby: () => void;
 };
 
 const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
+  // Estado para controlar la dificultad actual del bot
   const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(
     botId === 'mediumbot' ? 'medium' : 'easy'
   );
+  
+  // Clave para forzar el re-renderizado del componente Board cuando cambie la dificultad
   const [gameKey, setGameKey] = useState(0);
 
+  // Función para volver al menú principal
   const handleAbandon = async () => {
       onBackToLobby();
   };
 
+  // Alterna entre los dos niveles de dificultad y reinicia el tablero
   const handleChangeDifficulty = () => {
     const newDifficulty = difficulty === 'easy' ? 'medium' : 'easy';
     setDifficulty(newDifficulty);
-    setGameKey(prev => prev + 1); // Usamos la versión de callback para mayor seguridad
+    setGameKey(prev => prev + 1); // Incrementamos la key para resetear el tablero
   };
 
+  // Texto amigable para mostrar en el botón
   const difficultyText = difficulty === 'easy' ? 'Fácil' : 'Medio';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+    <div className="lobby-container"> {/* Reutilizamos el centrado maestro */}
       
-      {/* Cabecera de la partida */}
-      <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
-        {/* Usamos nom_usuario que es el estándar de la interfaz User */}
-        <h2>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
+      <div className="play-header">
+        {/* Título de la partida usando el nombre de usuario del objeto user */}
+        <h2 className="play-title">Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
         
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button 
-            onClick={handleChangeDifficulty}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#3b82f6', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
+        <div className="header-actions">
+          {/* Botón para cambiar dificultad (Estilo secundario/azul) */}
+          <button onClick={handleChangeDifficulty} className="btn-difficulty">
             {difficultyText}
           </button>
           
-          <button 
-            onClick={handleAbandon}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#ef4444', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            Abandonar Partida
+          {/* Botón para salir (Estilo logout/rojo) */}
+          <button onClick={handleAbandon} className="btn-logout">
+            Abandonar
           </button>
         </div>
       </div>
       
-      <p style={{ marginBottom: '30px', fontSize: '18px' }}>Es tu turno. Selecciona una casilla del tablero.</p>
+      {/* Mensaje de estado para el jugador */}
+      <p className="turn-indicator">Es tu turno. Selecciona una casilla del tablero.</p>
 
-      {/* Contenedor del Tablero - Usamos gameKey para forzar el reinicio si cambia la dificultad */}
-      <div key={gameKey} style={{ 
-        padding: '20px', 
-        backgroundColor: '#ffffff', 
-        borderRadius: '12px', 
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
-      }}>
+      {/* Contenedor del Tablero con la clase card para que resalte sobre el fondo */}
+      <div key={gameKey} className="card board-container">
         <Board botId={botId} difficulty={difficulty} boardSize={boardSize}/>
+      </div>
+
+      <div>
+        <h3>Reglas del Juego Y</h3>
+        <p>
+          Pulsa un hexágono para rellenarlo de tu color. Debes intentar trazar una línea 
+          de tu color que logre conectar los tres bordes del triángulo 
+          que compone el tablero.
+        </p>
       </div>
 
     </div>

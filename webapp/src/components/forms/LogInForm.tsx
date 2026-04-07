@@ -70,8 +70,6 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
         <label htmlFor="login-username">Nombre de Usuario:</label>
         <input
           type="text"
-          id="login-username"
-          value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="form-input"
         />
@@ -82,8 +80,6 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
         <label htmlFor="login-password">Contraseña:</label>
         <input
           type="password"
-          id="login-password"
-          value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="form-input"
         />

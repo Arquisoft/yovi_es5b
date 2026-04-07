@@ -4,11 +4,11 @@ interface HexagonProps {
   cx: number;
   cy: number;
   size: number;
-  color?: string;
+  color?: string; 
   onClick?: () => void;
 }
 
-export const Hexagon: React.FC<HexagonProps> = ({ cx, cy, size, color = '#eeeeee', onClick }) => {
+export const Hexagon: React.FC<HexagonProps> = ({ cx, cy, size, color, onClick }) => {
   // Calculamos los 6 vértices del hexágono puntiagudo
   const points = [];
   for (let i = 0; i < 6; i++) {
@@ -22,11 +22,9 @@ export const Hexagon: React.FC<HexagonProps> = ({ cx, cy, size, color = '#eeeeee
   return (
     <polygon
       points={points.join(' ')}
-      fill={color}
-      stroke="#333333"
-      strokeWidth="2"
+      fill={color}        // Recibe desde Board.tsx
       onClick={onClick}
-      style={{ cursor: 'pointer', transition: 'fill 0.2s' }}
+      className="hexagon-cell"
     />
   );
 };
