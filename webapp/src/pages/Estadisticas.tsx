@@ -52,21 +52,21 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
         <div className="card"> {/* Reutiliza la tarjeta blanca con padding y sombras */}
           
           <div className="stats"> {/* Reutiliza la estructura de fila para Partidas Jugadas */}
-            <label>Partidas jugadas:</label>
+            <label>Partidas jugadas</label>
             <div className="stats-played">
               {stats.jugadas}
             </div> 
           </div>
           
           <div className="stats"> 
-            <label>Partidas ganadas:</label>
+            <label>Partidas ganadas</label>
             <div className="stats-won">
               {stats.ganadas}
             </div>
           </div>
           
           <div className="stats"> 
-            <label>Partidas perdidas:</label>
+            <label>Partidas perdidas</label>
             <div className="stats-lost">
               {stats.perdidas}
             </div>

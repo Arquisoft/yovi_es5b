@@ -143,6 +143,17 @@ h3 {
   font-weight: bold;
 }
 
+.btn-play{
+  margin-top: 2rem;      
+  max-width: 22rem;      
+  width: 100%;           
+  padding: 1rem;
+  background-color: green;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
+
 /* --- Estilos para la Pantalla de Juego (PlayPage) --- */
 
 .lobby-container {
