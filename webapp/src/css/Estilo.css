@@ -275,6 +275,7 @@ h3 {
   stroke: darkslategray;
   stroke-width: 0.15rem; 
   cursor: pointer;
+  transition: stroke 0.2s, stroke-width 0.2s;
 }
 
 .hexagon-cell:hover {
