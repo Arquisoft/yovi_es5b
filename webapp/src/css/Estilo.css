@@ -269,7 +269,7 @@ h3 {
   max-width: 14rem;
 }
 
-/* --- Estilo para las celdas del tablero --- */
+/* --- Estilo para los hexagonos del tablero --- */
 
 .hexagon-cell {
   stroke: darkslategray;
