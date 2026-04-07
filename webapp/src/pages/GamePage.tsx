@@ -19,7 +19,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 // botId guardará el nombre del archivo (sin .rs) que usará gamey
   const [botId, setBotId] = useState("random_bot");
   const [strategy, setStrategy] = useState('random_bot');
-  const [size, setSize] = useState('15');
+  const [size, setSize] = useState('5');
 
   useEffect(() => {
     // Función asíncrona para verificar si el servidor de juegos está en línea
@@ -98,8 +98,9 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
           </select>
 
           <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
-            <option value="15">15x15</option>
-            <option value="30">30x30</option>
+            <option value="5">Tablero pequeño</option>
+            <option value="10">Tablero mediano</option>
+            <option value="15">Tablero grande</option>
           </select>
 
           <button 
