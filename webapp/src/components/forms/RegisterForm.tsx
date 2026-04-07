@@ -74,6 +74,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
         <label htmlFor="fullName">Nombre Completo:</label>
         <input
           type="text"
+          id="fullName"
+          value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           className="form-input"
         />
@@ -84,6 +86,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
         <label htmlFor="username">Nombre de Usuario:</label>
         <input
           type="text"
+          id="username"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="form-input"
         />
@@ -94,6 +98,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
         <label htmlFor="password">Contraseña:</label>
         <input
           type="password"
+          id="password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="form-input"
         />
