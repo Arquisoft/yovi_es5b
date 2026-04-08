@@ -86,6 +86,16 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
       }}>
         <Board botId={botId} difficulty={difficulty} boardSize={boardSize}/>
       </div>
+
+        <div>
+        <h3>Reglas del Juego Y</h3>
+        <p>
+          Pulsa un hexágono para rellenarlo de tu color. Debes intentar trazar una línea 
+          de tu color que logre conectar los tres bordes del triángulo 
+          que compone el tablero. <strong>Los hexágonos de la esquina valen por los dos lados</strong>.
+        </p>
+      </div>
+
     </div>
   );
 };
