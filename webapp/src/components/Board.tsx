@@ -26,7 +26,7 @@ type MoveResponse = {
 };
 
 type BoardProps = {
-  difficulty: 'easy' | 'medium';
+  difficulty: 'easy' | 'medium' | 'hard';
 };
 
 export const Board: React.FC<BoardProps> = ({ difficulty }) => {
@@ -71,8 +71,8 @@ export const Board: React.FC<BoardProps> = ({ difficulty }) => {
   // Diccionario de bots
 const BOT_ENDPOINTS: Record<string, string> = {
   easy: 'random_bot',
-  medium: 'piramid_bot',
-  // hard: 'attack_bot' 
+  medium: 'mediumbot',
+  hard: 'bridgebot' 
 };
 
 const askBotForMove = async (currentBoard: Record<string, CellState>) => {

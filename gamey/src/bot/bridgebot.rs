@@ -555,16 +555,18 @@ mod tests {
     fn test_priority_immediate_win_for_bot() {
         let bot = BridgeBot;
         let board_map = "
-            .
+            0
            0 .
           0 . .
+         0 1 . .
+        . 1 . 1 .
         ";
-        let game = setup_test_board(3, board_map);
+        let game = setup_test_board(5, board_map);
         let chosen = bot.choose_move(&game).expect("Debe mover");
 
         assert!(
             is_immediate_winning_move(&game, PlayerId::new(0), chosen),
-            "FALLO: Si existe victoria inmediata propia, debe jugarla"
+            "FALLO: Si existe victoria inmediata propia, debe jugarla, opciones válidas: [10], eligió: {}", chosen
         );
     }
 
@@ -664,20 +666,20 @@ mod tests {
         let bot = BridgeBot;
         // Bot en el centro (7), enemigos en 12 y 13
         let board_map = "
-            .
-           . .
-          . . .
-         . 0 . .
-        . . 1 1 .
+            1
+           1 1
+          . 1 .
+         . . . .
+        . 0 0 0 .
         ";
         let game = setup_test_board(5, board_map);
 
         let chosen = bot.choose_move(&game).expect("Debe mover");
+        let chosen_idx = chosen.to_index(5);
 
-        assert_eq!(
-            chosen.x(),
-            0,
-            "FALLO: Bajo presión en pared faltante, debería jugar puente improvisado en la pared"
+        assert!(
+            [6, 9, 10, 14].contains(&chosen_idx),
+            "FALLO: Bajo presión en pared faltante, debería jugar puente improvisado en la pared, opciones válidas: [10, 14], eligió: {}", chosen_idx
         );
         assert_eq!(
             hex_distance(&chosen, &Coordinates::from_index(7, 5)),

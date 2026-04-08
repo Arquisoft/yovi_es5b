@@ -1,38 +1,51 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 
-
 import { ROUTES } from '../routes/constants';
 import { Board } from '../components/Board';
+
+// 1. Tipamos los niveles permitidos estrictamente 
+type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
+// 2. Diccionarios de traducción bidireccional
+const urlToDifficulty: Record<string, DifficultyLevel> = {
+  'random_bot': 'easy',
+  'mediumbot': 'medium',
+  'bridgebot': 'hard',
+};
+
+const difficultyToUrl: Record<DifficultyLevel, string> = {
+  'easy': 'random_bot',
+  'medium': 'mediumbot',
+  'hard': 'bridgebot',
+};
 
 const PlayPage: React.FC = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Leemos la URL al cargar. Si dice medium_bot, empezamos en medio.
-  const initialDifficulty = searchParams.get('bot') === 'mediumbot' ? 'medium' : 'easy';
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(initialDifficulty);
+  // Leemos la URL inicial y usamos el diccionario. Cae a 'easy' si falla.
+  const currentBotParam = searchParams.get('bot') || '';
+  const initialDifficulty = urlToDifficulty[currentBotParam] || 'easy';
+
+  // El estado ahora soporta 'hard'
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = () => {
     navigate(ROUTES.GAME_PATH(username || ''));
   };
 
-  const handleChangeDifficulty = () => {
-    const newDifficulty = difficulty === 'easy' ? 'medium' : 'easy';
-    const newBot = newDifficulty === 'easy' ? 'random_bot' : 'mediumbot';
+  // 3. La nueva función lee directamente el valor del elemento select
+  const handleChangeDifficulty = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newDifficulty = event.target.value as DifficultyLevel;
+    const newBotParam = difficultyToUrl[newDifficulty];
 
     setDifficulty(newDifficulty);
-    setGameKey(gameKey + 1); 
-
-    // Esto actualiza la URL inmediatamente sin recargar la página
-    setSearchParams({ bot: newBot });
+    setGameKey(gameKey + 1); // Forzamos el reinicio del tablero
+    setSearchParams({ bot: newBotParam }); // Sincronizamos la URL
   };
-
-  const difficultyText = difficulty === 'easy' ? 'Fácil' : 'Medio';
-
-  // ... (el resto del return se queda exactamente igual)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
@@ -42,8 +55,11 @@ const PlayPage: React.FC = () => {
         <h2>Partida de: <strong>{username}</strong></h2>
         
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button 
-            onClick={handleChangeDifficulty}
+          
+          {/* Reemplazamos el botón por un menú desplegable óptimo */}
+          <select 
+            value={difficulty} 
+            onChange={handleChangeDifficulty}
             style={{ 
               padding: '8px 16px', 
               backgroundColor: '#3b82f6', 
@@ -51,11 +67,14 @@ const PlayPage: React.FC = () => {
               border: 'none', 
               borderRadius: '4px', 
               cursor: 'pointer',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              outline: 'none'
             }}
           >
-            {difficultyText}
-          </button>
+            <option value="easy">Dificultad: Fácil</option>
+            <option value="medium">Dificultad: Medio</option>
+            <option value="hard">Dificultad: Difícil</option>
+          </select>
           
           <button 
             onClick={handleAbandon}
