@@ -656,6 +656,30 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_compromised_bridge() {
+        // Puente comprometido
+        let bot = BridgeBot;
+        let board_map = "
+            .
+           . 0
+          . 1 .
+         . . 0 .
+        . . . . .
+        ";
+        let game = setup_test_board(5, board_map);
+        let center = Coordinates::from_index(8, 5);
+        let chosen = bot.choose_move(&game).expect("Debe mover");
+        let chosen_idx = chosen.to_index(5);
+        
+        let valid_jumps = [6];
+        assert!(
+            valid_jumps.contains(&chosen_idx) && hex_distance(&chosen, &center) == 2,
+            "FALLO: El bot debería elegir la posición 6 para el puente comprometido, eligió {}", chosen_idx
+        );
+    }
+
+
     // ==========================================================
     // NIVEL 4: AVANCE ESTRATÉGICO HACIA PAREDES
     // ==========================================================
@@ -703,4 +727,49 @@ mod tests {
             "FALLO: En empate por puntuación y centralidad, debe elegir menor índice"
         );
     }
+
+    #[test]
+    fn test_no_bridges() {
+        let bot = BridgeBot;
+        // Tablero sin puentes creados
+        let board_map = "
+            0
+           . .
+          . 1 .
+         . . 1 .
+        0 . 1 . 0
+        ";
+        let game = setup_test_board(5, board_map);
+        let chosen = bot.choose_move(&game).expect("Debe mover");
+        let chosen_idx = chosen.to_index(5);
+        
+        let valid_jumps = [7];
+        assert!(
+            valid_jumps.contains(&chosen_idx),
+            "FALLO: se debe elegir la posición 7, se eligió: {}", chosen_idx
+        );
+    }
+
+    #[test]
+    fn test_center_taken() {
+        let bot = BridgeBot;
+        // El centro ya está tomado
+        let board_map = "
+            1
+           . .
+          . 0 .
+         . 0 0 .
+        1 . 0 . 1
+        ";
+        let game = setup_test_board(5, board_map);
+        let chosen = bot.choose_move(&game).expect("Debe mover");
+        let chosen_idx = chosen.to_index(5);
+        
+        let valid_jumps = [6];
+        assert!(
+            valid_jumps.contains(&chosen_idx),
+            "FALLO: El bot debería elegir la posición 6, se eligió: {}", chosen_idx
+        );
+    }
+
 }
