@@ -112,6 +112,18 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
             JUGAR
           </button>
         </div>
+
+        <div>
+          <p>
+            <strong>Board:</strong> Pinche para seleccionar el tamaño del tablero, configurado mediante número de hexágonos
+          </p>
+        </div>      
+        <div>
+          <p>
+            <strong>Bot:</strong> Pinche para seleccionar el contra qué bot quieres jugar
+          </p>
+        </div>
+
       </main>
     </div>
   );
