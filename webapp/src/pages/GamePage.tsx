@@ -19,7 +19,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 // botId guardará el nombre del archivo (sin .rs) que usará gamey
   const [botId, setBotId] = useState("random_bot");
   const [strategy, setStrategy] = useState('random_bot');
-  const [size, setSize] = useState('15');
+  const [size, setSize] = useState('5');
 
   useEffect(() => {
     // Función asíncrona para verificar si el servidor de juegos está en línea
@@ -93,13 +93,15 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         <div className="selectors-container">
           {/* Selectores vinculados a los estados locales para configurar la partida */}
           <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
-            <option value="random">Bot Aleatorio</option>
-            <option value="mediumbot">Bot Medio</option>
+            <option value="random">Bot Aleatorio (Fácil)</option>
+            <option value="mediumbot">Bot Medio (Medio)</option>
+            <option value="bridgebot">Bot Puente (Difícil)</option>
           </select>
 
           <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
-            <option value="15">15x15</option>
-            <option value="30">30x30</option>
+            <option value="5">Tablero pequeño</option>
+            <option value="10">Tablero mediano</option>
+            <option value="15">Tablero grande</option>
           </select>
 
           <button 
@@ -111,6 +113,18 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
             JUGAR
           </button>
         </div>
+
+        <div>
+          <p>
+            <strong>Board:</strong> Pinche para seleccionar el tamaño del tablero, configurado mediante número de hexágonos
+          </p>
+        </div>      
+        <div>
+          <p>
+            <strong>Bot:</strong> Pinche para seleccionar el contra qué bot quieres jugar
+          </p>
+        </div>
+
       </main>
     </div>
   );

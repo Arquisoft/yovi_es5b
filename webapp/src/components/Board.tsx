@@ -3,7 +3,7 @@ import { Hexagon } from './Hexagon';
 
 type BoardProps = {
     botId: string;
-    difficulty: 'easy' | 'medium';
+    difficulty: 'easy' | 'medium' | 'hard';
     boardSize: number;
 };
 
@@ -96,7 +96,8 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
 const BOT_ENDPOINTS: Record<string, string> = {
   easy: 'random_bot',
   medium: 'mediumbot',
-  // hard: 'attack_bot' 
+  hard: 'bridgebot' 
+
 };
 
 const askBotForMove = async (currentBoard: Record<string, CellState>) => {
@@ -210,13 +211,13 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
   let statusColor = '#3b82f6';
 
   if (winner === 'human') {
-    statusMessage = '🎉 ¡HAS GANADO LA PARTIDA! 🎉';
+    statusMessage = '¡HAS GANADO LA PARTIDA!';
     statusColor = '#22c55e'; // Verde
   } else if (winner === 'bot') {
-    statusMessage = '💀 El Bot te ha ganado...';
+    statusMessage = 'El Bot te ha ganado...';
     statusColor = '#ef4444'; // Rojo
   } else if (isBotThinking) {
-    statusMessage = '🤖 El bot está pensando...';
+    statusMessage = 'El bot está pensando...';
     statusColor = '#ef4444';
   }
 
@@ -234,7 +235,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
           onClick={resetGame}
           style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >
-          🔄 Volver a jugar
+          Volver a jugar
         </button>
       )}
     </div>
