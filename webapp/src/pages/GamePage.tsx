@@ -93,8 +93,9 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         <div className="selectors-container">
           {/* Selectores vinculados a los estados locales para configurar la partida */}
           <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
-            <option value="random">Bot Aleatorio</option>
-            <option value="mediumbot">Bot Medio</option>
+            <option value="random">Bot Aleatorio (Fácil)</option>
+            <option value="mediumbot">Bot Medio (Medio)</option>
+            <option value="bridgebot">Bot Puente (Difícil)</option>
           </select>
 
           <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
