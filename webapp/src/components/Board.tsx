@@ -3,7 +3,7 @@ import { Hexagon } from './Hexagon';
 
 type BoardProps = {
     botId: string;
-    difficulty: 'easy' | 'medium';
+    difficulty: 'easy' | 'medium' | 'hard';
     boardSize: number;
 };
 
@@ -96,7 +96,8 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
 const BOT_ENDPOINTS: Record<string, string> = {
   easy: 'random_bot',
   medium: 'mediumbot',
-  // hard: 'attack_bot' 
+  hard: 'bridgebot' 
+
 };
 
 const askBotForMove = async (currentBoard: Record<string, CellState>) => {

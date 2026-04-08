@@ -2,6 +2,15 @@ import { useState } from 'react';
 import { Board } from '../components/Board'; 
 import type { User } from "../types/user";
 
+// Mantén tus diccionarios de mapeo
+type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
+const urlToDifficulty: Record<string, DifficultyLevel> = {
+  'random_bot': 'easy',
+  'mediumbot': 'medium',
+  'bridgebot': 'hard',
+};
+
 type PlayPageProps = {
     user: User;
     botId: string;
@@ -9,35 +18,32 @@ type PlayPageProps = {
     onBackToLobby: any;
 };
 
-const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium'>(
-    botId === 'mediumbot' ? 'medium' : 'easy'
-  );
+const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
+  // Inicializa basándose en botId recibido como prop
+  const initialDifficulty = urlToDifficulty[botId] || 'easy';
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = async () => {
-      onBackToLobby();
+    onBackToLobby();
   };
 
-  const handleChangeDifficulty = () => {
-    const newDifficulty = difficulty === 'easy' ? 'medium' : 'easy';
+  // Handler que soporta las 3 dificultades
+  const handleChangeDifficulty = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newDifficulty = event.target.value as DifficultyLevel;
     setDifficulty(newDifficulty);
-    setGameKey(prev => prev + 1); // Usamos la versión de callback para mayor seguridad
+    setGameKey(prev => prev + 1);
   };
-
-  const difficultyText = difficulty === 'easy' ? 'Fácil' : 'Medio';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
-      
-      {/* Cabecera de la partida */}
       <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
-        {/* Usamos nom_usuario que es el estándar de la interfaz User */}
         <h2>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
         
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button 
-            onClick={handleChangeDifficulty}
+          <select 
+            value={difficulty} 
+            onChange={handleChangeDifficulty}
             style={{ 
               padding: '8px 16px', 
               backgroundColor: '#3b82f6', 
@@ -45,11 +51,13 @@ const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
               border: 'none', 
               borderRadius: '4px', 
               cursor: 'pointer',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
-            {difficultyText}
-          </button>
+            <option value="easy">Dificultad: Fácil</option>
+            <option value="medium">Dificultad: Medio</option>
+            <option value="hard">Dificultad: Difícil</option>
+          </select>
           
           <button 
             onClick={handleAbandon}
@@ -70,7 +78,6 @@ const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
       
       <p style={{ marginBottom: '30px', fontSize: '18px' }}>Es tu turno. Selecciona una casilla del tablero.</p>
 
-      {/* Contenedor del Tablero - Usamos gameKey para forzar el reinicio si cambia la dificultad */}
       <div key={gameKey} style={{ 
         padding: '20px', 
         backgroundColor: '#ffffff', 
