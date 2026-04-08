@@ -3,7 +3,7 @@ Feature: Jugar una partida
 
   Scenario: Iniciar una partida correctamente
     Given Me he registrado con nombre "Ana Test", usuario "ana_test" y contraseña "test123..." y accedo al lobby
-    When Selecciono la estrategia "Bot Aleatorio" y pulso en JUGAR
+    When Selecciono la estrategia "Bot Aleatorio (Fácil)" y pulso en JUGAR
     Then Debería ver el tablero de juego con el mensaje de turno
 
   Scenario: Hacer un movimiento en el tablero
