@@ -22,7 +22,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería renderizar el tablero inicial correctamente', () => {
-    const { container } = render(<Board difficulty="easy" />)
+    const { container } = render(<Board boardSize={5} botId="random_bot" difficulty="easy"/>)
     
     expect(screen.getByText(/Tu turno \(Juegas con Azul\)/i)).toBeTruthy()
     // Tablero tamaño 5 = 15 hexágonos
@@ -31,7 +31,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería llamar a la API y cambiar el estado al hacer clic en un hexágono', async () => {
-    const { container } = render(<Board difficulty="easy" />)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -56,7 +56,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board difficulty="easy" />)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -78,7 +78,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board difficulty="easy" />)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -93,7 +93,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     global.fetch = vi.fn().mockRejectedValueOnce(new Error('Bot server down'))
 
-    const { container } = render(<Board difficulty="easy" />)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -102,24 +102,33 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     consoleSpy.mockRestore()
   })
 
-  it('debería manejar el caso en el que el bot no devuelve coordenadas', async () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  it('debería detectar la victoria del humano cuando llena el tablero con el último movimiento', async () => {
+    // Simulamos que el backend devuelve status Finished con winner 0 (humano)
+    // y coords vacías porque el tablero está lleno y el bot no puede mover
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
         bot_id: 'random_bot',
-        coords: {}, // Sin coordenadas (x undefined)
-        status: { Ongoing: { next_player: 0 } }
+        coords: { x: 0, y: 0, z: 0 },
+        status: { Finished: { winner: 0 } } // 0 = Humano ganó con la última casilla
       }),
     } as Response)
 
-    const { container } = render(<Board difficulty="easy" />)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("El bot no tiene movimientos disponibles (o hay un empate).")
+      expect(screen.getByText(/¡HAS GANADO LA PARTIDA!/i)).toBeTruthy()
+      expect(screen.getByRole('button', { name: /Volver a jugar/i })).toBeTruthy()
     })
-    consoleSpy.mockRestore()
+  })
+
+  it('debería renderizar el número correcto de hexágonos para un tamaño de tablero personalizado', () => {
+    // Tablero tamaño 3 = 3*4/2 = 6 hexágonos
+    const { container } = render(<Board boardSize={3} botId="random_bot"  difficulty="easy"/>)
+
+    const hexagons = container.querySelectorAll('polygon')
+    expect(hexagons.length).toBe(6)
   })
 })

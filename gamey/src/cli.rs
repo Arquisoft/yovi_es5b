@@ -23,7 +23,7 @@ use std::sync::Arc;
 #[command(long_about = "GameY: A command-line implementation of the Game of Y.")]
 pub struct CliArgs {
     /// Size of the triangular board (length of one side).
-    #[arg(short, long, default_value_t = 5)]
+    #[arg(short, long, default_value_t = 7)]
     pub size: u32,
 
     /// Game mode: human (2-player), computer (vs bot), or server (HTTP API).

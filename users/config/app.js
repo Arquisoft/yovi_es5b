@@ -22,7 +22,9 @@ try {
 
 // Cabeceras CORS
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.header('Origin') ?? req.header("Host");
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
@@ -35,7 +37,7 @@ app.use(session({
   secret: 'your_secret_key',          // Use a strong, unique secret
   resave: false,                      // Don't save unchanged sessions
   saveUninitialized: false,           // Don't store empty sessions
-  cookie: { maxAge: 21600000 }           // Session lasts 6 hours
+  cookie: { maxAge: 21600000, httpOnly: false }           // Session lasts 6 hours
 }));
 
 // Autenticación mediante sesión de express-session

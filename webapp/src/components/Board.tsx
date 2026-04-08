@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Hexagon } from './Hexagon';
+
+type BoardProps = {
+    botId: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    boardSize: number;
+};
 
 type CellState = 'empty' | 'human' | 'bot';
 
@@ -25,29 +31,47 @@ type MoveResponse = {
     status: GameStatus;
 };
 
-type BoardProps = {
-  difficulty: 'easy' | 'medium' | 'hard';
-};
+export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
+  // ── Viewport SVG fijo ────────────────────────────────────────────────────
+  const SVG_W = 600;
+  const SVG_H = 560;
+  const PADDING = 30;
 
-export const Board: React.FC<BoardProps> = ({ difficulty }) => {
-  const size = 30; 
-  const boardSize = 5; 
+  //   Fila más ancha  = boardSize hexágonos → ancho total = boardSize * sqrt(3)*size
+  //   Número de filas = boardSize           → alto total  = (boardSize-1)*1.5*size + 2*size
+  const maxSizeByWidth  = (SVG_W - 2 * PADDING) / (boardSize * Math.sqrt(3));
+  const maxSizeByHeight = (SVG_H - 2 * PADDING) / ((boardSize - 1) * 1.5 + 2);
+  const size = Math.floor(Math.min(maxSizeByWidth, maxSizeByHeight));
+
+  const hexWidth = Math.sqrt(3) * size;   // distancia horizontal entre centros de columna
+  const yOffset  = 1.5 * size;            // distancia vertical entre filas
   
-  const hexWidth = Math.sqrt(3) * size;
-  const yOffset = 1.5 * size;
-  const startX = 300;
-  const startY = 50;
+  // Altura total del triángulo
+  const totalH = (boardSize - 1) * yOffset + 2 * size;
 
+  // Centro horizontal del SVG
+  const svgCenterX = SVG_W / 2;
+
+  // Punto Y desde el que empieza la primera fila, para centrar verticalmente
+  const boardTop = (SVG_H - totalH) / 2 + size;
+  // ─────────────────────────────────────────────────────────────────────────
+ 
   const [boardState, setBoardState] = useState<Record<string, CellState>>({});
   const [isBotThinking, setIsBotThinking] = useState(false);
   const [winner, setWinner] = useState<CellState | null>(null);
 
   const handleWinner = (status: GameStatus): void => {
       if (status.Finished !== undefined) {
-          const winner = status.Finished.winner == 0 ? "human" : "bot";
+          const userWon = status.Finished.winner == 0;
+          const winner = userWon ? "human" : "bot";
           setWinner(winner);
+          
+          // Guardar la partida en la base de datos
+          salvarPartidaEnBD(userWon);
       }
   };
+
+  console.debug(botId);
 
   const generarYEN = (currentBoard: Record<string, CellState>): object => {
     const filas: string[] = [];
@@ -73,6 +97,7 @@ const BOT_ENDPOINTS: Record<string, string> = {
   easy: 'random_bot',
   medium: 'mediumbot',
   hard: 'bridgebot' 
+
 };
 
 const askBotForMove = async (currentBoard: Record<string, CellState>) => {
@@ -91,11 +116,15 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
     if (res.ok) {
       const data: MoveResponse = await res.json();
-      handleWinner(data.status);
       
-      if (data.coords && data.coords.x !== undefined) {
+      // Comprobar primero si la partida ya terminó (el humano ganó con su último movimiento)
+      // Si hay ganador, no colocamos la ficha del bot
+      if (data.status.Finished !== undefined) {
+        handleWinner(data.status);
+      } else if (data.coords && data.coords.x !== undefined) {
         const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
         setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
+        handleWinner(data.status);
       } else {
         console.warn("El bot devolvió una respuesta válida pero sin coordenadas.");
       }
@@ -106,11 +135,36 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       alert(`Error en el servidor al pedir movimiento al bot: ${botEndpoint}. Revisa la consola.`);
     }
   } catch (error) {
-    console.error("Error de red al contactar con el bot:", error);
+    console.error("Error al contactar con el bot:", error);
   } finally {
     setIsBotThinking(false);
   }
 };
+
+  const salvarPartidaEnBD = async (userWon: boolean) => {
+    try {
+      const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+      
+      const res = await fetch(`${USERS_URL}/guardar-partida`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          oponente: difficulty === 'easy' ? 'random_bot' : 'mediumbot',
+          ganada: userWon
+        })
+      });
+
+      if (res.ok) {
+        console.log('Partida guardada en la base de datos correctamente.');
+      } else {
+        const errorText = await res.text();
+        console.error(`Error al guardar la partida (${res.status}):`, errorText);
+      }
+    } catch (error) {
+      console.error("Error al guardar la partida en BD:", error);
+    }
+  };
 
   const handleHexClick = (x: number, y: number, z: number) => {
     const id = `${x}-${y}-${z}`;
@@ -137,8 +191,8 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
         const z = (boardSize - 1) - x - y;
         const id = `${x}-${y}-${z}`;
 
-        const cx = startX + (c - r / 2) * hexWidth;
-        const cy = startY + r * yOffset;
+        const cx = svgCenterX - (r * hexWidth) / 2 + c * hexWidth;
+        const cy = boardTop + r * yOffset;
         
         let color = '#eeeeee'; 
         if (boardState[id] === 'human') color = '#3b82f6';
@@ -172,8 +226,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       <p style={{ height: '24px', fontWeight: 'bold', color: statusColor, marginBottom: '10px', fontSize: winner ? '20px' : '16px' }}>
         {statusMessage}
       </p>
-      
-      <svg width="600" height="400" style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
+      <svg width={SVG_W} height={SVG_H} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
         {renderHexagons()}
       </svg>
 

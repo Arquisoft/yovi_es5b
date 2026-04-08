@@ -57,22 +57,42 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-=== Persistencia de Datos (Esquema de Base de Datos)
+=== Tecnología utilizada
 
-Para la gestión de la información del **Juego Y**, se ha diseñado un esquema relacional que permite tratar de forma uniforme a los jugadores humanos y a los bots.
+La persistencia de datos se gestiona mediante una base de datos *MySQL*, accedida a través del ORM *Sequelize* en el backend Node.js. Sequelize se encarga de la creación y sincronización de las tablas, así como de la gestión de las relaciones entre entidades.
 
-* **Modelo de Herencia:** Se utiliza la entidad **Jugador** como una abstracción que vincula a un **Usuario** (humano) o a un **Robot** mediante un atributo `behaviour_Type` y un `id_externo`.
-* **Gestión de Partidas:** La entidad **Partida** registra el enfrentamiento entre dos jugadores, almacenando la puntuación final y el número de turnos transcurridos.
-* **Tecnología:** El sistema utiliza **MySQL** para la persistencia, permitiendo una gestión ágil de los datos en un entorno local de desarrollo mediante un motor de base de datos sin servidor y basado en múltiples archivos para asegurar el princpio de responsabilidad única.
+=== Entidades y esquema relacional
 
-.Diagrama del Modelo de Datos para el Juego Y
-image::../images/DiagramaBD.png["Esquema de la Base de Datos", width=800, align="center"]
+El modelo de datos está compuesto por dos tablas: **Usuarios** y **Partidas**. La relación entre ellas es de *uno a muchos*: un usuario puede tener asociadas múltiples partidas, pero cada partida pertenece exactamente a un usuario. La integridad referencial se gestiona mediante la clave foránea `id_usuario` en la tabla `Partidas`.
 
-[cols="1,3"]
+
+==== Tabla Usuarios
+
+Almacena los datos de registro y autenticación de cada jugador registrado en el sistema.
+
+[cols="1,1,2,2", options="header"]
 |===
-| **Entidad** | **Descripción**
-| **Usuario** | Almacena los datos personales y credenciales de acceso (nombre, usuario, contraseña).
-| **Robot** | Define los diferentes tipos de comportamiento o algoritmos de IA disponibles.
-| **Jugador** | Tabla intermedia que unifica a humanos y robots para participar en partidas.
-| **Partida** | Registra el resultado de un juego, incluyendo puntuación, turnos y los dos jugadores implicados.
+| Campo | Tipo | Restricciones | Descripción
+| `id_usuario` | INTEGER | PK, AUTO_INCREMENT | Identificador único del usuario
+| `nombre` | VARCHAR(255) | NOT NULL | Nombre real del usuario
+| `nom_usuario` | VARCHAR(255) | NOT NULL, UNIQUE | Nombre de usuario para login
+| `contrasena` | VARCHAR(255) | NOT NULL | Contraseña del usuario (hash)
 |===
+
+==== Tabla Partidas
+
+Registra el historial de partidas jugadas, asociando cada partida a un usuario y al bot oponente.
+
+[cols="1,1,2,2", options="header"]
+|===
+| Campo | Tipo | Restricciones | Descripción
+| `id_partida` | INTEGER | PK, AUTO_INCREMENT | Identificador único de la partida
+| `id_usuario` | INTEGER | NOT NULL, FK | Referencia al usuario que jugó la partida
+| `oponente` | VARCHAR(255) | NOT NULL | Identificador del bot oponente
+| `ganada` | BOOLEAN | NOT NULL | `true` si el usuario ganó, `false` si perdió
+|===
+
+=== Decisiones de diseño relevantes
+
+* *Resultado de la partida*: se almacena como un valor booleano (true si el usuario gana y false si el usuario pierde) porque los empates no son posibles en el juego Y.
+* *Almacenamiento de contraseñas*: El campo `contrasena` debe almacenar exclusivamente el hash de la contraseña. La responsabilidad del hasheo recae en la capa de servicio, no en el modelo.

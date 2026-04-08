@@ -1,62 +1,46 @@
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
+import { Board } from '../components/Board'; 
+import type { User } from "../types/user";
 
-import { ROUTES } from '../routes/constants';
-import { Board } from '../components/Board';
-
-// 1. Tipamos los niveles permitidos estrictamente 
+// Mantén tus diccionarios de mapeo
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
-// 2. Diccionarios de traducción bidireccional
 const urlToDifficulty: Record<string, DifficultyLevel> = {
   'random_bot': 'easy',
   'mediumbot': 'medium',
   'bridgebot': 'hard',
 };
 
-const difficultyToUrl: Record<DifficultyLevel, string> = {
-  'easy': 'random_bot',
-  'medium': 'mediumbot',
-  'hard': 'bridgebot',
+type PlayPageProps = {
+    user: User;
+    botId: string;
+    boardSize: number;
+    onBackToLobby: any;
 };
 
-const PlayPage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Leemos la URL inicial y usamos el diccionario. Cae a 'easy' si falla.
-  const currentBotParam = searchParams.get('bot') || '';
-  const initialDifficulty = urlToDifficulty[currentBotParam] || 'easy';
-
-  // El estado ahora soporta 'hard'
+const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
+  // Inicializa basándose en botId recibido como prop
+  const initialDifficulty = urlToDifficulty[botId] || 'easy';
   const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
   const [gameKey, setGameKey] = useState(0);
 
-  const handleAbandon = () => {
-    navigate(ROUTES.GAME_PATH(username || ''));
+  const handleAbandon = async () => {
+    onBackToLobby();
   };
 
-  // 3. La nueva función lee directamente el valor del elemento select
+  // Handler que soporta las 3 dificultades
   const handleChangeDifficulty = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newDifficulty = event.target.value as DifficultyLevel;
-    const newBotParam = difficultyToUrl[newDifficulty];
-
     setDifficulty(newDifficulty);
-    setGameKey(gameKey + 1); // Forzamos el reinicio del tablero
-    setSearchParams({ bot: newBotParam }); // Sincronizamos la URL
+    setGameKey(prev => prev + 1);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
-      
-      {/* Cabecera de la partida */}
       <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
-        <h2>Partida de: <strong>{username}</strong></h2>
+        <h2>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
         
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          
-          {/* Reemplazamos el botón por un menú desplegable óptimo */}
           <select 
             value={difficulty} 
             onChange={handleChangeDifficulty}
@@ -68,7 +52,6 @@ const PlayPage: React.FC = () => {
               borderRadius: '4px', 
               cursor: 'pointer',
               fontWeight: 'bold',
-              outline: 'none'
             }}
           >
             <option value="easy">Dificultad: Fácil</option>
@@ -95,16 +78,14 @@ const PlayPage: React.FC = () => {
       
       <p style={{ marginBottom: '30px', fontSize: '18px' }}>Es tu turno. Selecciona una casilla del tablero.</p>
 
-      {/* Contenedor del Tablero */}
-      <div style={{ 
+      <div key={gameKey} style={{ 
         padding: '20px', 
         backgroundColor: '#ffffff', 
         borderRadius: '12px', 
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
       }}>
-        <Board key={gameKey} difficulty={difficulty} />
+        <Board botId={botId} difficulty={difficulty} boardSize={boardSize}/>
       </div>
-
     </div>
   );
 };

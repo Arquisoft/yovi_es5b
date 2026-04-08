@@ -22,57 +22,67 @@
 
 ## Project Structure
 
-The project is divided into three main components, each in its own directory:
+El proyecto se divide en cuatro subdirectorios principales:
 
-- `webapp/`: A frontend application built with React, Vite, and TypeScript.
-- `users/`: A backend service for managing users, built with Node.js and Express.
-- `gamey/`: A Rust game engine and bot service.
-- `docs/`: Architecture documentation sources following Arc42 template
+- `webapp/`: Frontend de la aplicación hecho en React + TypeScript con Vite.
+- `users/`: Backend de gestión de usuarios hecho en Express.js
+- `gamey/`: Backend del juego hecho en Rust.
+- `database/`: archivos necesarios para lanzar el contenedor de la base de datos MySQL.
+- `docs/`: Documentación arquitectónica usando la plantilla arc42.
 
-Each component has its own `package.json` file with the necessary scripts to run and test the application.
-
-## Basic Features
-
-- **User Registration**: The web application provides a simple form to register new users.
-- **User Service**: The user service receives the registration request, simulates some processing, and returns a welcome message.
-- **GameY**: A basic Game engine which only chooses a random piece.
-
-## Components
+## Componentes
 
 ### Webapp
 
-The `webapp` is a single-page application (SPA) created with [Vite](https://vitejs.dev/) and [React](https://reactjs.org/).
+`webapp` es una single-page application (SPA) creada con [Vite](https://vitejs.dev/) y [React](https://reactjs.org/).
 
-- `src/App.tsx`: The main component of the application.
-- `src/RegisterForm.tsx`: The component that renders the user registration form.
-- `package.json`: Contains scripts to run, build, and test the webapp.
-- `vite.config.ts`: Configuration file for Vite.
-- `Dockerfile`: Defines the Docker image for the webapp.
+- `src/App.tsx`: Componente principal de la aplicación.
+- `package.json`: Contiene los scripts necesarios para ejecutar, compilar y probar webapp.
+- `vite.config.ts`: Archivo de configuración para Vite.
+- `Dockerfile`: Archivo que define la imagen de Docker para webapp.
 
-### Users Service
+### Users
 
-The `users` service is a simple REST API built with [Node.js](https://nodejs.org/) and [Express](https://expressjs.com/).
+`users` es una API implementada usando [Node.js](https://nodejs.org/) and [Express](https://expressjs.com/).
 
-- `users-service.js`: The main file for the user service. It defines an endpoint `/createuser` to handle user creation.
-- `package.json`: Contains scripts to start the service.
-- `Dockerfile`: Defines the Docker image for the user service.
+- `users-service.js`: Archivo principal de `users` desde donde se lanzará el módulo.
+- `package.json`: Contiene los scripts necesarios para iniciar y probar el servicio.
+- `Dockerfile`: Archivo que define la imagen de Docker para users.
 
 ### Gamey
 
-The `gamey` component is a Rust-based game engine with bot support, built with [Rust](https://www.rust-lang.org/) and [Cargo](https://doc.rust-lang.org/cargo/).
+`gamey` es el módulo del juego con soporte para bots hecho con [Rust](https://www.rust-lang.org/) y [Cargo](https://doc.rust-lang.org/cargo/).
 
-- `src/main.rs`: Entry point for the application.
-- `src/lib.rs`: Library exports for the gamey engine.
-- `src/bot/`: Bot implementation and registry.
-- `src/core/`: Core game logic including actions, coordinates, game state, and player management.
-- `src/notation/`: Game notation support (YEN, YGN).
-- `src/web/`: Web interface components.
-- `Cargo.toml`: Project manifest with dependencies and metadata.
-- `Dockerfile`: Defines the Docker image for the gamey service.
+- `src/main.rs`: Punto de entrada principal de la aplicación.
+- `src/lib.rs`: Biblioteca del motor de juego.
+- `src/bot/`: Registro e implementación de bots.
+- `src/core/`: Lógica base del juego, incluyendo acciones, coordenadas, estado y gestión de jugadores.
+- `src/notation/`: Notación del juego (YEN, YGN).
+- `Cargo.toml`: Dependencias y metadatos del módulo.
+- `Dockerfile`: Archivo que define la imagen de Docker para gamey.
 
-## Running the Project
+### database
 
-You can run this project using Docker (recommended) or locally without Docker.
+`database` es el submódulo que contiene la información necesaria para arrancar la base de datos MySQL de `users`.
+
+- `Dockerfile`: Archivo que define la imagen de MySQL para gamey.
+
+## Ejecutar el proyecto
+
+Se puede ejecutar el proyecto en local usando Docker o sin Docker. Si da problemas con Docker, probar a ejecutarlo de la otra forma.
+
+### Sin Docker
+
+1. **Base de datos**: sobre el directorio base: lanzar el contenedor de la base de datos con `docker-compose -f docker-compose.yml up -d database`
+2. **Módulo gamey**: sobre el directorio `gamey`: ejecutar `cargo run -- --mode server --port 4000`
+3. **Módulo users**: sobre el directorio `users`: ejecutar `npm run start`
+4. **Módulo webapp**: sobre el directorio `webapp`: ejecutar `npm run dev`
+
+Finalmente, entrar en [http://localhost:5173/](http://localhost:5173/).
+
+**NOTA**: recordar ejecutar **npm install** en `users` y `webapp` por si hay alguna dependencia nueva pendiente de instalar.
+
+**NOTA**: como arreglo temporal para que arranque la base de datos en local, cambiar en `users/config/db.js`, línea 7, el valor de la IP por `127.0.0.1`. **No subir este cambio a master**.
 
 ### With Docker
 
@@ -92,65 +102,9 @@ This command will build the Docker images for both the `webapp` and `users` serv
 - User service API: [http://localhost:3000](http://localhost:3000)
 - Gamey API: [http://localhost:4000](http://localhost:4000)
 
-### Without Docker
+## Scripts disponibles
 
-To run the project locally without Docker, you will need to run each component in a separate terminal.
-
-#### Prerequisites
-
-* [Node.js](https://nodejs.org/) and npm installed.
-
-#### 1. Running the User Service
-
-Navigate to the `users` directory:
-
-```bash
-cd users
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the service:
-
-```bash
-npm start
-```
-
-The user service will be available at `http://localhost:3000`.
-
-#### 2. Running the Web Application
-
-Navigate to the `webapp` directory:
-
-```bash
-cd webapp
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the application:
-
-```bash
-npm run dev
-```
-
-The web application will be available at `http://localhost:5173`.
-
-#### 3. Running the GameY application
-
-At this moment the GameY application is not needed but once it is needed you should also start it from the command line.
-
-## Available Scripts
-
-Each component has its own set of scripts defined in its `package.json`. Here are some of the most important ones:
+Cada módulo posee su conjunto de scripts. A continuación se listan los scripts de cada módulo:
 
 ### Webapp (`webapp/package.json`)
 

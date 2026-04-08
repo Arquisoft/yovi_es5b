@@ -1,7 +1,7 @@
-Feature: Register
-  Validate the register form
+Feature: Registrar usuario
+  Registrar un usuario correctamente
 
-  Scenario: Successful registration
-    Given the register page is open
-    When I enter "Alice" as the username and submit
-    Then I should see a welcome message containing "Bienvenido a Yovi"
+  Scenario: Registro correcto como usuario
+    Given Acceso a la página de registro
+    When Relleno el formulario nombre de usuario como "Pedro", nombre "pepe", contraseña "test123..." y pulso en Registrar
+    Then Debería haber creado mi cuenta de "Pedro" y tener acceso a la pantalla de selección de juego

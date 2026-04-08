@@ -76,7 +76,7 @@ describe('Pruebas de Inicio de Sesión', () => {
             .send({ nom_usuario: "nadie", contrasena: "password123" })
 
         expect(res.status).toBe(400)
-        expect(res.body.error).toBe("Ocurrió un error al iniciar sesión.")
+        expect(res.body.error).toBe("Error al iniciar sesión. Credenciales no válidas.")
     })
 
     it('debería fallar si la contraseña es incorrecta', async () => {

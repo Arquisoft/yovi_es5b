@@ -205,6 +205,243 @@ async fn test_choose_endpoint_with_missing_content_type() {
 }
 
 // ============================================================================
+// Play endpoint tests - Success cases
+// ============================================================================
+
+/// Prueba: Petición de juego válida a random bot
+#[tokio::test]
+async fn test_play_endpoint_with_valid_request() {
+    let app = test_app();
+
+    // Posición codificada para URL: { "size": 3, "turn": 0, "players": ["B", "R"], "layout": "./../..." }
+    let query_params = format!("?bot_id=random_bot&strategy=normal&position={}", "%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%200%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22.%2F..%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let move_response: MoveResponse = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(move_response.api_version, "v1");
+    assert_eq!(move_response.bot_id, "random_bot");
+    // Coordinates should be valid (we can't predict exactly which one the random bot picks)
+}
+
+/// Prueba: peticion de juego con un juego a medias
+#[tokio::test]
+async fn test_play_endpoint_with_partially_filled_board() {
+    let app = test_app();
+
+    // Juego a medias codificado para URL:
+    let query_params = format!("?bot_id=random_bot&strategy=normal&position={}", "%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%201%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22B%2FR.%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let move_response: MoveResponse = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(move_response.api_version, "v1");
+    assert_eq!(move_response.bot_id, "random_bot");
+}
+
+/// Prueba: omitir parámetro strategy
+#[tokio::test]
+async fn test_play_endpoint_withoyt_strategy_param() {
+    let app = test_app();
+
+    // Juego a medias codificado para URL:
+    let query_params = format!("?bot_id=random_bot&position={}", "%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%201%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22B%2FR.%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let move_response: MoveResponse = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(move_response.api_version, "v1");
+    assert_eq!(move_response.bot_id, "random_bot");
+}
+
+/// Prueba: omitir parámetro bot_id (random_bot por defecto
+#[tokio::test]
+async fn test_play_endpoint_without_bot_id_param() {
+    let app = test_app();
+
+    // Juego a medias codificado para URL:
+    let query_params = format!("?position={}", "%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%201%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22B%2FR.%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let move_response: MoveResponse = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(move_response.api_version, "v1");
+    assert_eq!(move_response.bot_id, "random_bot");
+}
+
+// ============================================================================
+// Play endpoint tests - Error cases
+// ============================================================================
+
+
+/// Prueba: versión de API no válida (v2 en vez de v1)
+#[tokio::test]
+async fn test_play_endpoint_with_invalid_api_version() {
+    let app = test_app();
+
+    // Posición codificada para URL: { "size": 3, "turn": 0, "players": ["B", "R"], "layout": "./../..." }
+    let query_params = format!("?bot_id=random_bot&strategy=normal&position={}", "%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%200%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22.%2F..%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v2/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK); // Axum returns 200 with error JSON
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
+
+    assert!(error_response.message.contains("Unsupported API version"));
+    assert_eq!(error_response.api_version, Some("v2".to_string()));
+}
+
+/// Prueba: bot no existente (unknown_bot en vez de random_bot)
+#[tokio::test]
+async fn test_play_endpoint_with_unknown_bot() {
+    let app = test_app();
+
+    // Posición codificada para URL: { "size": 3, "turn": 0, "players": ["B", "R"], "layout": "./../..." }
+    let query_params = format!("?bot_id=unknown_bot&strategy=normal&position={}", "%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%200%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22.%2F..%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
+
+    assert!(error_response.message.contains("Bot not found"));
+    assert!(error_response.message.contains("unknown_bot"));
+    assert_eq!(error_response.bot_id, Some("unknown_bot".to_string()));
+}
+
+/// Prueba: JSON no válido en parámetro position
+#[tokio::test]
+async fn test_play_endpoint_with_invalid_json() {
+    let app = test_app();
+    //
+    // Posición codificada para URL: {{ "size": 3, "turn": 0, "players": ["B", "R"], "layout": "./../..." }
+    let query_params = format!("?bot_id=unknown_bot&strategy=normal&position={}", "%7B%7B%20%22size%22%3A%203%2C%20%22turn%22%3A%200%2C%20%22players%22%3A%20%5B%22B%22%2C%20%22R%22%5D%2C%20%22layout%22%3A%20%22.%2F..%2F...%22%20%7D%0A");
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Devuelve 200 con JSON de error
+    assert!(response.status().is_success());
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
+
+    assert!(error_response.message.contains("Invalid YEN format"));
+}
+
+/// Prueba: omitir parámetro position
+#[tokio::test]
+async fn test_play_endpoint_without_position_param() {
+    let app = test_app();
+
+    let query_params = "?bot_id=unknown_bot&strategy=normal";
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/v1/play".to_owned() + &query_params)
+                .header("content-type", "application/json")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Devuelve 400
+    assert!(response.status().is_client_error());
+}
+
+
+// ============================================================================
 // Custom state tests
 // ============================================================================
 
