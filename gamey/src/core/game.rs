@@ -504,6 +504,10 @@ impl TryFrom<YEN> for GameY {
                 }
             }
         }
+        // Una vez reconstruido el tablero, forzamos next_player al valor que indica el YEN
+        ygame.status = GameStatus::Ongoing {
+            next_player: PlayerId::new(game.turn()),
+        };
         Ok(ygame)
     }
 }
