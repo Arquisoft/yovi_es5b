@@ -8,7 +8,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   beforeEach(() => {
     // Limpiamos el historial de llamadas de las funciones mockeadas (igual que en backend)
     vi.clearAllMocks()
-    
+
     // Configuramos un mock de fetch por defecto (Ongoing)
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -22,8 +22,8 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería renderizar el tablero inicial correctamente', () => {
-    const { container } = render(<Board boardSize={5} botId="random_bot" difficulty="easy"/>)
-    
+    const { container } = render(<Board boardSize={5} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+
     expect(screen.getByText(/Tu turno \(Juegas con Azul\)/i)).toBeTruthy()
     // Tablero tamaño 5 = 15 hexágonos
     const hexagons = container.querySelectorAll('polygon')
@@ -31,14 +31,14 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería llamar a la API y cambiar el estado al hacer clic en un hexágono', async () => {
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
 
     expect(screen.getByText(/El bot está pensando.../i)).toBeTruthy()
     expect(global.fetch).toHaveBeenCalledTimes(1) // Verificamos la llamada a la API
-    
+
     await waitFor(() => {
       expect(screen.getByText(/Tu turno \(Juegas con Azul\)/i)).toBeTruthy()
     })
@@ -56,7 +56,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -78,7 +78,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -93,7 +93,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     global.fetch = vi.fn().mockRejectedValueOnce(new Error('Bot server down'))
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -115,7 +115,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -126,7 +126,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
 
   it('debería renderizar el número correcto de hexágonos para un tamaño de tablero personalizado', () => {
     // Tablero tamaño 3 = 3*4/2 = 6 hexágonos
-    const { container } = render(<Board boardSize={3} botId="random_bot"  difficulty="easy"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
 
     const hexagons = container.querySelectorAll('polygon')
     expect(hexagons.length).toBe(6)

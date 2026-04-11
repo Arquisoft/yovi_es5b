@@ -5,6 +5,11 @@ type BoardProps = {
     botId: string;
     difficulty: 'easy' | 'medium' | 'hard';
     boardSize: number;
+    gameMode: 'bot' | 'pvp';
+    // Nombre del primer jugador en modo PvP (nombre del usuario autenticado)
+    player1Name: string;
+    // Nombre del segundo jugador en modo PvP (por defecto 'Invitado')
+    player2Name: string;
 };
 
 type CellState = 'empty' | 'human' | 'bot';
@@ -31,7 +36,7 @@ type MoveResponse = {
     status: GameStatus;
 };
 
-export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
+export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, player2Name}: BoardProps) => {
   // ── Viewport SVG fijo ────────────────────────────────────────────────────
   const SVG_W = 600;
   const SVG_H = 560;
@@ -45,7 +50,7 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
 
   const hexWidth = Math.sqrt(3) * size;   // distancia horizontal entre centros de columna
   const yOffset  = 1.5 * size;            // distancia vertical entre filas
-  
+
   // Altura total del triángulo
   const totalH = (boardSize - 1) * yOffset + 2 * size;
 
@@ -55,17 +60,19 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
   // Punto Y desde el que empieza la primera fila, para centrar verticalmente
   const boardTop = (SVG_H - totalH) / 2 + size;
   // ─────────────────────────────────────────────────────────────────────────
- 
+
   const [boardState, setBoardState] = useState<Record<string, CellState>>({});
   const [isBotThinking, setIsBotThinking] = useState(false);
   const [winner, setWinner] = useState<CellState | null>(null);
+  // En modo PvP, controla de quién es el turno: 'human' = Jugador 1 (azul), 'bot' = Jugador 2 (rojo)
+  const [pvpTurn, setPvpTurn] = useState<'human' | 'bot'>('human');
 
   const handleWinner = (status: GameStatus): void => {
       if (status.Finished !== undefined) {
           const userWon = status.Finished.winner == 0;
           const winner = userWon ? "human" : "bot";
           setWinner(winner);
-          
+
           // Guardar la partida en la base de datos
           salvarPartidaEnBD(userWon);
       }
@@ -73,7 +80,10 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
 
   console.debug(botId);
 
-  const generarYEN = (currentBoard: Record<string, CellState>): object => {
+  // Serializa el estado del tablero al formato YEN que entiende el backend Gamey.
+  // El parámetro 'turn' indica qué jugador mueve a continuación: 0 = B (azul), 1 = R (rojo).
+  // En modo bot siempre es 1 (le toca al bot). En modo PvP varía según el turno actual.
+  const generarYEN = (currentBoard: Record<string, CellState>, turn: number = 1): object => {
     const filas: string[] = [];
     for (let r = 0; r < boardSize; r++) {
       let filaString = "";
@@ -89,14 +99,14 @@ export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
       }
       filas.push(filaString);
     }
-    return { size: boardSize, turn: 1, players: ["B", "R"], layout: filas.join("/") };
+    return { size: boardSize, turn, players: ["B", "R"], layout: filas.join("/") };
   };
 
   // Diccionario de bots
 const BOT_ENDPOINTS: Record<string, string> = {
   easy: 'random_bot',
   medium: 'mediumbot',
-  hard: 'bridgebot' 
+  hard: 'bridgebot'
 
 };
 
@@ -105,8 +115,8 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
   try {
     const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
     const yenPayload = generarYEN(currentBoard);
-    
-    const botEndpoint = BOT_ENDPOINTS[difficulty]; 
+
+    const botEndpoint = BOT_ENDPOINTS[difficulty];
 
     const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/${botEndpoint}`, {
       method: 'POST',
@@ -116,7 +126,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
     if (res.ok) {
       const data: MoveResponse = await res.json();
-      
+
       // Comprobar primero si la partida ya terminó (el humano ganó con su último movimiento)
       // Si hay ganador, no colocamos la ficha del bot
       if (data.status.Finished !== undefined) {
@@ -141,18 +151,62 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
   }
 };
 
-  const salvarPartidaEnBD = async (userWon: boolean) => {
+  // Consulta al backend Gamey si la partida ha terminado tras el movimiento de un jugador en modo PvP.
+  // Se reutiliza el endpoint de elección de bot únicamente para obtener el estado del juego (status),
+  // ignorando las coordenadas que devuelve (el bot no llega a jugar).
+  // 'currentTurn': jugador que acaba de mover ('human'=J1/B, 'bot'=J2/R).
+  const checkWinViaPvP = async (board: Record<string, CellState>, currentTurn: 'human' | 'bot') => {
+    setIsBotThinking(true);
+    try {
+      const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
+      // Tras el movimiento de J1 (B, player 0), le toca a J2 (R, player 1) → turn: 1
+      // Tras el movimiento de J2 (R, player 1), le toca a J1 (B, player 0) → turn: 0
+      const nextTurn = currentTurn === 'human' ? 1 : 0;
+      const yenPayload = generarYEN(board, nextTurn);
+
+      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/random_bot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(yenPayload)
+      });
+
+      if (res.ok) {
+        const data: MoveResponse = await res.json();
+        if (data.status.Finished !== undefined) {
+          // winner: 0 = J1 (B/human) ganó, 1 = J2 (R/bot) ganó
+          const playerWon: CellState = data.status.Finished.winner === 0 ? 'human' : 'bot';
+          setWinner(playerWon);
+          // Desde el punto de vista de la BD, 'human' (Jugador 1) es quien gana o pierde.
+          // Se guarda el nombre del J2 como oponente.
+          salvarPartidaEnBD(playerWon === 'human', player2Name);
+        } else {
+          // Partida en curso: alternar turno al otro jugador
+          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human');
+        }
+      } else {
+        const errorText = await res.text();
+        console.error(`Error al verificar el estado PvP (${res.status}):`, errorText);
+      }
+    } catch (error) {
+      console.error("Error al contactar con Gamey para verificar victoria PvP:", error);
+    } finally {
+      setIsBotThinking(false);
+    }
+  };
+
+  // Guarda el resultado de la partida en la base de datos del servicio de usuarios.
+  // En modo bot, el nombre del oponente se deduce de la dificultad.
+  // En modo PvP, se pasa explícitamente 'jugador' como nombre del oponente.
+  const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
     try {
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
-      
+      const oponente = oponenteName ?? (difficulty === 'easy' ? 'random_bot' : difficulty === 'medium' ? 'mediumbot' : 'bridgebot');
+
       const res = await fetch(`${USERS_URL}/guardar-partida`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          oponente: difficulty === 'easy' ? 'random_bot' : 'mediumbot',
-          ganada: userWon
-        })
+        body: JSON.stringify({ oponente, ganada: userWon })
       });
 
       if (res.ok) {
@@ -168,18 +222,29 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
   const handleHexClick = (x: number, y: number, z: number) => {
     const id = `${x}-${y}-${z}`;
-    
-    if (boardState[id] || isBotThinking || winner) return;
 
-    const newBoard: Record<string, CellState> = { ...boardState, [id]: 'human' as CellState };
-    setBoardState(newBoard);
+    // Ignorar clic si la celda ya está ocupada, la partida ha terminado, o se está esperando respuesta del backend
+    if (boardState[id] || winner || isBotThinking) return;
 
-    askBotForMove(newBoard);
+    if (gameMode === 'pvp') {
+      // En PvP: Jugador 1 usa 'human' (azul) y Jugador 2 usa 'bot' (rojo)
+      const cell: CellState = pvpTurn === 'human' ? 'human' : 'bot';
+      const newBoard: Record<string, CellState> = { ...boardState, [id]: cell };
+      setBoardState(newBoard);
+      // Delegar la comprobación de victoria al backend Gamey
+      checkWinViaPvP(newBoard, pvpTurn);
+    } else {
+      const newBoard: Record<string, CellState> = { ...boardState, [id]: 'human' as CellState };
+      setBoardState(newBoard);
+      askBotForMove(newBoard);
+    }
   };
 
   const resetGame = () => {
     setBoardState({});
     setWinner(null);
+    // Reiniciar el turno al Jugador 1 al empezar una nueva partida en modo PvP
+    setPvpTurn('human');
   };
 
   const renderHexagons = () => {
@@ -193,8 +258,8 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
         const cx = svgCenterX - (r * hexWidth) / 2 + c * hexWidth;
         const cy = boardTop + r * yOffset;
-        
-        let color = '#eeeeee'; 
+
+        let color = '#eeeeee';
         if (boardState[id] === 'human') color = '#3b82f6';
         if (boardState[id] === 'bot') color = '#ef4444';
 
@@ -206,19 +271,38 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     return hexElements;
   };
 
-  // Mensajes de la interfaz superior
-  let statusMessage = 'Tu turno (Juegas con Azul)';
-  let statusColor = '#3b82f6';
+  // Mensajes de la interfaz superior: cambian según el modo de juego y el estado actual
+  let statusMessage: string;
+  let statusColor: string;
 
-  if (winner === 'human') {
-    statusMessage = '¡HAS GANADO LA PARTIDA!';
-    statusColor = '#22c55e'; // Verde
-  } else if (winner === 'bot') {
-    statusMessage = 'El Bot te ha ganado...';
-    statusColor = '#ef4444'; // Rojo
-  } else if (isBotThinking) {
-    statusMessage = 'El bot está pensando...';
-    statusColor = '#ef4444';
+  if (gameMode === 'pvp') {
+    if (winner === 'human') {
+      statusMessage = `¡${player1Name} GANA LA PARTIDA!`;
+      statusColor = '#22c55e';
+    } else if (winner === 'bot') {
+      statusMessage = `¡${player2Name} GANA LA PARTIDA!`;
+      statusColor = '#ef4444';
+    } else if (pvpTurn === 'human') {
+      statusMessage = `Turno de ${player1Name} (Azul)`;
+      statusColor = '#3b82f6';
+    } else {
+      statusMessage = `Turno de ${player2Name} (Rojo)`;
+      statusColor = '#ef4444';
+    }
+  } else {
+    if (winner === 'human') {
+      statusMessage = '¡HAS GANADO LA PARTIDA!';
+      statusColor = '#22c55e';
+    } else if (winner === 'bot') {
+      statusMessage = 'El Bot te ha ganado...';
+      statusColor = '#ef4444';
+    } else if (isBotThinking) {
+      statusMessage = 'El bot está pensando...';
+      statusColor = '#ef4444';
+    } else {
+      statusMessage = 'Tu turno (Juegas con Azul)';
+      statusColor = '#3b82f6';
+    }
   }
 
   return (
@@ -231,7 +315,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       </svg>
 
       {winner && (
-        <button 
+        <button
           onClick={resetGame}
           style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >

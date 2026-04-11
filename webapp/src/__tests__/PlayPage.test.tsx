@@ -26,7 +26,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería extraer el nombre de usuario de la sesión y mostrarlo en el título', async () => {
     render(
-        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" onBackToLobby={()=>{}}/>
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}/>
     )
 
     // Comprobamos que el nombre aparece en la pantalla
@@ -36,7 +36,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería renderizar el componente Board (Tablero)', async () => {
     render(
-        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" onBackToLobby={()=>{}}/>
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}/>
     )
 
     // Buscamos nuestro tablero "mockeado"
@@ -47,7 +47,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
     )
-    
+
     // Buscamos el botón de jugar
     const playButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(playButton).toBeTruthy()
