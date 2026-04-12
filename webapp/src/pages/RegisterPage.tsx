@@ -20,7 +20,7 @@ const RegisterPage = () => {
   }
 
   return (
-    <div>
+    <div className="lobby-container">
       <h2>Bienvenido a Yovi</h2>
 
       <div className="auth-selector"> {/* Fila de botones para elegir entre registro o login */}

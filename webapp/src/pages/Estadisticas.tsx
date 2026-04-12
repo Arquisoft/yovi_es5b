@@ -43,8 +43,8 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
   }, [user.nom_usuario]);
 
   return (
-    <div> {/* Reutiliza el centrado maestro */}
-      <h2 className="main-title">Estadísticas de {user.nombre}</h2> {/* Reutiliza el estilo de título blanco */}
+    <div className='lobby-container'> {/* Reutiliza el centrado maestro */}
+      <h2>Estadísticas de {user.nombre}</h2> {/* Reutiliza el estilo de título blanco */}
       
       {loading ? (
         <div className="status-badge checking">Cargando datos...</div> // Reutiliza el badge de carga
