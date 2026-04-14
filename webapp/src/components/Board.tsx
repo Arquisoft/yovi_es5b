@@ -4,90 +4,86 @@ import { Hexagon } from './Hexagon';
 type BoardProps = {
     botId: string;
     difficulty: 'easy' | 'medium' | 'hard';
-    boardSize: number;
-    gameMode: 'bot' | 'pvp';
-    // Nombre del primer jugador en modo PvP (nombre del usuario autenticado)
-    player1Name: string;
-    // Nombre del segundo jugador en modo PvP (por defecto 'Invitado')
-    player2Name: string;
+    boardSize: number;                    // número de hexágonos por lado del triángulo (5, 10 o 15)
+    gameMode: 'bot' | 'pvp';             // 'bot' = jugador vs IA  |  'pvp' = dos jugadores locales
+    player1Name: string;                  // nombre del usuario autenticado
+    player2Name: string;                  // nombre del Jugador 2 en modo PvP (por defecto 'Invitado')
 };
 
+// 'human' = Jugador 1 (azul)  |  'bot' = Jugador 2 / IA (rojo)
 type CellState = 'empty' | 'human' | 'bot';
 
 type Coordinates = {
-    x : number;
-    y : number;
-    z : number;
+    x: number; 
+    y: number;
+    z: number;
 };
 
 type GameStatus = {
-    Ongoing: PlayerId | undefined;
-    Finished: PlayerId | undefined;
+    Ongoing: PlayerId | undefined;   // la partida continúa
+    Finished: PlayerId | undefined;  // la partida terminó; winner: 0=B(azul) | 1=R(rojo)
 };
 
 type PlayerId = {
     winner: number;
 };
 
-type MoveResponse = {
+type MoveResponse = { // respuesta del endpoint /v1/ybot/choose/{bot_id} de Gamey
     api_version: string;
     bot_id: string;
-    coords: Coordinates;
-    status: GameStatus;
+    coords: Coordinates;  // movimiento sugerido por el bot
+    status: GameStatus;   // estado de la partida tras evaluar el tablero
 };
 
 export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, player2Name}: BoardProps) => {
-  // ── Viewport SVG fijo ────────────────────────────────────────────────────
+
+  // Calcula el tamaño del hexágono para que el tablero quepa en el SVG
   const SVG_W = 600;
   const SVG_H = 560;
   const PADDING = 30;
 
-  //   Fila más ancha  = boardSize hexágonos → ancho total = boardSize * sqrt(3)*size
-  //   Número de filas = boardSize           → alto total  = (boardSize-1)*1.5*size + 2*size
   const maxSizeByWidth  = (SVG_W - 2 * PADDING) / (boardSize * Math.sqrt(3));
   const maxSizeByHeight = (SVG_H - 2 * PADDING) / ((boardSize - 1) * 1.5 + 2);
-  const size = Math.floor(Math.min(maxSizeByWidth, maxSizeByHeight));
+  const size = Math.floor(Math.min(maxSizeByWidth, maxSizeByHeight)); // tamaño final del hexágono (el menor de los dos límites)
 
-  const hexWidth = Math.sqrt(3) * size;   // distancia horizontal entre centros de columna
-  const yOffset  = 1.5 * size;            // distancia vertical entre filas
+  const hexWidth = Math.sqrt(3) * size;
+  const yOffset  = 1.5 * size;
 
-  // Altura total del triángulo
-  const totalH = (boardSize - 1) * yOffset + 2 * size;
-
-  // Centro horizontal del SVG
+  const totalH    = (boardSize - 1) * yOffset + 2 * size;
   const svgCenterX = SVG_W / 2;
+  const boardTop   = (SVG_H - totalH) / 2 + size; // punto Y de inicio del tablero, centrado verticalmente
 
-  // Punto Y desde el que empieza la primera fila, para centrar verticalmente
-  const boardTop = (SVG_H - totalH) / 2 + size;
-  // ─────────────────────────────────────────────────────────────────────────
-
+  // Mapa de celdas ocupadas: clave = "x-y-z", valor = quién la ocupa
   const [boardState, setBoardState] = useState<Record<string, CellState>>({});
+
+  // Bloquea nuevos clics mientras se espera respuesta del backend (modo bot y PvP)
   const [isBotThinking, setIsBotThinking] = useState(false);
+
+  // null = en curso  |  'human' = ganó J1  |  'bot' = ganó J2/bot
   const [winner, setWinner] = useState<CellState | null>(null);
-  // En modo PvP, controla de quién es el turno: 'human' = Jugador 1 (azul), 'bot' = Jugador 2 (rojo)
+
+  // Solo relevante en PvP: de quién es el turno; siempre empieza J1
   const [pvpTurn, setPvpTurn] = useState<'human' | 'bot'>('human');
 
+  // Procesa el status de Gamey en modo bot y actualiza el ganador
   const handleWinner = (status: GameStatus): void => {
-      if (status.Finished !== undefined) {
-          const userWon = status.Finished.winner == 0;
-          const winner = userWon ? "human" : "bot";
-          setWinner(winner);
-
-          // Guardar la partida en la base de datos
-          salvarPartidaEnBD(userWon);
-      }
+    if (status.Finished !== undefined) {
+      const userWon = status.Finished.winner == 0; // 0 = B = humano
+      setWinner(userWon ? 'human' : 'bot');
+      salvarPartidaEnBD(userWon);
+    }
   };
 
   console.debug(botId);
 
-  // Serializa el estado del tablero al formato YEN que entiende el backend Gamey.
-  // El parámetro 'turn' indica qué jugador mueve a continuación: 0 = B (azul), 1 = R (rojo).
-  // En modo bot siempre es 1 (le toca al bot). En modo PvP varía según el turno actual.
+  // Convierte el estado del tablero al formato YEN que espera Gamey.
+  // Layout: filas separadas por '/', cada carácter es B / R / .
   const generarYEN = (currentBoard: Record<string, CellState>, turn: number = 1): object => {
     const filas: string[] = [];
     for (let r = 0; r < boardSize; r++) {
       let filaString = "";
       for (let c = 0; c <= r; c++) {
+        // Conversión de posición (fila, columna) a coordenadas baricéntricas
         const x = boardSize - 1 - r;
         const y = c;
         const z = (boardSize - 1) - x - y;
@@ -102,68 +98,61 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     return { size: boardSize, turn, players: ["B", "R"], layout: filas.join("/") };
   };
 
-  // Diccionario de bots
-const BOT_ENDPOINTS: Record<string, string> = {
-  easy: 'random_bot',
-  medium: 'mediumbot',
-  hard: 'bridgebot'
+  const BOT_ENDPOINTS: Record<string, string> = { // mapeo de dificultad al identificador del bot en Gamey
+    easy:   'random_bot',
+    medium: 'mediumbot',
+    hard:   'bridgebot'
+  };
 
-};
+  // Envía el tablero a Gamey y coloca el movimiento devuelto por el bot.
+  // Si el humano ya ganó antes de que el bot mueva, no coloca ficha del bot.
+  const askBotForMove = async (currentBoard: Record<string, CellState>) => {
+    setIsBotThinking(true);
+    try {
+      const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
+      const yenPayload = generarYEN(currentBoard); // turn=1 por defecto: le toca al bot como player 1
+      const botEndpoint = BOT_ENDPOINTS[difficulty];
 
-const askBotForMove = async (currentBoard: Record<string, CellState>) => {
-  setIsBotThinking(true);
-  try {
-    const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-    const yenPayload = generarYEN(currentBoard);
+      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/${botEndpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(yenPayload)
+      });
 
-    const botEndpoint = BOT_ENDPOINTS[difficulty];
+      if (res.ok) {
+        const data: MoveResponse = await res.json();
 
-    const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/${botEndpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(yenPayload)
-    });
-
-    if (res.ok) {
-      const data: MoveResponse = await res.json();
-
-      const humanWon = data.status.Finished?.winner === 0;
-      if (!humanWon && data.coords && data.coords.x !== undefined) {
-        const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
-        setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
-      } else if (!humanWon) {
-        console.warn("El bot devolvió una respuesta válida pero sin coordenadas.");
+        const humanWon = data.status.Finished?.winner === 0; // el humano ganó con su último movimiento
+        if (!humanWon && data.coords && data.coords.x !== undefined) {
+          const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
+          setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
+        } else if (!humanWon) {
+          console.warn("El bot devolvió una respuesta válida pero sin coordenadas.");
+        }
+        handleWinner(data.status);
+      } else {
+        const errorText = await res.text();
+        console.error(`Error del servidor (${res.status}):`, errorText);
+        alert(`Error en el servidor al pedir movimiento al bot: ${botEndpoint}. Revisa la consola.`);
       }
-      handleWinner(data.status);
-    } else {
-      const errorText = await res.text();
-      console.error(`Error del servidor (${res.status}):`, errorText);
-      alert(`Error en el servidor al pedir movimiento al bot: ${botEndpoint}. Revisa la consola.`);
+    } catch (error) {
+      console.error("Error al contactar con el bot:", error);
+    } finally {
+      setIsBotThinking(false);
     }
-  } catch (error) {
-    console.error("Error al contactar con el bot:", error);
-  } finally {
-    setIsBotThinking(false);
-  }
-};
+  };
 
-  // Consulta al backend Gamey si la partida ha terminado tras el movimiento de un jugador en modo PvP.
-  // Se reutiliza el endpoint de elección de bot únicamente para obtener el estado del juego (status),
-  // ignorando las coordenadas que devuelve (el bot no llega a jugar).
-  //
-  // Gamey espera siempre turn: 1 (el jugador que va a mover es player 1 / R).
-  // Cuando acaba de mover J2 ('bot'), intercambiamos las piezas en el YEN:
-  //   - Las piezas de J2 se envían como 'B' (player 0)
-  //   - Las piezas de J1 se envían como 'R' (player 1)
-  // Así Gamey siempre evalúa "¿ganó player 0 (el que acaba de mover)?".
-  // 'currentTurn': jugador que acaba de mover ('human'=J1, 'bot'=J2).
+  // Comprueba si alguien ganó en PvP consultando a Gamey.
+  // Siempre enviamos turn:1 para que Gamey evalúe "¿ganó B (player 0)?".
+  // Cuando acaba de mover J2, intercambiamos B y R en el YEN para que J2 sea tratado como B.
+  // Solo declaramos ganador con winner===0; ignoramos winner===1 porque corresponde
+  // al movimiento aleatorio del bot que Gamey hace internamente y que en PvP no ocurre.
   const checkWinViaPvP = async (board: Record<string, CellState>, currentTurn: 'human' | 'bot') => {
     setIsBotThinking(true);
     try {
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
 
-      // Si J2 (bot) acaba de mover, intercambiamos el encoding de las piezas
-      const swapped = currentTurn === 'bot';
+      const swapped = currentTurn === 'bot'; // true si J2 acaba de mover: intercambiar codificación B y R
       const filas: string[] = [];
       for (let r = 0; r < boardSize; r++) {
         let filaString = "";
@@ -172,6 +161,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
           const y = c;
           const z = (boardSize - 1) - x - y;
           const cell = board[`${x}-${y}-${z}`];
+          // Sin swap: J1-B, J2-R  |  Con swap: J2-B (el que acaba de mover), J1-R
           if (cell === 'human') filaString += swapped ? 'R' : 'B';
           else if (cell === 'bot') filaString += swapped ? 'B' : 'R';
           else filaString += '.';
@@ -180,6 +170,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       }
       const yenPayload = { size: boardSize, turn: 1, players: ["B", "R"], layout: filas.join("/") };
 
+      // Se usa random_bot solo para obtener el campo status; las coords sugeridas se ignoran
       const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/random_bot`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -189,20 +180,13 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       if (res.ok) {
         const data: MoveResponse = await res.json();
 
-        // Solo declaramos ganador si winner === 0, es decir, si ganó 'B' (el jugador que
-        // acaba de mover en nuestra codificación). Si winner === 1, significa que el movimiento
-        // ALEATORIO que el bot sugería habría ganado para R, pero ese movimiento no se juega
-        // en PvP, así que lo ignoramos y continuamos la partida.
         if (data.status.Finished !== undefined && data.status.Finished.winner === 0) {
-          // B ganó: si no hubo swap → J1 ('human'); si hubo swap → J2 ('bot')
+          // B ganó: si hubo swap B=J2 ('bot'), si no hubo swap B=J1 ('human')
           const playerWon: CellState = swapped ? 'bot' : 'human';
           setWinner(playerWon);
-          // Desde el punto de vista de la BD, 'human' (Jugador 1) es quien gana o pierde.
-          // Se guarda el nombre del J2 como oponente.
-          salvarPartidaEnBD(playerWon === 'human', player2Name);
+          salvarPartidaEnBD(playerWon === 'human', player2Name); // guarda con el nombre de J2 como oponente
         } else {
-          // Partida en curso (o el bot hipotético ganaría, lo ignoramos): alternar turno
-          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human');
+          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human'); // nadie ganó: alterna el turno
         }
       } else {
         const errorText = await res.text();
@@ -215,17 +199,19 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     }
   };
 
-  // Guarda el resultado de la partida en la base de datos del servicio de usuarios.
-  // En modo bot, el nombre del oponente se deduce de la dificultad.
-  // En modo PvP, se pasa explícitamente 'jugador' como nombre del oponente.
+  // Guarda el resultado en el servicio de usuarios (puerto 3000).
+  // En modo bot deduce el nombre del oponente de la dificultad si no se pasa explícitamente.
   const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
     try {
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
-      const oponente = oponenteName ?? (difficulty === 'easy' ? 'random_bot' : difficulty === 'medium' ? 'mediumbot' : 'bridgebot');
+      const oponente = oponenteName ?? (
+        difficulty === 'easy'   ? 'random_bot' :
+        difficulty === 'medium' ? 'mediumbot'  : 'bridgebot'
+      );
 
       const res = await fetch(`${USERS_URL}/guardar-partida`, {
         method: 'POST',
-        credentials: 'include',
+        credentials: 'include', // incluye la cookie de sesión para autenticar al usuario
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oponente, ganada: userWon })
       });
@@ -244,16 +230,14 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
   const handleHexClick = (x: number, y: number, z: number) => {
     const id = `${x}-${y}-${z}`;
 
-    // Ignorar clic si la celda ya está ocupada, la partida ha terminado, o se está esperando respuesta del backend
+    // Ignora el clic si la celda está ocupada, la partida terminó o el backend está procesando
     if (boardState[id] || winner || isBotThinking) return;
 
     if (gameMode === 'pvp') {
-      // En PvP: Jugador 1 usa 'human' (azul) y Jugador 2 usa 'bot' (rojo)
-      const cell: CellState = pvpTurn === 'human' ? 'human' : 'bot';
+      const cell: CellState = pvpTurn === 'human' ? 'human' : 'bot'; // J1 coloca azul, J2 coloca rojo
       const newBoard: Record<string, CellState> = { ...boardState, [id]: cell };
       setBoardState(newBoard);
-      // Delegar la comprobación de victoria al backend Gamey
-      checkWinViaPvP(newBoard, pvpTurn);
+      checkWinViaPvP(newBoard, pvpTurn); // delega la comprobación de victoria al backend
     } else {
       const newBoard: Record<string, CellState> = { ...boardState, [id]: 'human' as CellState };
       setBoardState(newBoard);
@@ -261,10 +245,10 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     }
   };
 
+  // Reinicia el tablero; en PvP siempre empieza J1
   const resetGame = () => {
     setBoardState({});
     setWinner(null);
-    // Reiniciar el turno al Jugador 1 al empezar una nueva partida en modo PvP
     setPvpTurn('human');
   };
 
@@ -277,12 +261,12 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
         const z = (boardSize - 1) - x - y;
         const id = `${x}-${y}-${z}`;
 
-        const cx = svgCenterX - (r * hexWidth) / 2 + c * hexWidth;
+        const cx = svgCenterX - (r * hexWidth) / 2 + c * hexWidth; // posición X centrada en el SVG
         const cy = boardTop + r * yOffset;
 
-        let color = '#eeeeee';
-        if (boardState[id] === 'human') color = '#3b82f6';
-        if (boardState[id] === 'bot') color = '#ef4444';
+        let color = '#eeeeee';                              // vacía: gris
+        if (boardState[id] === 'human') color = '#3b82f6'; // J1: azul
+        if (boardState[id] === 'bot')   color = '#ef4444'; // J2/bot: rojo
 
         hexElements.push(
           <Hexagon key={id} cx={cx} cy={cy} size={size} color={color} onClick={() => handleHexClick(x, y, z)} />
@@ -292,7 +276,6 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     return hexElements;
   };
 
-  // Mensajes de la interfaz superior: cambian según el modo de juego y el estado actual
   let statusMessage: string;
   let statusColor: string;
 
@@ -328,13 +311,17 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {/* Barra de estado: indica turno actual o ganador */}
       <p style={{ height: '24px', fontWeight: 'bold', color: statusColor, marginBottom: '10px', fontSize: winner ? '20px' : '16px' }}>
         {statusMessage}
       </p>
+
+      {/* Tablero SVG con todos los hexágonos */}
       <svg width={SVG_W} height={SVG_H} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
         {renderHexagons()}
       </svg>
 
+      {/* Botón de reinicio: solo aparece cuando la partida ha terminado */}
       {winner && (
         <button
           onClick={resetGame}
