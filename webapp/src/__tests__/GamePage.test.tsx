@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import GamePage from '../pages/GamePage'
 import { vi, beforeEach, describe, it, expect, afterEach } from 'vitest'
 
@@ -20,7 +20,7 @@ describe('GamePage', () => {
     render(
         <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
-    
+
     const title = await screen.findByText(/Juego Y/i)
     expect(title).toBeTruthy()
   })
@@ -29,10 +29,10 @@ describe('GamePage', () => {
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
-    
+
     const welcome = await screen.findByText(/Bienvenido/i)
     const username = await screen.findByText('Pepe')
-    
+
     expect(welcome).toBeTruthy()
     expect(username).toBeTruthy()
   })
@@ -74,5 +74,18 @@ describe('GamePage', () => {
 
     const backButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(backButton).toBeTruthy()
+  })
+
+  // Test del modo PvP: funcionalidad añadida en la issue jugador vs jugador
+  it('debería mostrar el input del nombre del Jugador 2 al seleccionar modo PvP', async () => {
+    render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
+
+    const selects = await screen.findAllByRole('combobox')
+    // El primer selector es el de modo de juego
+    fireEvent.change(selects[0], { target: { value: 'pvp' } })
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/Nombre del Jugador 2/i)).toBeTruthy()
+    })
   })
 })

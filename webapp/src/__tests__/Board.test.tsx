@@ -132,3 +132,117 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     expect(hexagons.length).toBe(6)
   })
 })
+
+describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    // Mock por defecto: partida en curso, nadie ha ganado todavía
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        api_version: 'v1',
+        bot_id: 'random_bot',
+        coords: { x: 0, y: 0, z: 2 },
+        status: { Ongoing: { next_player: 0 } }
+      }),
+    } as Response)
+  })
+
+  it('debería mostrar el turno del Jugador 1 al inicio en modo PvP', () => {
+    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+
+    expect(screen.getByText(/Turno de Guille \(Azul\)/i)).toBeTruthy()
+  })
+
+  it('debería alternar al turno del Jugador 2 tras el movimiento del Jugador 1', async () => {
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+
+    fireEvent.click(container.querySelectorAll('polygon')[0])
+
+    await waitFor(() => {
+      expect(screen.getByText(/Turno de Pepe \(Rojo\)/i)).toBeTruthy()
+    })
+  })
+
+  it('debería detectar la victoria del Jugador 1 en modo PvP', async () => {
+    // winner:0 cuando J1 acaba de mover (sin swap) → J1 gana
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        api_version: 'v1',
+        bot_id: 'random_bot',
+        coords: { x: 0, y: 0, z: 2 },
+        status: { Finished: { winner: 0 } }
+      }),
+    } as Response)
+
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    fireEvent.click(container.querySelectorAll('polygon')[0])
+
+    await waitFor(() => {
+      expect(screen.getByText(/¡Guille GANA LA PARTIDA!/i)).toBeTruthy()
+      expect(screen.getByRole('button', { name: /Volver a jugar/i })).toBeTruthy()
+    })
+  })
+
+  it('debería detectar la victoria del Jugador 2 en modo PvP', async () => {
+    // J1 mueve primero (Ongoing) y luego J2 mueve (Finished winner:0 con swap activo → J2 gana)
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          api_version: 'v1',
+          bot_id: 'random_bot',
+          coords: { x: 0, y: 0, z: 2 },
+          status: { Ongoing: { next_player: 0 } }
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          api_version: 'v1',
+          bot_id: 'random_bot',
+          coords: { x: 0, y: 1, z: 1 },
+          status: { Finished: { winner: 0 } } // con swap activo: winner:0 = J2 gana
+        }),
+      } as Response)
+
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    const hexagons = container.querySelectorAll('polygon')
+
+    // J1 mueve
+    fireEvent.click(hexagons[0])
+    await waitFor(() => {
+      expect(screen.getByText(/Turno de Pepe \(Rojo\)/i)).toBeTruthy()
+    })
+
+    // J2 mueve
+    fireEvent.click(hexagons[1])
+    await waitFor(() => {
+      expect(screen.getByText(/¡Pepe GANA LA PARTIDA!/i)).toBeTruthy()
+      expect(screen.getByRole('button', { name: /Volver a jugar/i })).toBeTruthy()
+    })
+  })
+
+  it('debería ignorar winner:1 en modo PvP y continuar la partida', async () => {
+    // winner:1 corresponde al movimiento aleatorio interno de Gamey, que no ocurre en PvP
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        api_version: 'v1',
+        bot_id: 'random_bot',
+        coords: { x: 0, y: 0, z: 2 },
+        status: { Finished: { winner: 1 } }
+      }),
+    } as Response)
+
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    fireEvent.click(container.querySelectorAll('polygon')[0])
+
+    // La partida debe continuar: se alterna el turno sin declarar ganador
+    await waitFor(() => {
+      expect(screen.getByText(/Turno de Pepe \(Rojo\)/i)).toBeTruthy()
+    })
+  })
+})
