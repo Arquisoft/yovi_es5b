@@ -204,10 +204,7 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
   const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
     try {
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
-      const oponente = oponenteName ?? (
-        difficulty === 'easy'   ? 'random_bot' :
-        difficulty === 'medium' ? 'mediumbot'  : 'bridgebot'
-      );
+      const oponente = oponenteName ?? BOT_ENDPOINTS[difficulty];
 
       const res = await fetch(`${USERS_URL}/guardar-partida`, {
         method: 'POST',
