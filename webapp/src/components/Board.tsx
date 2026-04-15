@@ -150,26 +150,11 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
   const checkWinViaPvP = async (board: Record<string, CellState>, currentTurn: 'human' | 'bot') => {
     setIsBotThinking(true);
     try {
-      const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-
       const swapped = currentTurn === 'bot'; // true si J2 acaba de mover: intercambiar codificación B y R
-      const filas: string[] = [];
-      for (let r = 0; r < boardSize; r++) {
-        let filaString = "";
-        for (let c = 0; c <= r; c++) {
-          const x = boardSize - 1 - r;
-          const y = c;
-          const z = (boardSize - 1) - x - y;
-          const cell = board[`${x}-${y}-${z}`];
-          // Sin swap: J1-B, J2-R  |  Con swap: J2-B (el que acaba de mover), J1-R
-          if (cell === 'human') filaString += swapped ? 'R' : 'B';
-          else if (cell === 'bot') filaString += swapped ? 'B' : 'R';
-          else filaString += '.';
-        }
-        filas.push(filaString);
-      }
-      const yenPayload = { size: boardSize, turn: 1, players: ["B", "R"], layout: filas.join("/") };
-
+      
+      const yenPayload = buildYenPayload(board, swapped);
+      
+      const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
       // Se usa random_bot solo para obtener el campo status; las coords sugeridas se ignoran
       const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/random_bot`, {
         method: 'POST',
@@ -198,6 +183,28 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
       setIsBotThinking(false);
     }
   };
+
+  // Función auxiliar para checkWinViaPvP que construye el payload YEN
+  const buildYenPayload = (board: Record<string, CellState>, swapped: boolean) => {
+    const filas: string[] = [];
+    
+    for (let r = 0; r < boardSize; r++) {
+      let filaString = "";
+      for (let c = 0; c <= r; c++) {
+        const x = boardSize - 1 - r;
+        const y = c;
+        const z = (boardSize - 1) - x - y;
+        const cell = board[`${x}-${y}-${z}`];
+        // Sin swap: J1-B, J2-R  |  Con swap: J2-B (el que acaba de mover), J1-R
+        if (cell === 'human') filaString += swapped ? 'R' : 'B';
+        else if (cell === 'bot') filaString += swapped ? 'B' : 'R';
+        else filaString += '.';
+      }
+      filas.push(filaString);
+    }
+    
+    return { size: boardSize, turn: 1, players: ["B", "R"], layout: filas.join("/") };
+  }
 
   // Guarda el resultado en el servicio de usuarios (puerto 3000).
   // En modo bot deduce el nombre del oponente de la dificultad si no se pasa explícitamente.
