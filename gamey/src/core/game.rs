@@ -504,6 +504,20 @@ impl TryFrom<YEN> for GameY {
                 }
             }
         }
+        // Una vez reconstruido el tablero, forzamos next_player al valor que indica el YEN,
+        // pero solo si el juego no ha terminado ya durante la reconstrucción.
+        if !ygame.check_game_over() {
+            let turn = game.turn();
+            if turn >= 2 {
+                return Err(GameYError::InvalidYENTurn {
+                    turn,
+                    player_count: 2,
+                });
+            }
+            ygame.status = GameStatus::Ongoing {
+                next_player: PlayerId::new(turn),
+            };
+        }
         Ok(ygame)
     }
 }
@@ -785,6 +799,25 @@ mod tests {
                 assert_eq!(next_player, PlayerId::new(0));
             }
             _ => panic!("Game should be ongoing"),
+        }
+    }
+
+    #[test]
+    fn test_load_yen_invalid_turn() {
+        let yen_str = r#"{
+            "size": 3,
+            "turn": 2,
+            "players": ["B","R"],
+            "layout": "./../..."
+        }"#;
+        let yen: YEN = serde_json::from_str(yen_str).unwrap();
+        let err = GameY::try_from(yen).unwrap_err();
+        match err {
+            GameYError::InvalidYENTurn { turn, player_count } => {
+                assert_eq!(turn, 2);
+                assert_eq!(player_count, 2);
+            }
+            other => panic!("Expected InvalidYENTurn, found: {:?}", other),
         }
     }
 }
