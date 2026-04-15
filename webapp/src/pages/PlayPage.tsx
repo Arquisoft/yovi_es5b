@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Board } from '../components/Board';
 import type { User } from "../types/user";
 
-// Mantén tus diccionarios de mapeo
+// Dificultades de los bots
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
 const urlToDifficulty: Record<string, DifficultyLevel> = {
