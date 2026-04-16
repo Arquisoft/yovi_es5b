@@ -139,13 +139,11 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
     vi.clearAllMocks()
     // Mock por defecto: partida en curso, nadie ha ganado todavía
     global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
+    ok: true,
+    json: async () => ({
         api_version: 'v1',
-        bot_id: 'random_bot',
-        coords: { x: 0, y: 0, z: 2 },
         status: { Ongoing: { next_player: 0 } }
-      }),
+    })
     } as Response)
   })
 
@@ -166,15 +164,13 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
   })
 
   it('debería detectar la victoria del Jugador 1 en modo PvP', async () => {
-    // winner:0 cuando J1 acaba de mover (sin swap) → J1 gana
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
+    // winner:0 → J1 (Guille) gana
+    global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
         api_version: 'v1',
-        bot_id: 'random_bot',
-        coords: { x: 0, y: 0, z: 2 },
         status: { Finished: { winner: 0 } }
-      }),
+    })
     } as Response)
 
     const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
@@ -187,24 +183,19 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
   })
 
   it('debería detectar la victoria del Jugador 2 en modo PvP', async () => {
-    // J1 mueve primero (Ongoing) y luego J2 mueve (Finished winner:0 con swap activo → J2 gana)
-    global.fetch = vi.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
+    // J1 mueve primero (Ongoing) y luego J2 mueve (Finished winner:1 → J2 gana)
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
           api_version: 'v1',
-          bot_id: 'random_bot',
-          coords: { x: 0, y: 0, z: 2 },
           status: { Ongoing: { next_player: 0 } }
-        }),
-      } as Response)
+      })
+    } as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           api_version: 'v1',
-          bot_id: 'random_bot',
-          coords: { x: 0, y: 1, z: 1 },
-          status: { Finished: { winner: 0 } } // con swap activo: winner:0 = J2 gana
+          status: { Finished: { winner: 1 } } // winner:1 → J2 (Pepe) gana
         }),
       } as Response)
 
@@ -225,22 +216,20 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
     })
   })
 
-  it('debería ignorar winner:1 en modo PvP y continuar la partida', async () => {
-    // winner:1 corresponde al movimiento aleatorio interno de Gamey, que no ocurre en PvP
+  it('debería continuar la partida cuando el backend devuelve Ongoing', async () => {
+    // Ongoing → nadie ganó, se alterna el turno
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
-        bot_id: 'random_bot',
-        coords: { x: 0, y: 0, z: 2 },
-        status: { Finished: { winner: 1 } }
+        status: { Ongoing: { next_player: 1 } }
       }),
     } as Response)
 
     const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
-    // La partida debe continuar: se alterna el turno sin declarar ganador
+    // La partida continúa: se muestra el turno de J2
     await waitFor(() => {
       expect(screen.getByText(/Turno de Pepe \(Rojo\)/i)).toBeTruthy()
     })

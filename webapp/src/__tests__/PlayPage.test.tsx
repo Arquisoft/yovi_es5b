@@ -43,7 +43,6 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     expect(await screen.findByTestId('mock-board')).toBeTruthy()
   })
 
-  // Test del modo PvP: funcionalidad añadida en la issue jugador vs jugador
   it('debería mostrar los nombres de ambos jugadores en el título en modo PvP', async () => {
     render(
       <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"Guille"}} botId="random_bot" gameMode="pvp" player2Name="Pepe" onBackToLobby={() => {}}/>

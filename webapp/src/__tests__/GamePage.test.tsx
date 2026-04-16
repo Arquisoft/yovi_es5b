@@ -76,7 +76,6 @@ describe('GamePage', () => {
     expect(backButton).toBeTruthy()
   })
 
-  // Test del modo PvP: funcionalidad añadida en la issue jugador vs jugador
   it('debería mostrar el input del nombre del Jugador 2 al seleccionar modo PvP', async () => {
     render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
 

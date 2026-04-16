@@ -35,6 +35,11 @@ type MoveResponse = { // respuesta del endpoint /v1/ybot/choose/{bot_id} de Game
     status: GameStatus;   // estado de la partida tras evaluar el tablero
 };
 
+type StatusResponse = { // respuesta del endpoint /v1/ybot/status de Gamey
+    api_version: string;
+    status: GameStatus;   // estado de la partida tras evaluar el tablero
+};
+
 export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, player2Name}: BoardProps) => {
 
   // Calcula el tamaño del hexágono para que el tablero quepa en el SVG
@@ -142,49 +147,30 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     }
   };
 
-  // Comprueba si alguien ganó en PvP consultando a Gamey.
-  // Siempre enviamos turn:1 para que Gamey evalúe "¿ganó B (player 0)?".
-  // Cuando acaba de mover J2, intercambiamos B y R en el YEN para que J2 sea tratado como B.
-  // Solo declaramos ganador con winner===0; ignoramos winner===1 porque corresponde
-  // al movimiento aleatorio del bot que Gamey hace internamente y que en PvP no ocurre.
+  // Comprueba si alguien ganó en PvP consultando al endpoint de estado de Gamey.
+  // No invoca ningún bot: solo evalúa el tablero tal como está.
   const checkWinViaPvP = async (board: Record<string, CellState>, currentTurn: 'human' | 'bot') => {
     setIsBotThinking(true);
     try {
+      // Construir el YEN con el turno del jugador que acaba de mover (0 = J1/human, 1 = J2/bot)
+      const turnIdx = currentTurn === 'human' ? 0 : 1;
+      const yenPayload = generarYEN(board, turnIdx);
+
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-
-      const swapped = currentTurn === 'bot'; // true si J2 acaba de mover: intercambiar codificación B y R
-      const filas: string[] = [];
-      for (let r = 0; r < boardSize; r++) {
-        let filaString = "";
-        for (let c = 0; c <= r; c++) {
-          const x = boardSize - 1 - r;
-          const y = c;
-          const z = (boardSize - 1) - x - y;
-          const cell = board[`${x}-${y}-${z}`];
-          // Sin swap: J1-B, J2-R  |  Con swap: J2-B (el que acaba de mover), J1-R
-          if (cell === 'human') filaString += swapped ? 'R' : 'B';
-          else if (cell === 'bot') filaString += swapped ? 'B' : 'R';
-          else filaString += '.';
-        }
-        filas.push(filaString);
-      }
-      const yenPayload = { size: boardSize, turn: 1, players: ["B", "R"], layout: filas.join("/") };
-
-      // Se usa random_bot solo para obtener el campo status; las coords sugeridas se ignoran
-      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/random_bot`, {
+      const res = await fetch(`${GAMEY_URL}/v1/ybot/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(yenPayload)
       });
 
       if (res.ok) {
-        const data: MoveResponse = await res.json();
+        const data: StatusResponse = await res.json();
 
-        if (data.status.Finished !== undefined && data.status.Finished.winner === 0) {
-          // B ganó: si hubo swap B=J2 ('bot'), si no hubo swap B=J1 ('human')
-          const playerWon: CellState = swapped ? 'bot' : 'human';
+        if (data.status.Finished !== undefined) {
+          // winner 0 = J1 (human, azul) | winner 1 = J2 (bot, rojo)
+          const playerWon: CellState = data.status.Finished.winner === 0 ? 'human' : 'bot';
           setWinner(playerWon);
-          salvarPartidaEnBD(playerWon === 'human', player2Name); // guarda con el nombre de J2 como oponente
+          salvarPartidaEnBD(playerWon === 'human', player2Name);
         } else {
           setPvpTurn(currentTurn === 'human' ? 'bot' : 'human'); // nadie ganó: alterna el turno
         }
