@@ -185,35 +185,6 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     }
   };
 
-  // Función auxiliar para checkWinViaPvP que construye el payload YEN
-  const buildYenPayload = (board: Record<string, CellState>, swapped: boolean) => {
-    const filas: string[] = [];
-    
-    for (let r = 0; r < boardSize; r++) {
-      filas.push(buildFila(board, r, swapped));
-    }
-    
-    return { size: boardSize, turn: 1, players: ["B", "R"], layout: filas.join("/") };
-  };
-
-  // Función auxiliar para buildYenPayload que construye una fila
-  const buildFila = (board: Record<string, CellState>, r: number, swapped: boolean): string => {
-    let filaString = "";
-
-    for (let c = 0; c <= r; c++) {
-        const x = boardSize - 1 - r;
-        const y = c;
-        const z = (boardSize - 1) - x - y;
-        const cell = board[`${x}-${y}-${z}`];
-        // Sin swap: J1-B, J2-R  |  Con swap: J2-B (el que acaba de mover), J1-R
-        if (cell === 'human') filaString += swapped ? 'R' : 'B';
-        else if (cell === 'bot') filaString += swapped ? 'B' : 'R';
-        else filaString += '.';
-      }
-
-      return filaString;
-  };
-
   // Guarda el resultado en el servicio de usuarios (puerto 3000).
   // En modo bot deduce el nombre del oponente de la dificultad si no se pasa explícitamente.
   const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
