@@ -89,6 +89,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
           <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="combobox">
             <option value="random">Bot Aleatorio</option>
             <option value="mediumbot">Bot Medio</option>
+            <option value="bridgebot">Bot Puente (Difícil)</option>
           </select>
 
           {/* Selección de las dimensiones del tablero */}
