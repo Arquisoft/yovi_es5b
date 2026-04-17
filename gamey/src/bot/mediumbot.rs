@@ -2,14 +2,66 @@ use crate::core::{Coordinates, GameY};
 use crate::YBot;
 use rand::prelude::IndexedRandom;
 
+// Bot intermedio orientado a expansion directa:
+// abre en centro y luego crece por frontera hacia paredes faltantes.
 #[derive(Debug, Default)]
 pub struct MediumBot;
 
+// Representa las tres paredes objetivo del tablero triangular.
+#[derive(Clone, Copy)]
+enum Side {
+    X,
+    Y,
+    Z,
+}
+
+// En coordenadas cubicas, dos celdas son vecinas si |dx|+|dy|+|dz| = 2.
 fn are_neighbors(c1: &Coordinates, c2: &Coordinates) -> bool {
     let dx = (c1.x() as i32 - c2.x() as i32).abs();
     let dy = (c1.y() as i32 - c2.y() as i32).abs();
     let dz = (c1.z() as i32 - c2.z() as i32).abs();
     dx + dy + dz == 2
+}
+
+// Puntua que tan centrada esta una celda; se usa solo en la apertura.
+fn center_metric(c: &Coordinates) -> i32 {
+    1000 - ((c.x() as i32 - c.y() as i32).abs()
+        + (c.y() as i32 - c.z() as i32).abs()
+        + (c.z() as i32 - c.x() as i32).abs())
+}
+
+// Distancia directa de una celda a la pared indicada.
+fn distance_to_side(cell: &Coordinates, side: Side) -> i32 {
+    match side {
+        Side::X => cell.x() as i32,
+        Side::Y => cell.y() as i32,
+        Side::Z => cell.z() as i32,
+    }
+}
+
+// Mide cuan recto es el avance hacia una pared concreta.
+// Menor valor implica menos desvio lateral.
+fn straightness_to_side(cell: &Coordinates, side: Side) -> i32 {
+    match side {
+        Side::X => (cell.y() as i32 - cell.z() as i32).abs(),
+        Side::Y => (cell.x() as i32 - cell.z() as i32).abs(),
+        Side::Z => (cell.x() as i32 - cell.y() as i32).abs(),
+    }
+}
+
+// Obtiene la mejor puntuacion hacia cualquier pared faltante.
+// Prioriza acercarse a la pared y, en empate, mantener linea recta.
+fn best_missing_side_score(cell: &Coordinates, missing_sides: &[Side]) -> i32 {
+    missing_sides
+        .iter()
+        .map(|&side| {
+            let dist = distance_to_side(cell, side);
+            let line = straightness_to_side(cell, side);
+            // Primero cercania a pared faltante; luego trayectoria recta.
+            -(dist * 100 + line * 10)
+        })
+        .max()
+        .unwrap_or(i32::MIN)
 }
 
 impl YBot for MediumBot {
@@ -18,19 +70,21 @@ impl YBot for MediumBot {
     }
 
     fn choose_move(&self, board: &GameY) -> Option<Coordinates> {
+        // 1) Obtener celdas libres; sin jugadas legales no hay movimiento.
         let available_cells = board.available_cells();
         if available_cells.is_empty() {
             return None;
         }
 
         let board_size = board.board_size();
-        let mut rng = rand::rng();
 
+        // 2) Identificar al jugador activo del turno.
         let my_player_id = match board.next_player() {
             Some(id) => id,
             None => return None,
         };
 
+        // 3) Recolectar todas las fichas propias para construir la frontera.
         let mut my_pieces = Vec::new();
         for idx in 0..board.total_cells() {
             let coords = Coordinates::from_index(idx, board_size);
@@ -39,35 +93,97 @@ impl YBot for MediumBot {
             }
         }
 
-        // Deducir qué lados nos faltan por tocar
+        // 4) Apertura: primer turno siempre al centro disponible.
+        if my_pieces.is_empty() {
+            let best_center_score = available_cells
+                .iter()
+                .map(|&idx| {
+                    let c = Coordinates::from_index(idx, board_size);
+                    center_metric(&c)
+                })
+                .max()
+                .unwrap_or(i32::MIN);
+
+            return available_cells
+                .iter()
+                .map(|&idx| Coordinates::from_index(idx, board_size))
+                .filter(|c| center_metric(c) == best_center_score)
+                .min_by_key(|c| c.to_index(board_size));
+        }
+
+        // 5) Calcular paredes ya tocadas y pendientes.
         let touched_x = my_pieces.iter().any(|c| c.x() == 0);
         let touched_y = my_pieces.iter().any(|c| c.y() == 0);
         let touched_z = my_pieces.iter().any(|c| c.z() == 0);
 
-        let mut best_score = -1;
+        let mut missing_sides = Vec::new();
+        if !touched_x {
+            missing_sides.push(Side::X);
+        }
+        if !touched_y {
+            missing_sides.push(Side::Y);
+        }
+        if !touched_z {
+            missing_sides.push(Side::Z);
+        }
+
+        // Si ya se tocan las 3 paredes, mantener crecimiento contiguo estable.
+        if missing_sides.is_empty() {
+            let best_neighbor = available_cells
+                .iter()
+                .map(|&idx| Coordinates::from_index(idx, board_size))
+                .filter(|cell| my_pieces.iter().any(|p| are_neighbors(cell, p)))
+                .min_by_key(|c| c.to_index(board_size));
+
+            if best_neighbor.is_some() {
+                return best_neighbor;
+            }
+
+            // Respaldo raro: si no hay vecinos detectables, elegir cualquier libre.
+            let mut rng = rand::rng();
+            let non_neighbors: Vec<Coordinates> = available_cells
+                .iter()
+                .map(|&idx| Coordinates::from_index(idx, board_size))
+                .filter(|cell| !my_pieces.iter().any(|p| are_neighbors(cell, p)))
+                .collect();
+
+            if !non_neighbors.is_empty() {
+                return non_neighbors.choose(&mut rng).copied();
+            }
+
+            return available_cells
+                .iter()
+                .map(|&idx| Coordinates::from_index(idx, board_size))
+                .collect::<Vec<_>>()
+                .choose(&mut rng)
+                .copied();
+        }
+
+        // 6) Frontera: solo se evalua expansion en celdas contiguas a la red.
+        let frontier: Vec<Coordinates> = available_cells
+            .iter()
+            .map(|&idx| Coordinates::from_index(idx, board_size))
+            .filter(|cell| my_pieces.iter().any(|p| are_neighbors(cell, p)))
+            .collect();
+
+        let candidates: Vec<Coordinates> = if frontier.is_empty() {
+            // Respaldo raro: si no hay frontera detectable, evaluar todo libre.
+            available_cells
+                .iter()
+                .map(|&idx| Coordinates::from_index(idx, board_size))
+                .collect()
+        } else {
+            frontier
+        };
+
+        let mut best_score = i32::MIN;
         let mut best_candidates: Vec<Coordinates> = Vec::new();
 
-        // Evaluar absolutamente todas las celdas disponibles
-        for &idx in available_cells {
-            let cell = Coordinates::from_index(idx, board_size);
-            
-            // 1. PUNTUACIÓN BASE: Centralidad matemática
-            let unbalance = (cell.x() as i32 - cell.y() as i32).abs()
-                          + (cell.y() as i32 - cell.z() as i32).abs()
-                          + (cell.z() as i32 - cell.x() as i32).abs();
-            
-            let mut score = 1000 - unbalance;
-
-            // 2. PUNTUACIÓN TÁCTICA: Proximidad a los bordes objetivo
-            if !touched_x { score += (board_size - cell.x()) as i32 * 10; }
-            if !touched_y { score += (board_size - cell.y()) as i32 * 10; }
-            if !touched_z { score += (board_size - cell.z()) as i32 * 10; }
-
-            // 3. MULTIPLICADOR DE CONEXIÓN: Prioridad absoluta
-            let is_adj = my_pieces.iter().any(|p| are_neighbors(&cell, p));
-            if is_adj {
-                score += 5000;
-            }
+        for cell in candidates {
+            // 7) Score final: direccion a pared faltante + soporte contiguo.
+            let side_score = best_missing_side_score(&cell, &missing_sides);
+            let contiguous_support = my_pieces.iter().filter(|p| are_neighbors(&cell, p)).count() as i32;
+            let score = side_score + contiguous_support * 3;
 
             // Actualizar el ranking
             if score > best_score {
@@ -79,14 +195,46 @@ impl YBot for MediumBot {
             }
         }
 
-        best_candidates.choose(&mut rng).copied()
+        best_candidates
+            .into_iter()
+            // Desempate estable para que el bot no sea aleatorio en igualdad.
+            .min_by_key(|c| c.to_index(board_size))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Movement, PlayerId};
+    use crate::core::{Movement, PlayerId};
+
+    /* GUÍA VISUAL DE ÍNDICES (Tamaño 5)
+       Para facilitar la lectura de los tests:
+               0
+             1   2
+           3   4   5
+         6   7   8   9
+       10  11  12  13  14
+    */
+
+    /// Genera tableros mediante un mapa visual ASCII.
+    /// '0' = Bot, '1' = Humano, '.' = Vacío
+    fn setup_test_board(size: u32, map: &str) -> GameY {
+        let mut game = GameY::new(size);
+        let clean_map: String = map.chars().filter(|c| !c.is_whitespace()).collect();
+        for (i, char) in clean_map.chars().enumerate() {
+            if i >= game.total_cells() as usize { break; }
+            let coords = Coordinates::from_index(i as u32, size);
+            let player = match char {
+                '0' => Some(PlayerId::new(0)),
+                '1' => Some(PlayerId::new(1)),
+                _ => None,
+            };
+            if let Some(p) = player {
+                game.add_move(Movement::Placement { player: p, coords }).expect("Error inyectando ficha");
+            }
+        }
+        game
+    }
 
     // Prueba: nombre del bot
     #[test]
@@ -95,96 +243,102 @@ mod tests {
         assert_eq!(bot.name(), "mediumbot");
     }
 
-    // Prueba: bot elige movimiento al estar el tablero vacío
+    // Prueba: bot elige casilla central al estar el tablero vacío
     #[test]
-    fn test_medium_bot_returns_move_on_empty_board() {
+    fn test_medium_bot_pick_center_on_empty_board() {
         let bot = MediumBot;
-        let game = GameY::new(5);
+        let board_map = "
+            .
+           . .
+          . . .
+         . . . .
+        . . . . .
+        ";
+        let game = setup_test_board(5, board_map);
+        let chosen = bot.choose_move(&game).expect("Debe mover").to_index(5);
 
-        let chosen_move = bot.choose_move(&game);
-        assert!(chosen_move.is_some());
+        let valid_chosen = [4, 7, 8];
+        assert!(
+            valid_chosen.contains(&chosen),
+            "FALLO: El bot debería escoger una casilla central para empezar, pero eligió: {}", chosen
+        );
     }
 
-    // Prueba: bot elige coordenadas válidas al hacer un movimiento
+    // Prueba: bot elige casilla unida al centro cuando ya tiene el centro seleccionado
     #[test]
-    fn test_medium_bot_returns_valid_coordinates() {
+    fn test_medium_bot_pick_touching_center_on_not_empty_board() {
         let bot = MediumBot;
-        let game = GameY::new(5);
+        let board_map = "
+            .
+           . .
+          . 0 .
+         . . . .
+        . . . . .
+        ";
+        let game = setup_test_board(5, board_map);
+        let chosen = bot.choose_move(&game).expect("Debe mover").to_index(5);
 
-        let coords = bot.choose_move(&game).unwrap();
-        let index = coords.to_index(game.board_size());
+        let valid_chosen = [1, 2, 3, 5, 7, 8];
+        assert!(
+            valid_chosen.contains(&chosen),
+            "FALLO: El bot debería escoger una casilla unida al centro, pero eligió: {}", chosen
+        );
+    }
 
-        // Index should be within the valid range for a size-5 board
-        // Total cells = (5 * 6) / 2 = 15
-        assert!(index < 15);
+    // Prueba: bot elige casilla cercana a pared faltante cuando ya tiene piezas en el tablero
+    #[test]
+    fn test_medium_bot_pick_near_missing_wall_on_not_empty_board() {
+        let bot = MediumBot;
+        let board_map = "
+              .
+             . .
+            . . .
+           . 0 . .
+          . . 0 . .
+         . . . . . .
+        . . . . 1 1 1
+        ";
+        let game = setup_test_board(7, board_map);
+        let chosen = bot.choose_move(&game).expect("Debe mover").to_index(7);
+
+        let valid_chosen = [3, 6];
+        assert!(
+            valid_chosen.contains(&chosen),
+            "FALLO: El bot debería escoger una casilla colindante a las ya tomadas, lo mas cercanas al borde, pero eligió: {}", chosen
+        );
+    }
+
+    // Prueba: bot elige casilla random cuando no tiene ninguna colindante a las ya tomadas
+    #[test]
+    fn test_medium_bot_pick_random_when_no_adjacent_cells() {
+        let bot = MediumBot;
+        let board_map = "
+              .
+             . .
+            . . .
+           . 1 1 .
+          . 1 0 1 .
+         . . 1 1 . .
+        . . . . . . .
+        ";
+        let game = setup_test_board(7, board_map);
+        let chosen = bot.choose_move(&game);
+
+        assert!(chosen.is_some(), "FALLO: El bot debería escoger una casilla, pero no eligió ninguna");
     }
 
     // Prueba: bot no elige movimiento cuando el tablero está lleno
     #[test]
     fn test_medium_bot_returns_none_on_full_board() {
         let bot = MediumBot;
-        let mut game = GameY::new(2);
+        let board_map = "
+         1
+        0 0
+        ";
+        let game = setup_test_board(2, board_map);
 
-        // Fill the board (size 2 has 3 cells)
-        let moves = vec![
-            Movement::Placement {
-                player: PlayerId::new(0),
-                coords: Coordinates::new(1, 0, 0),
-            },
-            Movement::Placement {
-                player: PlayerId::new(1),
-                coords: Coordinates::new(0, 1, 0),
-            },
-            Movement::Placement {
-                player: PlayerId::new(0),
-                coords: Coordinates::new(0, 0, 1),
-            },
-        ];
-
-        for mv in moves {
-            game.add_move(mv).unwrap();
-        }
-
-        // Board is now full
         assert!(game.available_cells().is_empty());
         let chosen_move = bot.choose_move(&game);
         assert!(chosen_move.is_none());
-    }
-
-    // Prueba: bot elige movimiento correcto cuando ya existen celdas ocupadas
-    #[test]
-    fn test_random_bot_chooses_from_available_cells() {
-        let bot = MediumBot;
-        let mut game = GameY::new(3);
-
-        // Make some moves to reduce available cells
-        game.add_move(Movement::Placement {
-            player: PlayerId::new(0),
-            coords: Coordinates::new(2, 0, 0),
-        })
-        .unwrap();
-
-        let coords = bot.choose_move(&game).unwrap();
-        let index = coords.to_index(game.board_size());
-
-        // The chosen index should be in the available cells
-        assert!(game.available_cells().contains(&index));
-    }
-
-    // Prueba: bot elige movimientos correctos tras varias jugadas
-    #[test]
-    fn test_random_bot_multiple_calls_return_valid_moves() {
-        let bot = MediumBot;
-        let game = GameY::new(7);
-
-        // Call choose_move multiple times to exercise the randomness
-        for _ in 0..10 {
-            let coords = bot.choose_move(&game).unwrap();
-            let index = coords.to_index(game.board_size());
-
-            // Total cells for size 7 = (7 * 8) / 2 = 28
-            assert!(index < 28);
-            assert!(game.available_cells().contains(&index));
-        }
     }
 }
