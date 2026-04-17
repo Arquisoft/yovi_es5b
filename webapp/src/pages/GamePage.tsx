@@ -117,7 +117,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
           {/* Selector de dificultad: solo se muestra en modo bot, ya que en PvP no hay IA */}
           {gameMode === 'bot' && (
-            <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
+            <select value={strategy} onChange={(e) => setStrategy(e.target.value)} id="botSelect" className="lobby-select">
               <option value="random">Bot Aleatorio (Fácil)</option>
               <option value="mediumbot">Bot Medio (Medio)</option>
               <option value="bridgebot">Bot Puente (Difícil)</option>
