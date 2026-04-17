@@ -80,7 +80,7 @@ async fn test_choose_endpoint_with_partially_filled_board() {
     let app = test_app();
 
     // Board with some cells already filled: B in first cell, R in second
-    let yen = YEN::new(3, 2, vec!['B', 'R'], "B/R./.B.".to_string());
+    let yen = YEN::new(3, 1, vec!['B', 'R'], "B/R./.B.".to_string());
 
     let response = app
         .oneshot(

@@ -116,6 +116,15 @@ pub enum GameYError {
         line: u32,
     },
 
+    /// YEN turn value is outside the valid player range.
+    #[error("Invalid YEN turn: {turn}, expected turn in [0, {player_count})")]
+    InvalidYENTurn {
+        /// The invalid turn value from YEN.
+        turn: u32,
+        /// Number of players in the game.
+        player_count: u32,
+    },
+
     /// Server operation failed.
     #[error("Server error: {message}")]
     ServerError {
@@ -231,6 +240,17 @@ mod tests {
         assert!(msg.contains("expected 4"));
         assert!(msg.contains("found 2"));
         assert!(msg.contains("line 3"));
+    }
+
+    #[test]
+    fn test_invalid_yen_turn_display() {
+        let err = GameYError::InvalidYENTurn {
+            turn: 2,
+            player_count: 2,
+        };
+        let msg = format!("{}", err);
+        assert!(msg.contains("Invalid YEN turn: 2"));
+        assert!(msg.contains("[0, 2)"));
     }
 
     #[test]
