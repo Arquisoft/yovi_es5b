@@ -19,6 +19,9 @@ const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
   // Clave para forzar el re-renderizado del componente Board cuando cambie la dificultad
   const [gameKey, setGameKey] = useState(0);
 
+  // Texto amigable para mostrar en el botón
+  const difficultyText = difficulty === 'easy' ? 'Fácil' : 'Medio';
+
   // Función para volver al menú principal
   const handleAbandon = async () => {
       onBackToLobby();
@@ -30,9 +33,6 @@ const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
     setDifficulty(newDifficulty);
     setGameKey(prev => prev + 1);
   };
-
-  // Texto amigable para mostrar en el botón
-  const difficultyText = difficulty === 'easy' ? 'Fácil' : 'Medio';
 
   return (
     <div className="lobby-container"> {/* Reutilizamos el centrado maestro */}
