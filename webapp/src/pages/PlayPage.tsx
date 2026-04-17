@@ -24,11 +24,11 @@ const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
       onBackToLobby();
   };
 
-  // Alterna entre los dos niveles de dificultad y reinicia el tablero
-  const handleChangeDifficulty = () => {
-    const newDifficulty = difficulty === 'easy' ? 'medium' : 'easy';
+ // Handler que soporta las 3 dificultades
+  const handleChangeDifficulty = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newDifficulty = event.target.value as DifficultyLevel;
     setDifficulty(newDifficulty);
-    setGameKey(prev => prev + 1); // Incrementamos la key para resetear el tablero
+    setGameKey(prev => prev + 1);
   };
 
   // Texto amigable para mostrar en el botón
@@ -42,10 +42,14 @@ const PlayPage = ({user, botId, boardSize, onBackToLobby}: PlayPageProps) => {
         <h2 className="play-title">Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
         
         <div className="header-actions">
-          {/* Botón para cambiar dificultad (Estilo secundario/azul) */}
-          <button onClick={handleChangeDifficulty} className="btn-difficulty">
-            {difficultyText}
-          </button>
+          <select 
+            value={difficulty} 
+            onChange={handleChangeDifficulty}
+          >
+          <option value="easy">Dificultad: Fácil</option>
+            <option value="medium">Dificultad: Medio</option>
+            <option value="hard">Dificultad: Difícil</option>
+          </select>
           
           {/* Botón para salir (Estilo logout/rojo) */}
           <button onClick={handleAbandon} className="btn-logout">
