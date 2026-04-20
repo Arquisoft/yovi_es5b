@@ -72,8 +72,24 @@ Un 43% de los errores corresponde al servicio de **gamey**, alojado en el puerto
 
 El 8% restante corresponde a errores de autenticación (código 403). Esto puede deberse a que los usuarios simulados intentan navegar por la aplicación aunque no hayan conseguido registrarse debido a la sobrecarga del servicio de **users**. En un escenario real esto no ocurriría, ya que en principio los usuarios no intentarían acceder manualmente a las rutas que requieren autenticación, aunque por otro lado podrían intentar registrarse o iniciar sesión más veces, por lo que se sobrecargaría aun más el servicio **users**.
 
+
+===== PicoCarga500
+
+Para afinar los resultados anteriores, se comprueba si la aplicación soportaría esos 500 usuarios a la vez.
+
+image::13_picoCarga500-stats.png[Resultados PicoCarga500]
+
+En este escenario se obtienen más errores de los esperados. Como se puede ver en la siguiente captura, la mayoría de los errores se debe a "connection time outs", ya que la aplicación se satura cuando los 500 usuarios tratan de jugar simultáneamente.
+
+image::13_picoCarga500-errors.png[Errores de PicoCarga500]
+
+Analizando los resultados con más detalle, se observa cómo durante el primer minuto de las pruebas, en las que los usuarios se están registrando y accediendo a la partida, no hay errores. Las respuestas fallidas comienzan a aparecer cuando los usuarios tratan de jugar sus partidas, por lo que parece que el cuello de botella de la aplicación es el servicio de *gamey*.
+
+image::13_picoCarga500-responses-per-second.png[Respuestas por segundo de PicoCarga500]
+
 ==== Conclusiones
 
 La aplicación responde correctamente bajo condiciones de carga normal y picos puntuales. Con 10 usuarios, todas las peticiones se resolvieron por debajo de los 0,5 segundos sin ningún error, cumpliendo los requisitos de calidad, y con el pico de 100 usuarios simultáneos el sistema siguió siendo estable, con únicamente un ~0,5% de peticiones rozando los 3 segundos.
-El límite de la infraestructura actual se sitúa en torno a los 500 usuarios concurrentes. A partir de ese punto, los servicios de **users** (puerto 3000) y **gamey** (puerto 4000) comienzan a saturarse, acumulando entre ambos más del 90% de los errores registrados en la prueba de 1000 usuarios.
-Para soportar cargas mayores sería necesario escalar o replicar estos dos servicios, que se han identificado como los cuellos de botella principales del sistema.
+El límite de la infraestructura actual se sitúa en torno a los 500 usuarios concurrentes navegando la web en conjunto (repartidos entre registro, jugando partidas y consultando estadísticas). A partir de ese punto, los servicios de **users** (puerto 3000) y **gamey** (puerto 4000) comienzan a saturarse, acumulando entre ambos más del 90% de los errores registrados en la prueba de 1000 usuarios.
+No obstante, si los 500 jugadores llevaran a cabo las mismas acciones al mismo tiempo, se ha podido observar que el servicio de gamey no soporta una carga tan elevada, siendo este el principal cuello de botella de la aplicación.
+Para dar servicio a un número mayor de usuarios, sería necesario escalar o replicar estos dos servicios, especialmente el de *gamey*.
