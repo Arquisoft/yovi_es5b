@@ -12,12 +12,13 @@ A continuación se detallan las pruebas de carga llevadas a cabo con https://gat
 Para llevar a cabo las simulaciones se grabó una secuencia real de uso de la aplicación, que se repite de diferentes formas para recrear diferentes escenarios.
 
 La secuencia consiste en:
-. Un nuevo usuario accede a la página por primera vez
-. Se registra en la aplicación
-. Juega una partida
-. Vuelve al menú principal
-. Consulta sus estadísticas
-. Cierra sesión
+
+* Un nuevo usuario accede a la página por primera vez
+* Se registra en la aplicación
+* Juega una partida
+* Vuelve al menú principal
+* Consulta sus estadísticas
+* Cierra sesión
 
 ==== Escenarios simulados
 
