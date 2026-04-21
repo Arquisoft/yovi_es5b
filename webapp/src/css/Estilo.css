@@ -54,18 +54,39 @@ body, html {
 
 /*  BOTONES Y SELECTORES */
 
-/*   Boton de  jugar */
+/* Botón de Jugar y Submit con estilo premium */
 .submit-button, .btn-play {
   width: 100%;
   padding: 1rem;
-  background-color: green;
+  background-color: #27ae60; /* Un verde esmeralda */
   color: white;
-  border-radius: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: bold;
+  border: none;
+  border-radius: 0.8rem; 
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
   cursor: pointer;
   margin-top: 2rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transición con "rebote" */
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+  position: relative;
+  overflow: hidden;
 }
+
+/* Efecto al pasar el ratón */
+.submit-button:hover, .btn-play:hover {
+  background-color: #2ecc71; 
+  transform: scale(1.02); /* Crece ligeramente */
+  box-shadow: 0 8px 25px rgba(46, 204, 113, 0.5);
+  letter-spacing: 2px; /* El texto se expande un poco al hacer hover */
+}
+
+/* Efecto de pulsación */
+.submit-button:active, .btn-play:active {
+  transform: scale(0.96); /* Se comprime al pulsar */
+  box-shadow: 0 2px 10px rgba(39, 174, 96, 0.4);
+}
+
 
 /* Contenedor para agrupar botones de acción del GamePage*/
 .auth-selector {
@@ -93,12 +114,35 @@ body, html {
   font-weight: 700;
 }
 
-/* Boton de salir */
+/* Botón de salir */
 .btn-logout {
-  background-color: crimson;
+  background-color: crimson; 
   color: white;
+  padding: 0.8rem 1.5rem;  
+  border: none;              
   border-radius: 0.5rem;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease; /* Suaviza todos los cambios (color, escala, sombra) */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Efecto al pasar el ratón */
+.btn-logout:hover {
+  background-color: #e74c3c; /* Rojo más brillante */
+  transform: translateY(-2px); /* Se eleva sutilmente */
+  box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3); /* Sombra rojiza */
+}
+
+/* Efecto al hacer clic */
+.btn-logout:active {
+  transform: translateY(0); /* Vuelve a su posición original */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.9);
 }
 
 /* Eleccion de tablero y bot */
@@ -208,5 +252,85 @@ h3 {
     flex-direction: column;
     gap: 1rem;
   }
+}
+
+/* Página de Bienvenida */
+
+/* Animación de aparición suave desde abajo */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de flotación suave para la card */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.welcome-card {
+  background-color: white;
+  border-radius: 1.5rem;
+  padding: 4rem;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  animation: float 4s ease-in-out infinite; /* La card flota suavemente */
+}
+
+.welcome-title {
+  color: #222;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-text {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+/* Botón con efecto de pulso al pasar el ratón */
+.btn-enter {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+}
+
+.btn-enter:hover {
+  background-color: #2ecc71;
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(39, 174, 96, 0.6);
+}
+
+.btn-enter:active {
+  transform: scale(0.98);
 }
 
