@@ -4,6 +4,7 @@ import { expect } from '@playwright/test'
 // Helper reutilizable: registra un usuario y deja la sesión iniciada en el lobby
 async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.goto('http://localhost:5173')
+  await page.click('button:has-text("COMENZAR AVENTURA")');
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
@@ -14,6 +15,7 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
 
 async function loginYAccederAlLobby(page, nom_usuario, password) {
   await page.goto('http://localhost:5173')
+  await page.click('button:has-text("COMENZAR AVENTURA")');
   await page.click('.login-page-button')
   await page.fill('#login-username', nom_usuario)
   await page.fill('#login-password', password)
@@ -168,13 +170,13 @@ Then('Intento hacer clic de nuevo en esa misma casilla', async function () {
   await casillaOcupada.click()
 })
 
-When('Intento hacer clic de nuevo en esa misma casilla', async function () {
+/*When('Intento hacer clic de nuevo en esa misma casilla', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   const casillaOcupada = page.locator(`svg polygon[points="${this.puntosCasilla}"]`)
   this.azulesAntes = await page.locator('svg polygon[fill="#3b82f6"]').count()
   await casillaOcupada.click()
-})
+})*/
 
 Then('El número de piezas azules en el tablero no debería haber aumentado', async function () {
   const page = this.page

@@ -74,7 +74,7 @@ const StartPage = () => {
             className="btn-enter" 
             onClick={() => setHasStarted(true)}
           >
-            COMENZAR AVENTURA
+            COMENZAR 
           </button>
         </div>
       </div>
