@@ -57,7 +57,7 @@ body, html {
 
 /*  BOTONES Y SELECTORES */
 
-/*   Boton de volver a jugar */
+/*   Boton de  jugar */
 .submit-button, .btn-play {
   width: 100%;
   padding: 1rem;
@@ -67,9 +67,6 @@ body, html {
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-}
-
-.btn-play {
   margin-top: 2rem;
 }
 

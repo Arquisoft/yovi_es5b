@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Board } from '../components/Board'; 
 import type { User } from "../types/user";
+import '../css/Estilo.css';
 
 // Mantén tus diccionarios de mapeo
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
@@ -15,7 +16,7 @@ type PlayPageProps = {
     user: User;
     botId: string;
     boardSize: number;
-    onBackToLobby: any;
+    onBackToLobby: () => void;
 };
 
 const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {

@@ -104,6 +104,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
             <option value="15">Tablero grande</option>
           </select>
 
+          {/* Botón para iniciar partida, bloqueado si el servidor está caído */}
           <button 
             onClick={handleStartGame} 
             className="btn-play"
