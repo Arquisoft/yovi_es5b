@@ -14,7 +14,7 @@ When('Relleno el formulario nombre de usuario como {string}, nombre {string}, co
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
-  await page.click('.submit-button')
+  await page.click('button:has-text("Aceptar Registro")');
 })
 
 Then('Debería haber creado mi cuenta de {string} y tener acceso a la pantalla de selección de juego', async function (nombre) {

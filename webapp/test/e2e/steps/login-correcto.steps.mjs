@@ -7,8 +7,8 @@ Given('Me he registrado con nombre {string}, usuario {string} y contraseña {str
   if (!page) throw new Error('Page not initialized')
   await page.goto('http://localhost:5173')
   await page.fill('#fullName', nombre)
-  await page.fill('#username', nom_usuario)
-  await page.fill('#password', password)
+  await page.fill('#login-username', nom_usuario)
+  await page.fill('#login-password', password)
   await page.click('.submit-button')
   // Tras registrarse, cerrar sesión e ir a la página de inicio de sesión
   await page.click('.btn-logout')

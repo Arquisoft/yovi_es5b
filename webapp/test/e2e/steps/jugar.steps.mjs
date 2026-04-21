@@ -7,7 +7,7 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
-  await page.click('.submit-button')
+  await page.click('button:has-text("Aceptar Registro")');
   await page.waitForSelector('.lobby-main')
 }
 
@@ -16,7 +16,7 @@ async function loginYAccederAlLobby(page, nom_usuario, password) {
   await page.click('.login-page-button')
   await page.fill('#login-username', nom_usuario)
   await page.fill('#login-password', password)
-  await page.click('.submit-button')
+  await page.click('button:has-text("Iniciar Sesión")');
   await page.waitForSelector('.lobby-main')
 }
 
