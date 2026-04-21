@@ -22,6 +22,16 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+
+    // Si estamos en GitHub Actions (CI), forzamos que el servidor parezca online
+    // En  local, si no hay entorno CI, usará el fetch real 
+    // Si se elimina esto, el test pasará en verde en local pero fallará en GitHub
+    if (process.env.CI) {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        text: async () => 'OK',
+      });
+    }
   })
 
   it('debería extraer el nombre de usuario de la sesión y mostrarlo en el título', async () => {
