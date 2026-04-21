@@ -43,7 +43,7 @@ When('Selecciono la estrategia {string} y pulso en JUGAR', async function (estra
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Seleccionar la estrategia en el desplegable del lobby
-  await page.selectOption('.lobby-select', { label: estrategia })
+  await page.selectOption('#botSelect', { label: estrategia })
   await page.click('.btn-play')
   // Esperamos a que el tablero esté visible
   await page.waitForSelector('svg')

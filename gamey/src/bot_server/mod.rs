@@ -25,6 +25,7 @@ pub mod next_move;
 pub mod error;
 pub mod state;
 pub mod version;
+pub mod game_status;
 use axum::{
     response::IntoResponse,
     http::header,
@@ -33,6 +34,7 @@ use axum::{
 };
 use std::sync::Arc;
 pub use choose::MoveResponse;
+pub use game_status::StatusResponse;
 pub use error::ErrorResponse;
 pub use version::*;
 
@@ -47,6 +49,10 @@ pub fn create_router(state: AppState) -> axum::Router {
         .route(
             "/{api_version}/ybot/choose/{bot_id}",
             axum::routing::post(choose::choose).options(|| async {"OK"})
+        )
+        .route(
+            "/{api_version}/ybot/status",
+            axum::routing::post(game_status::game_status).options(|| async {"OK"})
         )
         .route(
             "/{api_version}/play",
