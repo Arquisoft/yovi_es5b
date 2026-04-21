@@ -199,14 +199,16 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
         body: JSON.stringify({ oponente, ganada: userWon })
       });
 
-      if (res.ok) {
+      if (res && res.ok) {
         console.log('Partida guardada en la base de datos correctamente.');
-      } else {
+      } else if (res) {
         const errorText = await res.text();
         console.error(`Error al guardar la partida (${res.status}):`, errorText);
+      } else {
+        console.error("No se recibió respuesta del servidor al intentar guardar la partida.");
       }
     } catch (error) {
-      console.error("Error al guardar la partida en BD:", error);
+      console.error("Error al contactar con el servidor de BD:", error);
     }
   };
 
