@@ -22,7 +22,9 @@ type PlayPageProps = {
 const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
   // Inicializa basándose en botId recibido como prop
   const initialDifficulty = urlToDifficulty[botId] || 'easy';
+    // Estado para controlar la dificultad actual del bot
   const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
+    // Clave para forzar el re-renderizado del componente Board cuando cambie la dificultad
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = async () => {
@@ -37,23 +39,14 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
-      <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
+    <div className="lobby-container">
+      <div className="play-header">
         <h2>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
         
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="header-actions">
           <select 
             value={difficulty} 
             onChange={handleChangeDifficulty}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#3b82f6', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
           >
             <option value="easy">Dificultad: Fácil</option>
             <option value="medium">Dificultad: Medio</option>
@@ -62,29 +55,16 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
           
           <button 
             onClick={handleAbandon}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#ef4444', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
+            className="btn-logout"
           >
             Abandonar Partida
           </button>
         </div>
       </div>
       
-      <p style={{ marginBottom: '30px', fontSize: '18px' }}>Es tu turno. Selecciona una casilla del tablero.</p>
+      <p className="turn-indicator">Es tu turno. Selecciona una casilla del tablero.</p>
 
-      <div key={gameKey} style={{ 
-        padding: '20px', 
-        backgroundColor: '#ffffff', 
-        borderRadius: '12px', 
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
-      }}>
+      <div key={gameKey}  className="card board-container">
         <Board botId={botId} difficulty={difficulty} boardSize={boardSize}/>
       </div>
 
