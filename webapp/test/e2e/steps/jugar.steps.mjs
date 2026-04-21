@@ -7,6 +7,7 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
+  await page.fill('#confirmPassword', password);
   await page.click('button:has-text("Aceptar Registro")');
   await page.waitForSelector('.lobby-main')
 }
@@ -157,7 +158,7 @@ Then('Debería mostrarse el mensaje de victoria y el botón de volver a jugar', 
 
 // ─── Step compartido del escenario de casilla ocupada ────────────────────────
 
-Then('And Intento hacer clic de nuevo en esa misma casilla', async function () {
+Then('Intento hacer clic de nuevo en esa misma casilla', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Localizamos de nuevo la casilla por sus puntos (ahora tendrá fill azul o rojo)
