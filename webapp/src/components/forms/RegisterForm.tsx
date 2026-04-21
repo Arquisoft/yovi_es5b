@@ -13,6 +13,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   
   // Estados auxiliares para feedback visual y errores
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +27,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     //Antes de ir al servidor, comprobamos que no haya campos vacíos
     if (!fullName.trim() || !username.trim() || !password.trim()) {
       setError('Por favor, rellena todos los campos.');
+      return;
+    }
+
+    //Veririfca que la contraseña en introducir y repetir coinciden
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      setLoading(false);
       return;
     }
 
@@ -101,6 +109,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="form-input"
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="confirmPassword">Repetir Contraseña:</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className="form-input"
         />
       </div>
