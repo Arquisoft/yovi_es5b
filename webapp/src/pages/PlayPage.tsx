@@ -41,9 +41,9 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
   return (
     <div className="lobby-container">
       <div className="play-header">
-        <h2>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
+        <h2 className="play-title">Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
         
-        <div className="header-actions">
+        <div className="auth-select">
           <select 
             value={difficulty} 
             onChange={handleChangeDifficulty}

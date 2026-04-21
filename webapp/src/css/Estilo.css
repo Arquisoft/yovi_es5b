@@ -1,8 +1,9 @@
 /* ESTILOS GLOBALES */
 
+/*Definimos el fondo de toda la aplicación para que se vea todo bien se use modo claro o osucro en el navegador*/
 body, html {
   width: 100%;
-  background-color: dimgray; /* Fondo neutro para evitar destellos de luz */
+  background-color: dimgray; 
   font-family: sans-serif;
 }
 
@@ -10,7 +11,7 @@ body, html {
 .lobby-container {
   display: flex;
   flex-direction: column;
-  align-items: center;      /* Centrado horizontal */
+  align-items: center;      
   justify-content: flex-start;
   width: 100%;
 }
@@ -22,11 +23,11 @@ body, html {
   background-color: white;
   border-radius: 1rem;
   display: flex;
-  width:90%;
   flex-direction: column;
   box-sizing: border-box;
   margin-top: 2rem;
-  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
 }
 
 /* Ajuste para que el tablero sea más ancho */
@@ -34,19 +35,15 @@ body, html {
   max-width: 50rem; 
 }
 
+/* Generalizacion de estilo para todos los formularios */
 .form-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   font-size: 1rem;
   color: black;
   font-weight: 600;
-  width: 100%;
 }
 
 /* Inputs de texto (Cuadros negros modernos) */
 .form-input {
-  width: 100%;
   padding: 0.8rem;
   background-color: black;
   border-radius: 0.5rem;
@@ -79,6 +76,7 @@ body, html {
   gap: 0.5rem;
 }
 
+/* Botones alternar entre login y register */
 .selector-button {
   flex: 1; 
   padding: 0.8rem;
@@ -89,16 +87,30 @@ body, html {
   cursor: pointer;
 }
 
+/* Destacamos el boton de la pestaña activa actualmente para dejar claro en cual se encuentra el usuario */
 .selector-button.active {
   background-color: lightslategrey;
   font-weight: 700;
 }
 
+/* Boton de salir */
 .btn-logout {
   background-color: crimson;
   color: white;
   border-radius: 0.5rem;
   cursor: pointer;
+}
+
+/* Eleccion de tablero y bot */
+.combobox{
+  background-color: lightgrey;
+  color: black;
+  height: 100%;
+  width: 100%;
+  font-weight: 600; 
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
 }
 
 /* TIPOGRAFÍA Y TEXTOS*/
@@ -117,6 +129,7 @@ h3 {
   font-weight: 800; 
   text-align: center; 
 }
+
 
 /* Especial para el h3 dentro de la card (que debe ser negro) */
 .card h3 { color: black; }

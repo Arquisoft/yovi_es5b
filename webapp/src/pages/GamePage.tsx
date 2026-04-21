@@ -70,7 +70,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   // Renderizado por defecto: El Menú Principal (Lobby)
   return (
     <div>
-      <header>
+      <header className="lobby-container">
         {/* Badge dinámico que cambia de color según el estado del servidor */}
         <div className={`status-badge ${gameyStatus}`}>
            {gameyStatus === 'ok' ? 'Conectado' : 'Desconectado'}
