@@ -69,15 +69,15 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
   // Renderizado por defecto: El Menú Principal (Lobby)
   return (
-    <div className="lobby-container">
-      <header className="lobby-header">
+    <div>
+      <header>
         {/* Badge dinámico que cambia de color según el estado del servidor */}
         <div className={`status-badge ${gameyStatus}`}>
            {gameyStatus === 'ok' ? 'Conectado' : 'Desconectado'}
         </div>
         
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={() => setViewStats(true)} className="btn-secondary">
+        <div  className="auth-selector">
+          <button onClick={() => setViewStats(true)} className="selector-button">
             Estadísticas
           </button>
           <button onClick={handleLogout} className="btn-logout">
@@ -90,15 +90,15 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         <h1>Juego Y</h1>
         <p>Bienvenido, <strong>{user.nombre}</strong></p>
 
-        <div className="selectors-container">
-          {/* Selectores vinculados a los estados locales para configurar la partida */}
-          <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
+        <div className="register-form">
+          {/* Selección del tipo de oponente (Bot) */}
+            <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="combobox">
             <option value="random">Bot Aleatorio (Fácil)</option>
             <option value="mediumbot">Bot Medio (Medio)</option>
             <option value="bridgebot">Bot Puente (Difícil)</option>
           </select>
 
-          <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
+          <select value={size} onChange={(e) => setSize(e.target.value)} className="combobox">
             <option value="5">Tablero pequeño</option>
             <option value="10">Tablero mediano</option>
             <option value="15">Tablero grande</option>

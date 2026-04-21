@@ -38,7 +38,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
         // Si la respuesta es correcta, guardamos los datos
         if (response.ok) {
           const data = await response.json();
-          setStats(data);
+          setStats(data);  // Guardamos datos si la respuesta es correcta
         }
       } catch {
         // Si hay error (backend no listo), avisamos por consola y dejamos los ceros
@@ -53,37 +53,43 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
   }, [user.nom_usuario]);
 
   return (
-    <div className="lobby-container stats-view">
+    <div className='lobby-container'>
       {/* Título con el nombre del usuario */}
-      <h1 className="stats-title">Estadísticas de {user.nombre}</h1> 
+      <h2>Estadísticas de {user.nombre}</h2> 
       
       {/* Si está cargando muestra el badge, si no muestra la tarjeta de datos */}
       {loading ? (
         <div className="status-badge checking">Cargando datos...</div>
       ) : (
-        <div className="card stats-card">
+        <div className="card">
           {/* Fila de partidas totales */}
-          <div className="stats-row">
-            <span className="stats-label">Partidas jugadas</span>
-            <span className="stats-number">{stats.jugadas}</span>
+          <div className="stats">
+            <label><strong>Partidas jugadas</strong></label>
+            <div className="stats-played">
+              {stats.jugadas}
+            </div>
           </div>
           
           {/* Fila de victorias */}
-          <div className="stats-row">
-            <span className="stats-label">Partidas ganadas</span>
-            <span className="stats-number win-text">{stats.ganadas}</span>
+          <div className="stats"> 
+            <label><strong>Partidas ganadas</strong></label>
+            <div className="stats-won">
+              {stats.ganadas}
+            </div>
           </div>
           
           {/* Fila de derrotas */}
-          <div className="stats-row">
-            <span className="stats-label">Partidas perdidas</span>
-            <span className="stats-number lose-text">{stats.perdidas}</span>
-          </div>
+          <div className="stats"> 
+            <label><strong>Partidas perdidas</strong></label>
+            <div className="stats-lost">
+              {stats.perdidas}
+            </div>
+        </div>
         </div>
       )}
       
       {/* Botón para regresar al lobby */}
-      <button onClick={onBack} className="btn-play stats-back-btn">
+      <button onClick={onBack} className="btn-play">
         Volver al Menú
       </button>
     </div>

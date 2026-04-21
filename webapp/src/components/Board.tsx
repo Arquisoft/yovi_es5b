@@ -205,33 +205,30 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
 
   // Mensajes de la interfaz superior
   let statusMessage = 'Tu turno (Juegas con Azul)';
-  let statusColor = '#3b82f6';
+  let statusClass = 'status-human';
 
   if (winner === 'human') {
     statusMessage = '¡HAS GANADO LA PARTIDA!';
-    statusColor = '#22c55e'; // Verde
+    statusClass = 'status-winner'; // Verde
   } else if (winner === 'bot') {
     statusMessage = 'El Bot te ha ganado...';
-    statusColor = '#ef4444'; // Rojo
+    statusClass = 'status-bot'; // Rojo
   } else if (isBotThinking) {
     statusMessage = 'El bot está pensando...';
-    statusColor = '#ef4444';
+    statusClass = 'status-bot';
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <p style={{ height: '24px', fontWeight: 'bold', color: statusColor, marginBottom: '10px', fontSize: winner ? '20px' : '16px' }}>
+    <div className="board-wrapper">
+      <p className={`board-status ${statusClass} ${winner ? 'winner-text' : ''}`}>
         {statusMessage}
       </p>
-      <svg width={SVG_W} height={SVG_H} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
+      <svg width={SVG_W} height={SVG_H} className="board-svg">
         {renderHexagons()}
       </svg>
 
       {winner && (
-        <button 
-          onClick={resetGame}
-          style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
+        <button onClick={resetGame} className="btn-play">
           Volver a jugar
         </button>
       )}
