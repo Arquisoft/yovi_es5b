@@ -63,7 +63,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     fireEvent.click(playButton)
 
     // Buscamos el botón de abandonar
-    const abandonButton = await screen.findByRole('button', { name: /Salir/i })
+    const abandonButton = await screen.findByRole('button', { name: /Abandonar Partida/i })
     expect(abandonButton).toBeTruthy()
 
     // Hacemos clic en el botón
