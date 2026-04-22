@@ -24,7 +24,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     vi.clearAllMocks()
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      text: () => Promise.resolve('OK'),
+      text: async () => 'OK',
     })
   })
 
