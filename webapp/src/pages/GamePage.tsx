@@ -4,12 +4,14 @@ import PlayPage from './PlayPage';
 import '../css/Estilo.css'; 
 import Estadisticas from './Estadisticas.tsx';
 import LanguageSelector from '../components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 interface GamePageProps {
   user: User;
 }
 
 const GamePage: React.FC<GamePageProps> = ({ user }) => {
+  const { t } = useTranslation();
   
   // Estado para la salud del microservicio de juego (Puerto 4000)
   const [gameyStatus, setGameyStatus] = useState<'checking' | 'ok' | 'error'>('checking');
@@ -74,36 +76,36 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
       <header className="lobby-header">
         {/* Badge dinámico que cambia de color según el estado del servidor */}
         <div className={`status-badge ${gameyStatus}`}>
-           {gameyStatus === 'ok' ? 'Conectado' : 'Desconectado'}
+            {gameyStatus === 'ok' ? t('lobby.connected') : t('lobby.disconnected')}
         </div>
         
         <div style={{ display: 'flex', gap: '10px' }}>
           <LanguageSelector username={user.nom_usuario} />
           <button onClick={() => setViewStats(true)} className="btn-secondary">
-            Estadísticas
+            {t('lobby.stats')}
           </button>
           <button onClick={handleLogout} className="btn-logout">
-            Salir
+            {t('lobby.logout')}
           </button>
         </div>
       </header>
 
       <main className="lobby-main">
-        <h1>Juego Y</h1>
-        <p>Bienvenido, <strong>{user.nombre}</strong></p>
+        <h1>{t('lobby.title')}</h1>
+        <p>{t('lobby.welcomeUser', { name: user.nombre })}</p>
 
         <div className="selectors-container">
           {/* Selectores vinculados a los estados locales para configurar la partida */}
           <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
-            <option value="random">Bot Aleatorio (Fácil)</option>
-            <option value="mediumbot">Bot Medio (Medio)</option>
-            <option value="bridgebot">Bot Puente (Difícil)</option>
+            <option value="random">{t('lobby.botRandom')}</option>
+            <option value="mediumbot">{t('lobby.botMedium')}</option>
+            <option value="bridgebot">{t('lobby.botBridge')}</option>
           </select>
 
           <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
-            <option value="5">Tablero pequeño</option>
-            <option value="10">Tablero mediano</option>
-            <option value="15">Tablero grande</option>
+            <option value="5">{t('lobby.boardSmall')}</option>
+            <option value="10">{t('lobby.boardMedium')}</option>
+            <option value="15">{t('lobby.boardLarge')}</option>
           </select>
 
           <button 
@@ -112,18 +114,18 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
             // Deshabilita el botón si no hay conexión con el servidor de juegos
             disabled={gameyStatus !== 'ok'}
           >
-            JUGAR
+            {t('lobby.play')}
           </button>
         </div>
 
         <div>
           <p>
-            <strong>Board:</strong> Pinche para seleccionar el tamaño del tablero, configurado mediante número de hexágonos
+            <strong>{t('lobby.boardHelpLabel')}</strong> {t('lobby.boardHelpText')}
           </p>
         </div>      
         <div>
           <p>
-            <strong>Bot:</strong> Pinche para seleccionar el contra qué bot quieres jugar
+            <strong>{t('lobby.botHelpLabel')}</strong> {t('lobby.botHelpText')}
           </p>
         </div>
 

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Hexagon } from './Hexagon';
+import { useTranslation } from 'react-i18next';
+import { translateApiError, type ApiErrorPayload } from '../utils/i18n/errorTranslator';
 
 type BoardProps = {
     botId: string;
@@ -32,6 +34,7 @@ type MoveResponse = {
 };
 
 export const Board = ({botId, difficulty, boardSize}: BoardProps) => {
+  const { t } = useTranslation();
   // ── Viewport SVG fijo ────────────────────────────────────────────────────
   const SVG_W = 600;
   const SVG_H = 560;
@@ -122,17 +125,24 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
         const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
         setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
       } else if (!humanWon) {
-        console.warn("El bot devolvió una respuesta válida pero sin coordenadas.");
+        console.warn(t('board.logs.botMissingCoords'));
       }
       handleWinner(data.status);
     } else {
-      // AQUÍ evitamos el fallo silencioso
-      const errorText = await res.text();
-      console.error(`Error del servidor (${res.status}):`, errorText);
-      alert(`Error en el servidor al pedir movimiento al bot: ${botEndpoint}. Revisa la consola.`);
+      let fallbackText = t('errors.generic');
+      try {
+        const payload = await res.json();
+        fallbackText = translateApiError(payload as ApiErrorPayload, t);
+      } catch {
+        const errorText = await res.text();
+        fallbackText = errorText || fallbackText;
+      }
+
+      console.error(t('board.logs.serverError', { status: res.status }), fallbackText);
+      alert(t('board.requestBotError', { bot: botEndpoint }));
     }
   } catch (error) {
-    console.error("Error al contactar con el bot:", error);
+    console.error(t('board.logs.requestBotFailed'), error);
   } finally {
     setIsBotThinking(false);
   }
@@ -153,13 +163,13 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
       });
 
       if (res.ok) {
-        console.log('Partida guardada en la base de datos correctamente.');
+        console.log(t('board.logs.matchSaved'));
       } else {
         const errorText = await res.text();
-        console.error(`Error al guardar la partida (${res.status}):`, errorText);
+        console.error(t('board.logs.matchSaveError', { status: res.status }), errorText);
       }
     } catch (error) {
-      console.error("Error al guardar la partida en BD:", error);
+      console.error(t('board.logs.matchSaveFailed'), error);
     }
   };
 
@@ -204,17 +214,17 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
   };
 
   // Mensajes de la interfaz superior
-  let statusMessage = 'Tu turno (Juegas con Azul)';
+  let statusMessage = t('board.yourTurn');
   let statusColor = '#3b82f6';
 
   if (winner === 'human') {
-    statusMessage = '¡HAS GANADO LA PARTIDA!';
+    statusMessage = t('board.won');
     statusColor = '#22c55e'; // Verde
   } else if (winner === 'bot') {
-    statusMessage = 'El Bot te ha ganado...';
+    statusMessage = t('board.lost');
     statusColor = '#ef4444'; // Rojo
   } else if (isBotThinking) {
-    statusMessage = 'El bot está pensando...';
+    statusMessage = t('board.thinking');
     statusColor = '#ef4444';
   }
 
@@ -232,7 +242,7 @@ const askBotForMove = async (currentBoard: Record<string, CellState>) => {
           onClick={resetGame}
           style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >
-          Volver a jugar
+          {t('board.playAgain')}
         </button>
       )}
     </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Board } from '../components/Board'; 
 import type { User } from "../types/user";
+import { useTranslation } from 'react-i18next';
 
 // Mantén tus diccionarios de mapeo
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
@@ -19,6 +20,7 @@ type PlayPageProps = {
 };
 
 const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
+  const { t } = useTranslation();
   // Inicializa basándose en botId recibido como prop
   const initialDifficulty = urlToDifficulty[botId] || 'easy';
   const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
@@ -38,7 +40,7 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
       <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
-        <h2>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></h2>
+        <h2>{t('play.titlePrefix')} <strong>{user.nom_usuario || t('play.defaultPlayer')}</strong></h2>
         
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <select 
@@ -54,9 +56,9 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
               fontWeight: 'bold',
             }}
           >
-            <option value="easy">Dificultad: Fácil</option>
-            <option value="medium">Dificultad: Medio</option>
-            <option value="hard">Dificultad: Difícil</option>
+            <option value="easy">{t('play.difficultyEasy')}</option>
+            <option value="medium">{t('play.difficultyMedium')}</option>
+            <option value="hard">{t('play.difficultyHard')}</option>
           </select>
           
           <button 
@@ -71,12 +73,12 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
               fontWeight: 'bold'
             }}
           >
-            Abandonar Partida
+            {t('play.abandon')}
           </button>
         </div>
       </div>
       
-      <p style={{ marginBottom: '30px', fontSize: '18px' }}>Es tu turno. Selecciona una casilla del tablero.</p>
+      <p style={{ marginBottom: '30px', fontSize: '18px' }}>{t('play.turnHelp')}</p>
 
       <div key={gameKey} style={{ 
         padding: '20px', 
@@ -88,11 +90,9 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
       </div>
 
         <div>
-        <h3>Reglas del Juego Y</h3>
+        <h3>{t('play.rulesTitle')}</h3>
         <p>
-          Pulsa un hexágono para rellenarlo de tu color. Debes intentar trazar una línea 
-          de tu color que logre conectar los tres bordes del triángulo 
-          que compone el tablero. <strong>Los hexágonos de la esquina valen por los dos lados</strong>.
+          {t('play.rulesTextBeforeHighlight')} <strong>{t('play.rulesTextHighlight')}</strong>{t('play.rulesTextAfterHighlight')}
         </p>
       </div>
 

@@ -3,10 +3,18 @@ import { setStoredLanguage, type AppLanguage } from '../i18n/storage';
 
 type LanguageSelectorProps = {
   username?: string;
+  containerClassName?: string;
+  labelClassName?: string;
+  selectClassName?: string;
 };
 
 // Componente para seleccionar el idioma de la aplicación
-const LanguageSelector = ({ username }: LanguageSelectorProps) => {
+const LanguageSelector = ({
+  username,
+  containerClassName,
+  labelClassName,
+  selectClassName,
+}: LanguageSelectorProps) => {
   const { t, i18n } = useTranslation();
 
   const currentLanguage: AppLanguage = i18n.language.toLowerCase().startsWith('en') ? 'en' : 'es';
@@ -17,10 +25,11 @@ const LanguageSelector = ({ username }: LanguageSelectorProps) => {
   };
 
   return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <span>{t('language.label')}:</span>
+    <label className={containerClassName ?? 'language-selector'}>
+      <span className={labelClassName ?? 'language-selector-label'}>{t('language.label')}:</span>
       <select
         aria-label={t('language.label')}
+        className={selectClassName ?? 'language-selector-select'}
         value={currentLanguage}
         onChange={(event) => onChangeLanguage(event.target.value as AppLanguage)}
       >

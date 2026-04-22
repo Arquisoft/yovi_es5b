@@ -30,11 +30,8 @@ describe('GamePage', () => {
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
     
-    const welcome = await screen.findByText(/Bienvenido/i)
-    const username = await screen.findByText('Pepe')
-    
+    const welcome = await screen.findByText(/Bienvenido, Pepe/i)
     expect(welcome).toBeTruthy()
-    expect(username).toBeTruthy()
   })
 
   it('should check gamey status on mount', async () => {

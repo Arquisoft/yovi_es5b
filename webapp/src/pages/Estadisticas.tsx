@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { User } from '../types/user';
 import '../css/Estilo.css';
+import { useTranslation } from 'react-i18next';
 
 // Interfaz para las propiedades que recibe el componente
 interface EstadisticasProps {
@@ -16,6 +17,7 @@ interface StatsData {
 }
 
 const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
+  const { t } = useTranslation();
   // Estado para guardar las estadísticas, empezamos en 0
   const [stats, setStats] = useState<StatsData>({ jugadas: 0, ganadas: 0, perdidas: 0 });
   // Estado para controlar si estamos cargando datos
@@ -42,7 +44,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
         }
       } catch {
         // Si hay error (backend no listo), avisamos por consola y dejamos los ceros
-        console.warn("Backend no listo, mostrando ceros por defecto.");
+        console.warn(t('errors.codes.STATS_FETCH_FAILED'));
       } finally {
         // Al terminar (bien o mal), quitamos el estado de carga
         setLoading(false);
@@ -55,28 +57,28 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
   return (
     <div className="lobby-container stats-view">
       {/* Título con el nombre del usuario */}
-      <h1 className="stats-title">Estadísticas de {user.nombre}</h1> 
+      <h1 className="stats-title">{t('stats.title', { name: user.nombre })}</h1> 
       
       {/* Si está cargando muestra el badge, si no muestra la tarjeta de datos */}
       {loading ? (
-        <div className="status-badge checking">Cargando datos...</div>
+        <div className="status-badge checking">{t('stats.loading')}</div>
       ) : (
         <div className="card stats-card">
           {/* Fila de partidas totales */}
           <div className="stats-row">
-            <span className="stats-label">Partidas jugadas</span>
+            <span className="stats-label">{t('stats.played')}</span>
             <span className="stats-number">{stats.jugadas}</span>
           </div>
           
           {/* Fila de victorias */}
           <div className="stats-row">
-            <span className="stats-label">Partidas ganadas</span>
+            <span className="stats-label">{t('stats.won')}</span>
             <span className="stats-number win-text">{stats.ganadas}</span>
           </div>
           
           {/* Fila de derrotas */}
           <div className="stats-row">
-            <span className="stats-label">Partidas perdidas</span>
+            <span className="stats-label">{t('stats.lost')}</span>
             <span className="stats-number lose-text">{stats.perdidas}</span>
           </div>
         </div>
@@ -84,7 +86,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
       
       {/* Botón para regresar al lobby */}
       <button onClick={onBack} className="btn-play stats-back-btn">
-        Volver al Menú
+        {t('stats.backToMenu')}
       </button>
     </div>
   );
