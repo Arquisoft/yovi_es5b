@@ -112,10 +112,7 @@ Then('Debería aparecer mi pieza en azul en esa casilla y el bot debería respon
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Tras el clic, esperamos a que el bot haya respondido (el indicador de "pensando" desaparece)
-  await page.waitForFunction(() => {
-    const p = document.querySelector('p[style]')
-    return p && !p.textContent.includes('pensando')
-  }, { timeout: 15000 })
+  await page.locator('.board-status', { hasText: 'Tu turno (Juegas con Azul)' }).click()
   // Debe haber al menos una casilla azul (pieza del jugador, color #3b82f6)
   const casillasAzules = page.locator('svg polygon[fill="#3b82f6"]')
   await expect(casillasAzules).toHaveCount(1)
