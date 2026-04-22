@@ -149,7 +149,7 @@ const conectarDB = async () => {
             console.log('Conexión a MySQL establecida correctamente.');
 
             // Sincroniza las tablas (force: true las recrea de forma forzosa)
-            await sequelize.sync({ alter: true });
+            await sequelize.sync({ force: true });
             console.log('Tablas de YOVI listas.');
 
             break;
