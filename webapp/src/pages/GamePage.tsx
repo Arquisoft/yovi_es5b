@@ -16,9 +16,8 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   const [playGame, setPlayGame] = useState(false);
   const [viewStats, setViewStats] = useState(false);
 
-// botId guardará el nombre del archivo (sin .rs) que usará gamey
+// botId es el nombre de bot de gamey
   const [botId, setBotId] = useState("random_bot");
-  const [strategy, setStrategy] = useState('random_bot');
   const [size, setSize] = useState('5');
   // Modo de juego seleccionado en el lobby: 'bot' para jugar contra IA, 'pvp' para dos jugadores locales
   const [gameMode, setGameMode] = useState<'bot' | 'pvp'>('bot');
@@ -46,9 +45,8 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Inicia la partida guardando la estrategia actual y cambiando de vista
+  // Inicia la partida cambiando de vista
   const handleStartGame = () => {
-      setBotId(strategy);
       setPlayGame(true);
   };
 
@@ -66,7 +64,8 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
   // Renderizado condicional: Prioridad 1 - La pantalla de juego
   if (playGame) {
-      return <PlayPage botId={botId} user={user} boardSize={Number(size)} gameMode={gameMode} player2Name={effectivePlayer2Name} onBackToLobby={handleBackToLobby}/>;
+      return <PlayPage botId={botId} user={user} boardSize={Number(size)} gameMode={gameMode} player2Name={effectivePlayer2Name} onBackToLobby={handleBackToLobby}
+                onChangeDifficulty={(botId: string) => setBotId(botId)}/>;
   }
 
   // Renderizado condicional: Prioridad 2 - La pantalla de estadísticas
@@ -117,7 +116,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
           {/* Selector de dificultad: solo se muestra en modo bot, ya que en PvP no hay IA */}
           {gameMode === 'bot' && (
-            <select value={strategy} onChange={(e) => setStrategy(e.target.value)} id="botSelect" className="lobby-select">
+            <select value={botId} onChange={(e) => setBotId(e.target.value)} id="botSelect" className="lobby-select">
               <option value="random">Bot Aleatorio (Fácil)</option>
               <option value="mediumbot">Bot Medio (Medio)</option>
               <option value="bridgebot">Bot Puente (Difícil)</option>

@@ -3,7 +3,6 @@ import { Hexagon } from './Hexagon';
 
 type BoardProps = {
     botId: string;
-    difficulty: 'easy' | 'medium' | 'hard';
     boardSize: number;                    // número de hexágonos por lado del triángulo (5, 10 o 15)
     gameMode: 'bot' | 'pvp';             // 'bot' = jugador vs IA  |  'pvp' = dos jugadores locales
     player1Name: string;                  // nombre del usuario autenticado
@@ -40,7 +39,7 @@ type StatusResponse = { // respuesta del endpoint /v1/ybot/status de Gamey
     status: GameStatus;   // estado de la partida tras evaluar el tablero
 };
 
-export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, player2Name}: BoardProps) => {
+export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: BoardProps) => {
 
   // Calcula el tamaño del hexágono para que el tablero quepa en el SVG
   const SVG_W = 600;
@@ -86,8 +85,6 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     }
   };
 
-  console.debug(botId);
-
   // Convierte el estado del tablero al formato YEN que espera Gamey.
   // Layout: filas separadas por '/', cada carácter es B / R / .
   const generarYEN = (currentBoard: Record<string, CellState>, turn: number = 1): object => {
@@ -110,12 +107,6 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     return { size: boardSize, turn, players: ["B", "R"], layout: filas.join("/") };
   };
 
-  const BOT_ENDPOINTS: Record<string, string> = { // mapeo de dificultad al identificador del bot en Gamey
-    easy:   'random_bot',
-    medium: 'mediumbot',
-    hard:   'bridgebot'
-  };
-
   // Envía el tablero a Gamey y coloca el movimiento devuelto por el bot.
   // Si el humano ya ganó antes de que el bot mueva, no coloca ficha del bot.
   const askBotForMove = async (currentBoard: Record<string, CellState>) => {
@@ -123,7 +114,7 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     try {
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
       const yenPayload = generarYEN(currentBoard); // turn=1 por defecto: le toca al bot como player 1
-      const botEndpoint = BOT_ENDPOINTS[difficulty];
+      const botEndpoint = botId
 
       const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/${botEndpoint}`, {
         method: 'POST',
@@ -249,7 +240,7 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
   const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
     try {
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
-      const oponente = oponenteName ?? BOT_ENDPOINTS[difficulty];
+      const oponente = oponenteName ?? botId
 
       const res = await fetch(`${USERS_URL}/guardar-partida`, {
         method: 'POST',
