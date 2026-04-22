@@ -87,4 +87,16 @@ describe('GamePage', () => {
       expect(screen.getByPlaceholderText(/Nombre del Jugador 2/i)).toBeTruthy()
     })
   })
+
+  it('debería funcionar correctamente el botón de jugar', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    const playButton = await screen.findByRole('button', { name: /JUGAR/i })
+    playButton.click();
+
+    // Texto de PlayPage
+    expect(await screen.findByText(/Es tu turno/i))
+  })
 })
