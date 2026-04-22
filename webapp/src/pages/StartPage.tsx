@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import GamePage from "../pages/GamePage";
 import RegisterPage from "../pages/RegisterPage";
 import "../css/Estilo.css"; 
+import { useTranslation } from 'react-i18next';
 
 import type { User } from "../types/user";
 
 
 //La única misión de esta clase es decidir qué pantalla debe ver el usuario nada más abrir la web.
 const StartPage = () => {
+  const { t } = useTranslation();
+
   // Estado para almacenar los datos del usuario si está logueado
   const [user, setUser] = useState<User | null>(null);
   
@@ -52,7 +55,7 @@ const StartPage = () => {
   if (loading) {
     return (
       <div className="lobby-container">
-        <p>Cargando sesión...</p>
+        <p>{t('start.loadingSession')}</p>
       </div>
     );
   }

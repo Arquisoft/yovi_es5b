@@ -130,7 +130,7 @@ async fn test_choose_endpoint_with_invalid_api_version() {
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert!(error_response.message.contains("Unsupported API version"));
+    assert_eq!(error_response.code, "UNSUPPORTED_API_VERSION");
     assert_eq!(error_response.api_version, Some("v2".to_string()));
 }
 
@@ -157,8 +157,8 @@ async fn test_choose_endpoint_with_unknown_bot() {
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert!(error_response.message.contains("Bot not found"));
-    assert!(error_response.message.contains("unknown_bot"));
+    assert_eq!(error_response.code, "BOT_NOT_FOUND");
+    assert!(error_response.details.unwrap().contains("unknown_bot"));
     assert_eq!(error_response.bot_id, Some("unknown_bot".to_string()));
 }
 
@@ -355,7 +355,7 @@ async fn test_play_endpoint_with_invalid_api_version() {
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert!(error_response.message.contains("Unsupported API version"));
+    assert_eq!(error_response.code, "UNSUPPORTED_API_VERSION");
     assert_eq!(error_response.api_version, Some("v2".to_string()));
 }
 
@@ -384,8 +384,8 @@ async fn test_play_endpoint_with_unknown_bot() {
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert!(error_response.message.contains("Bot not found"));
-    assert!(error_response.message.contains("unknown_bot"));
+    assert_eq!(error_response.code, "BOT_NOT_FOUND");
+    assert!(error_response.details.unwrap().contains("unknown_bot"));
     assert_eq!(error_response.bot_id, Some("unknown_bot".to_string()));
 }
 
@@ -414,7 +414,7 @@ async fn test_play_endpoint_with_invalid_json() {
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert!(error_response.message.contains("Invalid YEN format"));
+    assert_eq!(error_response.code, "INVALID_YEN_FORMAT");
 }
 
 /// Prueba: omitir parámetro position
@@ -495,7 +495,7 @@ async fn test_choose_with_empty_bot_registry() {
     let body = response.into_body().collect().await.unwrap().to_bytes();
     let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert!(error_response.message.contains("Bot not found"));
+    assert_eq!(error_response.code, "BOT_NOT_FOUND");
 }
 
 // ============================================================================

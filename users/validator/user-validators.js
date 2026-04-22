@@ -1,4 +1,5 @@
 import { Usuario } from '../models/index.js';
+import { ERROR_CODES, fieldError } from '../errors.js';
 /**
  * Validor de registrarUsuario. Comprueba:
  * - Nombre del usuario de al menos 4 caracteres y máximo 30.
@@ -11,11 +12,17 @@ import { Usuario } from '../models/index.js';
 const validarRegistrarUsuario = async (nombre, nom_usuario, contrasena) => {
     const errores = {};
     if (typeof nombre !== "string" || nombre.trim().length < 4 || nombre.trim().length > 30) {
-        errores.nombre = "El nombre debe tener entre 4 y 30 caracteres.";
+        errores.nombre = fieldError(
+            ERROR_CODES.USER_NAME_INVALID,
+            "El nombre debe tener entre 4 y 30 caracteres."
+        );
     }
 
     if (typeof nom_usuario !== "string" || nom_usuario.trim().length < 4 || nom_usuario.trim().length > 30) {
-        errores.nom_usuario = "El nick debe tener entre 4 y 30 caracteres.";
+        errores.nom_usuario = fieldError(
+            ERROR_CODES.USERNAME_INVALID_LENGTH,
+            "El nick debe tener entre 4 y 30 caracteres."
+        );
 
     } else {
         const usuarioExistente = await Usuario.findOne({
@@ -26,12 +33,18 @@ const validarRegistrarUsuario = async (nombre, nom_usuario, contrasena) => {
         });
 
         if (usuarioExistente !== null) {
-            errores.nom_usuario = "El nick de usuario ya está en uso.";
+            errores.nom_usuario = fieldError(
+                ERROR_CODES.USERNAME_TAKEN,
+                "El nick de usuario ya está en uso."
+            );
         }
     }
 
     if (typeof contrasena !== "string" || contrasena.length < 8) {
-        errores.contrasena = "La contraseña debe tener al menos 8 caracteres.";
+        errores.contrasena = fieldError(
+            ERROR_CODES.PASSWORD_TOO_SHORT,
+            "La contraseña debe tener al menos 8 caracteres."
+        );
     }
 
     return errores;
@@ -48,12 +61,18 @@ const validarIniciarSesion = async (nom_usuario, contrasena) => {
     const errores = {};
 
     if (typeof nom_usuario !== "string" || nom_usuario.trim().length < 4 || nom_usuario.trim().length > 30) {
-        errores.nom_usuario = "El nick debe tener entre 4 y 30 caracteres.";
+        errores.nom_usuario = fieldError(
+            ERROR_CODES.USERNAME_INVALID_LENGTH,
+            "El nick debe tener entre 4 y 30 caracteres."
+        );
 
     }
 
     if (typeof contrasena !== "string" || contrasena.length < 8) {
-        errores.contrasena = "La contraseña debe tener al menos 8 caracteres.";
+        errores.contrasena = fieldError(
+            ERROR_CODES.PASSWORD_TOO_SHORT,
+            "La contraseña debe tener al menos 8 caracteres."
+        );
     }
 
     return errores;

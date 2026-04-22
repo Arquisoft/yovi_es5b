@@ -3,6 +3,7 @@ import type { User } from '../types/user';
 import PlayPage from './PlayPage';
 import '../css/Estilo.css'; 
 import Estadisticas from './Estadisticas.tsx';
+import LanguageSelector from '../components/LanguageSelector';
 
 interface GamePageProps {
   user: User;
@@ -77,6 +78,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         </div>
         
         <div style={{ display: 'flex', gap: '10px' }}>
+          <LanguageSelector username={user.nom_usuario} />
           <button onClick={() => setViewStats(true)} className="btn-secondary">
             Estadísticas
           </button>

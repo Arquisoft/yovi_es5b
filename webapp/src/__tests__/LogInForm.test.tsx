@@ -4,6 +4,12 @@ import LogInForm from '../components/forms/LogInForm'
 import { afterEach, describe, expect, test, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 
+const waitForLoginFormToSettle = async () => {
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: /iniciar sesión/i })).not.toBeDisabled()
+  })
+}
+
 describe('LogInForm - Pruebas para secuencia de login', () => {
   const mockOnSuccess = vi.fn()
 
@@ -22,6 +28,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       const user = userEvent.setup()
 
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -35,6 +42,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
 
       await user.type(screen.getByLabelText(/contraseña/i), 'Renault123$')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -48,6 +56,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
 
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'f.alonso')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -62,6 +71,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), '   ')
       await user.type(screen.getByLabelText(/contraseña/i), '  ')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -84,6 +94,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'f.alonso')
       await user.type(screen.getByLabelText(/contraseña/i), 'Renault123$')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/login', {
@@ -107,6 +118,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
 
       // Primer intento sin campos
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
       })
@@ -121,6 +133,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'f.alonso')
       await user.type(screen.getByLabelText(/contraseña/i), 'Renault123$')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(screen.queryByText(/por favor, rellena todos los campos\./i)).not.toBeTruthy()
@@ -143,6 +156,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'f.alonso')
       await user.type(screen.getByLabelText(/contraseña/i), 'contraseñaIncorrecta')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(errorMessage)).toBeTruthy()
@@ -238,7 +252,9 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       const submitButton = screen.getByRole('button', { name: /iniciar sesión/i })
       await user.click(submitButton)
 
-      expect(screen.getByRole('button', { name: /iniciando sesión\.\.\./i })).toBeTruthy()
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /iniciando sesión\.\.\./i })).toBeTruthy()
+      })
     })
   })
 
@@ -263,6 +279,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'f.alonso')
       await user.type(screen.getByLabelText(/contraseña/i), 'Renault123$')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         const callArgs = mockFetch.mock.calls[0]
@@ -285,6 +302,7 @@ describe('LogInForm - Pruebas para secuencia de login', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'f.alonso')
       await user.type(screen.getByLabelText(/contraseña/i), 'Renault123$')
       await user.click(screen.getByRole('button', { name: /iniciar sesión/i }))
+      await waitForLoginFormToSettle()
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(

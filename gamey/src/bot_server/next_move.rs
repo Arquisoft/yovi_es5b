@@ -33,10 +33,11 @@ pub fn choose_next_move(next_move: NextMove) -> Result<MoveResponse, ErrorRespon
         Ok(game) => game,
         Err(err) => {
             return Err(ErrorResponse::error(
-                &format!("Invalid YEN format: {}", err),
+                "INVALID_YEN_FORMAT",
+                "Invalid game position format.",
                 Some(api_version),
                 Some(bot_id),
-            ));
+            ).with_details(format!("Invalid YEN format: {}", err)));
         }
     };
     let bot = match state.bots().find(&bot_id) {
@@ -44,13 +45,14 @@ pub fn choose_next_move(next_move: NextMove) -> Result<MoveResponse, ErrorRespon
         None => {
             let available_bots = state.bots().names().join(", ");
             return Err(ErrorResponse::error(
-                &format!(
-                    "Bot not found: {}, available bots: [{}]",
-                    bot_id, available_bots
-                ),
+                "BOT_NOT_FOUND",
+                "Selected bot is not available.",
                 Some(api_version),
-                Some(bot_id),
-            ));
+                Some(bot_id.clone()),
+            ).with_details(format!(
+                "Bot not found: {}, available bots: [{}]",
+                bot_id, available_bots
+            )));
         }
     };
 
@@ -110,12 +112,7 @@ mod tests {
 
         // Devuelve error tipo "Invalid YEN format"
         assert!(response.is_err());
-        assert!(
-            response
-                .unwrap_err()
-                .message
-                .starts_with("Invalid YEN format")
-        );
+        assert_eq!(response.unwrap_err().code, "INVALID_YEN_FORMAT");
     }
 
     // Prueba: utilizar bot no existente
@@ -135,7 +132,7 @@ mod tests {
 
         // Devuelve error tipo "Bot not found"
         assert!(response.is_err());
-        assert!(response.unwrap_err().message.starts_with("Bot not found"));
+        assert_eq!(response.unwrap_err().code, "BOT_NOT_FOUND");
     }
 
     // Prueba: enviar siguiente movimiento válido
