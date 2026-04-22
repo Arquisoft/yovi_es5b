@@ -39,7 +39,7 @@ async function loginYAccederAlLobby(page, nom_usuario, password) {
   //await page.waitForSelector('.lobby-container')
   await page.click('.submit-button');
   //await page.waitForSelector('.btn-play', { timeout: 10000 });
-    await page.waitForSelector('.btn-logout', { timeout: 10000 });
+  await page.waitForSelector('.btn-logout', { timeout: 10000 });
 
 }
 
@@ -66,7 +66,8 @@ When('Selecciono la estrategia {string} y pulso en JUGAR', async function (estra
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Seleccionar la estrategia en el desplegable del lobby
-  const selectorDificultad = page.locator('select.combobox').filter({ hasText: 'Bot' });
+  const combos = page.locator('select.combobox'); //solo cogemos el primer combobox para asegurar que sea el de bot
+  const selectorDificultad = combos.nth(1);
   await selectorDificultad.selectOption({ label: estrategia });
   await page.click('.btn-play')
   // Esperamos a que el tablero esté visible
