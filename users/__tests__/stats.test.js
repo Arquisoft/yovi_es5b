@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida } from '../service/stats.js'
 import { Partida, Usuario } from '../models/index.js'
+import {  iniciarSesion } from '../service/users.js'
 import request from 'supertest'
 import { app } from '../users-service.js'
 
@@ -20,6 +21,12 @@ vi.mock('../models/index.js', () => ({
         sync: vi.fn().mockResolvedValue()
     }
 }))
+
+// Mock para inicio de sesión
+vi.mock('../service/users.js', () => ({
+    iniciarSesion: vi.fn()
+}))
+
 
 describe('Pruebas unitarias de Estadísticas', () => {
     beforeEach(() => {
@@ -476,11 +483,13 @@ describe('Pruebas de Endpoints de Estadísticas', () => {
         contrasena: "cf3bb5beba6c60a05e697521c59aa5303805e07da980e4807ae25fd92a8458ad$7e38627095a070b8df3d0af12b9857aa6a56a350e6eba7bf867a95800d25fc58"
     }
 
+
     beforeEach(async () => {
         vi.clearAllMocks()
         agent = request.agent(app)
-        // Mock del usuario por defecto
+        // Mock del usuario por defecto al iniciar sesión
         Usuario.findOne.mockResolvedValue(usuarioMock)
+        iniciarSesion.mockResolvedValue(usuarioMock)
         // Login por defecto para todos los tests
         await agent.post('/login').send({ nom_usuario: "testuser", contrasena: "ADMSIS123$" })
     })
