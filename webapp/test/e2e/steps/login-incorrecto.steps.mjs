@@ -2,9 +2,17 @@ import { Given, When, Then } from '@cucumber/cucumber'
 import assert from 'assert'
 import { test, expect } from '@playwright/test';
 
+async function superarBienvenida(page) {
+  await page.waitForSelector('text=Cargando sesión...', { state: 'detached', timeout: 10000 });
+  const botonComenzar = page.locator('.btn-enter');
+  await botonComenzar.waitFor({ state: 'visible' });
+  await botonComenzar.click({ force: true });
+}
+
 Given('Acceso a la página de inicio de sesión', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
+    await superarBienvenida(page);
   await page.goto('http://localhost:5173')
   await page.click('.login-page-button')
 })
