@@ -34,7 +34,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       const user = userEvent.setup()
 
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!') // Usamos ^ y $ para que busque el texto exacto y no se confunda con "Repetir Contraseña"
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -48,7 +48,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       const user = userEvent.setup()
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!') // Usamos ^ y $ para que busque el texto exacto y no se confunda con "Repetir Contraseña"
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -77,7 +77,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), '   ')
       await user.type(screen.getByLabelText(/nombre de usuario/i), '  ')
-      await user.type(screen.getByLabelText(/contraseña/i), ' ')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), ' ')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -100,7 +100,8 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -131,7 +132,8 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -152,7 +154,8 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña1')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), '1234')
+      await user.type(screen.getByLabelText(/repetir contraseña/i), '1234')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -170,7 +173,8 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -193,7 +197,8 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {
@@ -219,7 +224,8 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
 
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
-      await user.type(screen.getByLabelText(/contraseña/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
+      await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
 
       await waitFor(() => {

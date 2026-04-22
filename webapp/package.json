@@ -17,13 +17,13 @@
     "start:all": "concurrently \"npm run dev\" \"docker compose -f ../docker-compose.yml up database\" \"npm --prefix ../users start\" \"cd ../gamey && cargo run -- --mode=server --port 4000\""
   },
   "dependencies": {
-    "@playwright/test": "^1.58.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.4.0",
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.59.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.6.1",

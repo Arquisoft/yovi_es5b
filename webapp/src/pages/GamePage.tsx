@@ -75,15 +75,16 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
   // Renderizado por defecto: El Menú Principal (Lobby)
   return (
-    <div className="lobby-container">
-      <header className="lobby-header">
+    <div>
+      <header className="lobby-container">
         {/* Badge dinámico que cambia de color según el estado del servidor */}
         <div className={`status-badge ${gameyStatus}`}>
            {gameyStatus === 'ok' ? 'Conectado' : 'Desconectado'}
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={() => setViewStats(true)} className="btn-secondary">
+        {/* Agrupamos botones con tu clase auth-selector para el layout */}
+        <div className="auth-selector">
+          <button onClick={() => setViewStats(true)} className="selector-button">
             Estadísticas
           </button>
           <button onClick={handleLogout} className="btn-logout">
@@ -96,57 +97,70 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         <h1>Juego Y</h1>
         <p>Bienvenido, <strong>{user.nombre}</strong></p>
 
-        <div className="selectors-container">
-          {/* Selector de modo de juego: permite elegir entre partida contra IA o contra otro jugador local */}
-          <select value={gameMode} onChange={(e) => setGameMode(e.target.value as 'bot' | 'pvp')} className="lobby-select">
+        {/* Usamos tu contenedor de formulario para agrupar los selectores */}
+        <div className="register-form">
+          
+          {/* Selector de modo de juego (Bot vs PvP) */}
+          <select 
+            value={gameMode} 
+            onChange={(e) => setGameMode(e.target.value as 'bot' | 'pvp')} 
+            className="combobox"
+          >
             <option value="bot">Jugador vs Bot</option>
             <option value="pvp">Jugador vs Jugador</option>
           </select>
 
-          {/* Input para el nombre del J2: solo visible en modo PvP; si se deja vacío se usará 'Invitado' */}
+          {/* Nombre J2: solo visible en PvP. Usamos tu clase combobox para el input de texto */}
           {gameMode === 'pvp' && (
             <input
               type="text"
               placeholder="Nombre del Jugador 2 (opcional)"
               value={player2Name}
               onChange={(e) => setPlayer2Name(e.target.value)}
-              className="lobby-select"
+              className="combobox"
             />
           )}
 
-          {/* Selector de dificultad: solo se muestra en modo bot, ya que en PvP no hay IA */}
+          {/* Dificultad: solo visible en modo Bot */}
           {gameMode === 'bot' && (
-            <select value={botId} onChange={(e) => setBotId(e.target.value)} id="botSelect" className="lobby-select">
+            <select 
+              value={botId} 
+              onChange={(e) => setBotId(e.target.value)} 
+              className="combobox"
+            >
               <option value="random">Bot Aleatorio (Fácil)</option>
               <option value="mediumbot">Bot Medio (Medio)</option>
               <option value="bridgebot">Bot Puente (Difícil)</option>
             </select>
           )}
 
-          <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
+          {/* Tamaño del tablero común para ambos modos */}
+          <select 
+            value={size} 
+            onChange={(e) => setSize(e.target.value)} 
+            className="combobox"
+          >
             <option value="5">Tablero pequeño</option>
             <option value="10">Tablero mediano</option>
             <option value="15">Tablero grande</option>
           </select>
 
+          {/* Botón de jugar con tu clase animada y lógica de bloqueo */}
           <button
             onClick={handleStartGame}
             className="btn-play"
-            // Deshabilita el botón si no hay conexión con el servidor de juegos
             disabled={gameyStatus !== 'ok'}
           >
-            JUGAR
+            {gameyStatus === 'ok' ? 'JUGAR' : 'SIN CONEXIÓN'}
           </button>
         </div>
 
-        <div>
+        <div className="info-section">
           <p>
-            <strong>Board:</strong> Pinche para seleccionar el tamaño del tablero, configurado mediante número de hexágonos
+            <strong>Board:</strong> Selecciona el tamaño del tablero mediante el número de hexágonos por lado.
           </p>
-        </div>
-        <div>
           <p>
-            <strong>Bot:</strong> Pinche para seleccionar el contra qué bot quieres jugar
+            <strong>Modo:</strong> Elige entre enfrentarte a nuestra IA o jugar localmente contra un amigo.
           </p>
         </div>
 

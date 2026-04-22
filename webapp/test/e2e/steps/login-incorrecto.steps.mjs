@@ -2,10 +2,15 @@ import { Given, When, Then } from '@cucumber/cucumber'
 import assert from 'assert'
 import { test, expect } from '@playwright/test';
 
+
 Given('Acceso a la página de inicio de sesión', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   await page.goto('http://localhost:5173')
+  const botonComenzar = page.locator('.btn-enter');
+  await botonComenzar.waitFor({ state: 'visible' });
+  await botonComenzar.click({ force: true });
+
   await page.click('.login-page-button')
 })
 

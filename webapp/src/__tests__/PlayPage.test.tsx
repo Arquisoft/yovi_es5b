@@ -22,6 +22,10 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      text: async () => 'OK',
+    })
   })
 
   it('debería extraer el nombre de usuario de la sesión y mostrarlo en el título', async () => {
@@ -66,7 +70,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     fireEvent.click(playButton)
 
     // Buscamos el botón de abandonar
-    const abandonButton = await screen.findByRole('button', { name: /Salir/i })
+    const abandonButton = await screen.findByRole('button', { name: /Abandonar Partida/i })
     expect(abandonButton).toBeTruthy()
 
     // Hacemos clic en el botón

@@ -249,14 +249,16 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
         body: JSON.stringify({ oponente, ganada: userWon })
       });
 
-      if (res.ok) {
+      if (res && res.ok) {
         console.log('Partida guardada en la base de datos correctamente.');
-      } else {
+      } else if (res) {
         const errorText = await res.text();
         console.error(`Error al guardar la partida (${res.status}):`, errorText);
+      } else {
+        console.error("No se recibió respuesta del servidor al intentar guardar la partida.");
       }
     } catch (error) {
-      console.error("Error al guardar la partida en BD:", error);
+      console.error("Error al contactar con el servidor de BD:", error);
     }
   };
 
@@ -320,48 +322,49 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
     return hexElements;
   };
 
+  // Resolución de conflictos: Lógica de mensajes dinámica de master con clases CSS de estilosFinal
   let statusMessage: string;
-  let statusColor: string;
+  let statusClass: string;
 
   if (gameMode === 'pvp') {
     if (winner === 'human') {
       statusMessage = `¡${player1Name} GANA LA PARTIDA!`;
-      statusColor = '#22c55e';
+      statusClass = 'status-winner';
     } else if (winner === 'bot') {
       statusMessage = `¡${player2Name} GANA LA PARTIDA!`;
-      statusColor = '#ef4444';
+      statusClass = 'status-bot';
     } else if (pvpTurn === 'human') {
       statusMessage = `Turno de ${player1Name} (Azul)`;
-      statusColor = '#3b82f6';
+      statusClass = 'status-human';
     } else {
       statusMessage = `Turno de ${player2Name} (Rojo)`;
-      statusColor = '#ef4444';
+      statusClass = 'status-bot';
     }
   } else {
     if (winner === 'human') {
       statusMessage = '¡HAS GANADO LA PARTIDA!';
-      statusColor = '#22c55e';
+      statusClass = 'status-winner';
     } else if (winner === 'bot') {
       statusMessage = 'El Bot te ha ganado...';
-      statusColor = '#ef4444';
+      statusClass = 'status-bot';
     } else if (isBotThinking) {
       statusMessage = 'El bot está pensando...';
-      statusColor = '#ef4444';
+      statusClass = 'status-bot';
     } else {
       statusMessage = 'Tu turno (Juegas con Azul)';
-      statusColor = '#3b82f6';
+      statusClass = 'status-human';
     }
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      {/* Barra de estado: indica turno actual o ganador */}
-      <p style={{ height: '24px', fontWeight: 'bold', color: statusColor, marginBottom: '10px', fontSize: winner ? '20px' : '16px' }}>
+    <div className="board-wrapper">
+      {/* Barra de estado: usa clases dinámicas según el ganador o turno */}
+      <p className={`board-status ${statusClass} ${winner ? 'winner-text' : ''}`}>
         {statusMessage}
       </p>
 
-      {/* Tablero SVG con todos los hexágonos */}
-      <svg width={SVG_W} height={SVG_H} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
+      {/* Tablero SVG con clase CSS externa */}
+      <svg width={SVG_W} height={SVG_H} className="board-svg">
         {renderHexagons()}
       </svg>
 
@@ -403,10 +406,7 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
       {/* Botón de reinicio: solo aparece cuando la partida ha terminado */}
       {winner && (
-        <button
-          onClick={resetGame}
-          style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
+        <button onClick={resetGame} className="btn-play">
           Volver a jugar
         </button>
       )}

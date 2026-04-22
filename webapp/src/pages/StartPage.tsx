@@ -15,6 +15,9 @@ const StartPage = () => {
   // Empieza en true porque lo primero que hacemos es preguntar al servidor
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Estado para controlar si el usuario ha pulsado "Entrar"
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+
   useEffect(() => {
 
     //Función asíncrona para verificar si existe una sesión activa (cookie)
@@ -53,6 +56,27 @@ const StartPage = () => {
     return (
       <div className="lobby-container">
         <p>Cargando sesión...</p>
+      </div>
+    );
+  }
+
+  if (!hasStarted) {
+    return (
+      <div className="welcome-screen">
+        <h1 className="main-title">Yovi_es5B</h1>
+        <div className="welcome-card">
+          <h2 className="welcome-title">¡Bienvenido!</h2>
+          <p className="welcome-text">
+            Estás a punto de entrar en el proyecto <strong>Yovi_es5B</strong>. 
+            Aquí podrás jugar al juego Y tanto contra bots como contra otra persona en local.
+          </p>
+          <button 
+            className="btn-enter" 
+            onClick={() => setHasStarted(true)}
+          >
+            COMENZAR 
+          </button>
+        </div>
       </div>
     );
   }
