@@ -16,19 +16,19 @@ Given('Me he registrado con nombre {string}, usuario {string} y contraseña {str
   await page.goto('http://localhost:5173');
   await superarBienvenida(page);
   await page.fill('#fullName', nombre);
-  await page.fill('#username', nom_usuario); // ID correcto según tu código
+  await page.fill('#username', nom_usuario); 
   await page.fill('#password', password);
   
   await page.fill('#confirmPassword', password);
   await page.click('.submit-button');
   // Tras registrarse, cerrar sesión e ir a la página de inicio de sesión
-// 2. Esperamos a entrar al lobby para confirmar éxito y luego cerramos sesión
+  // Esperamos a entrar al lobby para confirmar éxito y luego cerramos sesión
   await page.waitForSelector('.btn-logout', { timeout: 10000 });
   await page.click('.btn-logout');
 
-  // 3. Volvemos a entrar para ir al LOGIN
+  // Volvemos a entrar para ir al LOGIN
   await superarBienvenida(page);
-  await page.click('.login-page-button'); // Botón que abre el LogInForm
+  await page.click('.login-page-button'); 
 })
 
 When('Relleno el formulario de inicio de sesión con las credenciales correctas {string} {string} y pulso en Iniciar sesión', async function (nom_usuario, password) {
@@ -46,10 +46,10 @@ Then('Debería mostrarme la página de juego para mi usuario {string}', async fu
   // Buscar que el nombre de usuario aparece en el texto de bienvenida
   const lobby = page.locator('.lobby-main');
 
-await expect(lobby).toBeVisible({ timeout: 10000 });
+  await expect(lobby).toBeVisible({ timeout: 10000 });
 
   await expect(lobby).toHaveText(new RegExp(`Bienvenido,.*${nombre}`));
   // Buscar que el botón de jugar está presente
-const botonJugar = page.locator(".btn-play"); 
+  const botonJugar = page.locator(".btn-play"); 
   await expect(botonJugar).toBeVisible();
 })

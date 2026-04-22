@@ -6,12 +6,12 @@ async function superarBienvenida(page) {
   //Esperamos a que el mensaje de "Cargando sesión..." desaparezca
  await page.waitForSelector('text=Cargando sesión...', { state: 'detached', timeout: 10000 });
   
-  // 2. Localizar el botón COMENZAR
+  //Localizar el botón COMENZAR
   const botonComenzar = page.locator('.btn-enter');
   await botonComenzar.waitFor({ state: 'visible' });
 
-  // 3. ¡CRÍTICO!: Usamos force: true porque la clase .welcome-card tiene una 
-  // animación de CSS "float" que hace que Playwright crea que el botón no es estable.
+  // Usamos force: true porque la clase .welcome-card tiene una 
+  // animación de CSS  que hace que Playwright crea que el botón no es estable.
   await botonComenzar.click({ force: true });
 }
 
@@ -23,9 +23,8 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
   await page.fill('#confirmPassword', password);
-  await page.click('.submit-button');  //await page.waitForSelector('.lobby-container')
-//await page.waitForSelector('.btn-play', { timeout: 10000 });
-    await page.waitForSelector('.btn-logout', { timeout: 10000 });
+  await page.click('.submit-button');  
+  await page.waitForSelector('.btn-logout', { timeout: 10000 });
 }
 
 async function loginYAccederAlLobby(page, nom_usuario, password) {
@@ -35,10 +34,7 @@ async function loginYAccederAlLobby(page, nom_usuario, password) {
   await page.waitForSelector('#login-username', { state: 'visible' });
   await page.fill('#login-username', nom_usuario)
   await page.fill('#login-password', password)
-  //await page.click('button:has-text("Iniciar Sesión")');
-  //await page.waitForSelector('.lobby-container')
   await page.click('.submit-button');
-  //await page.waitForSelector('.btn-play', { timeout: 10000 });
   await page.waitForSelector('.btn-logout', { timeout: 10000 });
 
 }
@@ -66,8 +62,8 @@ When('Selecciono la estrategia {string} y pulso en JUGAR', async function (estra
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Seleccionar la estrategia en el desplegable del lobby
-  const combos = page.locator('select.combobox'); //solo cogemos el primer combobox para asegurar que sea el de bot
-  const selectorDificultad = combos.nth(1);
+  const combos = page.locator('select.combobox'); 
+  const selectorDificultad = combos.nth(1); //solo cogemos el primer combobox para asegurar que sea el de bot
   await selectorDificultad.selectOption({ label: estrategia });
   await page.click('.btn-play')
   // Esperamos a que el tablero esté visible
