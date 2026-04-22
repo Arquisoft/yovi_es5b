@@ -1,26 +1,45 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
 
+//Para pulsar bienvenida y superar la animación
+async function superarBienvenida(page) {
+  //Esperamos a que el mensaje de "Cargando sesión..." desaparezca
+ await page.waitForSelector('text=Cargando sesión...', { state: 'detached', timeout: 10000 });
+  
+  // 2. Localizar el botón COMENZAR
+  const botonComenzar = page.locator('.btn-enter');
+  await botonComenzar.waitFor({ state: 'visible' });
+
+  // 3. ¡CRÍTICO!: Usamos force: true porque la clase .welcome-card tiene una 
+  // animación de CSS "float" que hace que Playwright crea que el botón no es estable.
+  await botonComenzar.click({ force: true });
+}
+
 // Helper reutilizable: registra un usuario y deja la sesión iniciada en el lobby
 async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.goto('http://localhost:5173')
-  await page.click('button:has-text("COMENZAR")');
+  await superarBienvenida(page);
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
   await page.fill('#confirmPassword', password);
-  await page.click('button:has-text("Aceptar Registro")');
-  await page.waitForSelector('.lobby-main')
+  await page.click('.submit-button');  //await page.waitForSelector('.lobby-container')
+//await page.waitForSelector('.btn-play', { timeout: 10000 });
+    await page.waitForSelector('.btn-logout', { timeout: 10000 });
 }
 
 async function loginYAccederAlLobby(page, nom_usuario, password) {
   await page.goto('http://localhost:5173')
-  await page.click('button:has-text("COMENZAR")');
+await superarBienvenida(page);
   await page.click('.login-page-button')
-  await page.fill('#login-username', nom_usuario)
+await page.waitForSelector('#login-username', { state: 'visible' });
   await page.fill('#login-password', password)
-  await page.click('button:has-text("Iniciar Sesión")');
-  await page.waitForSelector('.lobby-main')
+  //await page.click('button:has-text("Iniciar Sesión")');
+  //await page.waitForSelector('.lobby-container')
+  await page.click('.submit-button');
+  //await page.waitForSelector('.btn-play', { timeout: 10000 });
+    await page.waitForSelector('.btn-logout', { timeout: 10000 });
+
 }
 
 // Respuesta mock que devuelve el servidor de gamey cuando el jugador gana.

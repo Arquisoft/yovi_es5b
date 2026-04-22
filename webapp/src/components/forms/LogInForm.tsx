@@ -93,7 +93,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
       {error && <div className="error-message">{error}</div>}
 
       {/* Botón de acción con feedback de estado */}
-      <button type="submit" className="submit-button" disabled={loading}>
+      <button type="submit" className="<submit-button>" disabled={loading}>
         {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
       </button>
     </form>
