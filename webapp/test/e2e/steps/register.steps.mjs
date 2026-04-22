@@ -15,6 +15,7 @@ When('Relleno el formulario nombre de usuario como {string}, nombre {string}, co
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
+  await page.fill('#confirmPassword', password)
   await page.click('button:has-text("Aceptar Registro")');
 })
 
