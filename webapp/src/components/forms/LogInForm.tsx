@@ -10,6 +10,11 @@ interface LogInFormProps {
 
 import type {User} from "../../types/user";
 
+type FormErrorState =
+  | { kind: 'i18n-key'; key: string }
+  | { kind: 'api'; payload: ApiErrorPayload }
+  | null;
+
 const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
   const { t } = useTranslation();
 
@@ -18,17 +23,23 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   
   // Estados para manejar el feedback visual
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<FormErrorState>(null);
   const [loading, setLoading] = useState(false);
+
+  const errorMessage = errorState
+    ? errorState.kind === 'i18n-key'
+      ? t(errorState.key)
+      : translateApiError(errorState.payload, t)
+    : null;
 
    //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Evita la recarga de la página
-    setError(null);         // Limpia intentos anteriores
+    setErrorState(null);    // Limpia intentos anteriores
 
     //Antes de ir al servidor, comprobamos que no haya campos vacíos
     if (!username.trim() || !password.trim()) {
-      setError(t('errors.requiredFields'));
+      setErrorState({ kind: 'i18n-key', key: 'errors.requiredFields' });
       return;
     }
 
@@ -56,12 +67,12 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
         onLoginSuccess(data);
       } else {
         //Credenciales incorrectas o usuario no encontrado.
-        setError(translateApiError(data as ApiErrorPayload, t));
+        setErrorState({ kind: 'api', payload: data as ApiErrorPayload });
       }
     } catch (err) {
       //Fallo en la red o servidor caído.
       console.error("Error en login:", err);
-      setError(t('errors.connectionUsers'));
+      setErrorState({ kind: 'i18n-key', key: 'errors.connectionUsers' });
     } finally {
       setLoading(false); // Restablece el estado del botón
     }
@@ -94,7 +105,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
       </div>
 
       {/* Muestra de errores dinámicos con la clase CSS externa */}
-      {error && <div className="error-message">{error}</div>}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
       {/* Botón de acción con feedback de estado */}
       <button type="submit" className="submit-button" disabled={loading}>

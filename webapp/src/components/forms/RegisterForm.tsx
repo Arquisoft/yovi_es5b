@@ -10,6 +10,11 @@ interface RegisterFormProps {
 
 import type {User} from "../../types/user";
 
+type FormErrorState =
+  | { kind: 'i18n-key'; key: string }
+  | { kind: 'api'; payload: ApiErrorPayload }
+  | null;
+
 const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const { t } = useTranslation();
 
@@ -19,17 +24,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const [password, setPassword] = useState('');
   
   // Estados auxiliares para feedback visual y errores
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<FormErrorState>(null);
   const [loading, setLoading] = useState(false);
+
+  const errorMessage = errorState
+    ? errorState.kind === 'i18n-key'
+      ? t(errorState.key)
+      : translateApiError(errorState.payload, t)
+    : null;
 
   //Manejador del envío del formulario, se marca como 'async' porque realiza una petición de red (fetch).
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Evita que la página se recargue al enviar
-    setError(null);         // Limpiamos errores previos
+    setErrorState(null);    // Limpiamos errores previos
 
     //Antes de ir al servidor, comprobamos que no haya campos vacíos
     if (!fullName.trim() || !username.trim() || !password.trim()) {
-      setError(t('errors.requiredFields'));
+      setErrorState({ kind: 'i18n-key', key: 'errors.requiredFields' });
       return;
     }
 
@@ -59,12 +70,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
         onRegisterSuccess(data);
       } else {
         //El backend rechazó la petición
-        setError(translateApiError(data as ApiErrorPayload, t));
+        setErrorState({ kind: 'api', payload: data as ApiErrorPayload });
       }
     } catch (err) {
       //Se lanza error si no se pudo alcanzar el servidor 
       console.error("Error de conexión:", err);
-      setError(t('errors.connectionUsers'));
+      setErrorState({ kind: 'i18n-key', key: 'errors.connectionUsers' });
     } finally {
       setLoading(false); // Liberamos el estado de carga
     }
@@ -109,7 +120,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
       </div>
 
       {/* Muestra de errores dinámicos usando la clase del CSS externo */}
-      {error && <div className="error-message">{error}</div>}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
       {/* Botón de acción con estado de carga */}
       <button type="submit" className="submit-button" disabled={loading}>

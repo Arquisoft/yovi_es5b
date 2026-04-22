@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Board } from '../components/Board'; 
 import type { User } from "../types/user";
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../components/LanguageSelector';
 
 // Mantén tus diccionarios de mapeo
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
@@ -43,6 +44,7 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
         <h2>{t('play.titlePrefix')} <strong>{user.nom_usuario || t('play.defaultPlayer')}</strong></h2>
         
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <LanguageSelector username={user.nom_usuario} />
           <select 
             value={difficulty} 
             onChange={handleChangeDifficulty}
