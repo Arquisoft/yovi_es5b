@@ -235,3 +235,119 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
     })
   })
 })
+
+describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
+ 
+  beforeEach(() => {
+    vi.clearAllMocks()
+    // Mock por defecto: bridgebot devuelve una sugerencia válida.
+    // Los tests individuales pueden sobreescribirlo con mockImplementation
+    // para distinguir entre la llamada de bot normal y la de sugerencia según la URL.
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        api_version: 'v1',
+        bot_id: 'bridgebot',
+        coords: { x: 2, y: 0, z: 0 },
+        status: { Ongoing: { next_player: 0 } }
+      }),
+    } as Response)
+  })
+ 
+  it('debería mostrar el botón de sugerencia habilitado al inicio de la partida', () => {
+    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+ 
+    const btn = screen.getByRole('button', { name: /Sugerir movimiento/i }) as HTMLButtonElement
+    expect(btn).toBeTruthy()
+    expect(btn.disabled).toBe(false)
+  })
+ 
+  it('debería llamar al endpoint de bridgebot con turn=0 cuando el humano pide sugerencia', async () => {
+    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+ 
+    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+ 
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/v1\/ybot\/choose\/bridgebot$/),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"turn":0'),
+        })
+      )
+    })
+  })
+ 
+  it('debería resaltar en dorado la casilla sugerida por el bridgebot', async () => {
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+ 
+    // Antes de pedir sugerencia, ningún hexágono está dorado
+    const doradosAntes = Array.from(container.querySelectorAll('polygon'))
+      .filter(p => p.getAttribute('fill') === '#fbbf24')
+    expect(doradosAntes.length).toBe(0)
+ 
+    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+ 
+    // Después de pedir sugerencia, exactamente un hexágono se pinta en dorado
+    await waitFor(() => {
+      const doradosDespues = Array.from(container.querySelectorAll('polygon'))
+        .filter(p => p.getAttribute('fill') === '#fbbf24')
+      expect(doradosDespues.length).toBe(1)
+    })
+  })
+ 
+  it('debería deshabilitar el botón tras pedir la sugerencia y mostrar "Sugerencia ya utilizada"', async () => {
+    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+ 
+    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+ 
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /Sugerencia ya utilizada/i }) as HTMLButtonElement
+      expect(btn.disabled).toBe(true)
+    })
+  })
+ 
+  it('debería limpiar el resaltado dorado al hacer clic en cualquier hexágono', async () => {
+    // fetch diferenciado: bridgebot devuelve (1,0,1), random_bot (0,0,2)
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url.includes('bridgebot')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            api_version: 'v1',
+            bot_id: 'bridgebot',
+            coords: { x: 1, y: 0, z: 1 },
+            status: { Ongoing: { next_player: 0 } }
+          }),
+        } as Response)
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          api_version: 'v1',
+          bot_id: 'random_bot',
+          coords: { x: 0, y: 0, z: 2 },
+          status: { Ongoing: { next_player: 0 } }
+        }),
+      } as Response)
+    })
+ 
+    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+ 
+    // Pide sugerencia y espera a que aparezca el dorado
+    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+    await waitFor(() => {
+      const dorados = Array.from(container.querySelectorAll('polygon'))
+        .filter(p => p.getAttribute('fill') === '#fbbf24')
+      expect(dorados.length).toBe(1)
+    })
+ 
+    // Clica un hexágono cualquiera: el resaltado dorado debe desaparecer
+    fireEvent.click(container.querySelectorAll('polygon')[5])
+    await waitFor(() => {
+      const dorados = Array.from(container.querySelectorAll('polygon'))
+        .filter(p => p.getAttribute('fill') === '#fbbf24')
+      expect(dorados.length).toBe(0)
+    })
+  })
+})

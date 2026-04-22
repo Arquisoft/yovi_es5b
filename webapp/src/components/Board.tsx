@@ -70,6 +70,13 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
   // Solo relevante en PvP: de quién es el turno; siempre empieza J1
   const [pvpTurn, setPvpTurn] = useState<'human' | 'bot'>('human');
 
+  // Sugerencia de movimiento: cada jugador puede pedir una sugerencia por partida.
+  // En modo bot solo el humano (azul) puede pedirla. En PvP cada jugador tiene su propia sugerencia.
+  const [humanSuggestionUsed, setHumanSuggestionUsed] = useState(false); // J1 (azul) ya pidió sugerencia
+  const [pvpBotSuggestionUsed, setPvpBotSuggestionUsed] = useState(false); // J2 (rojo) en PvP ya pidió sugerencia
+  const [suggestedCell, setSuggestedCell] = useState<string | null>(null); // id "x-y-z" de la casilla sugerida actualmente
+  const [isFetchingSuggestion, setIsFetchingSuggestion] = useState(false); // evita pulsaciones duplicadas al botón
+
   // Procesa el status de Gamey en modo bot y actualiza el ganador
   const handleWinner = (status: GameStatus): void => {
     if (status.Finished !== undefined) {
@@ -185,6 +192,58 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     }
   };
 
+  // Pide al bridgebot (bot más fuerte) una sugerencia de movimiento para el jugador de turno.
+  // Usa el mismo endpoint /choose que los bots: construye un YEN con el turno del jugador humano
+  // actual y el bridgebot nos devuelve la coordenada que jugaría él mismo en esa posición.
+  // No modifica el tablero: solo guarda la casilla en suggestedCell para resaltarla visualmente.
+  const askSuggestion = async () => {
+    // Evita solicitudes si la partida terminó, hay una petición en curso o se está esperando al bot
+    if (winner || isFetchingSuggestion || isBotThinking) return;
+
+    // Determina de quién es el turno actual (el que recibirá la sugerencia)
+    const currentTurn: 'human' | 'bot' = gameMode === 'pvp' ? pvpTurn : 'human';
+
+    // Comprueba que ese jugador aún no haya usado su sugerencia en esta partida
+    const alreadyUsed = currentTurn === 'human' ? humanSuggestionUsed : pvpBotSuggestionUsed;
+    if (alreadyUsed) return;
+
+    setIsFetchingSuggestion(true);
+    try {
+      // turn=0 → J1/azul/human pide consejo  |  turn=1 → J2/rojo pide consejo (solo en PvP)
+      const turnIdx = currentTurn === 'human' ? 0 : 1;
+      const yenPayload = generarYEN(boardState, turnIdx);
+      const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
+      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/bridgebot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(yenPayload)
+      });
+
+      if (res.ok) {
+        const data: MoveResponse = await res.json();
+        if (data.coords && data.coords.x !== undefined) {
+          const cellId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
+          setSuggestedCell(cellId);
+          // Marca la sugerencia como usada para ese jugador: una por partida
+          if (currentTurn === 'human') {
+            setHumanSuggestionUsed(true);
+          } else {
+            setPvpBotSuggestionUsed(true);
+          }
+        } else {
+          console.warn('El bridgebot no devolvió una coordenada válida para la sugerencia.');
+        }
+      } else {
+        const errorText = await res.text();
+        console.error(`Error del servidor al pedir sugerencia (${res.status}):`, errorText);
+      }
+    } catch (error) {
+      console.error('Error al contactar con bridgebot para sugerencia:', error);
+    } finally {
+      setIsFetchingSuggestion(false);
+    }
+  };
+
   // Guarda el resultado en el servicio de usuarios (puerto 3000).
   // En modo bot deduce el nombre del oponente de la dificultad si no se pasa explícitamente.
   const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
@@ -216,6 +275,9 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     // Ignora el clic si la celda está ocupada, la partida terminó o el backend está procesando
     if (boardState[id] || winner || isBotThinking) return;
 
+    // Cualquier clic consume/descarta la sugerencia actual: deja de resaltarse
+    if (suggestedCell) setSuggestedCell(null);
+
     if (gameMode === 'pvp') {
       const cell: CellState = pvpTurn === 'human' ? 'human' : 'bot'; // J1 coloca azul, J2 coloca rojo
       const newBoard: Record<string, CellState> = { ...boardState, [id]: cell };
@@ -233,6 +295,10 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
     setBoardState({});
     setWinner(null);
     setPvpTurn('human');
+    // Reset de la sugerencia: en la nueva partida cada jugador vuelve a tener su sugerencia disponible
+    setHumanSuggestionUsed(false);
+    setPvpBotSuggestionUsed(false);
+    setSuggestedCell(null);
   };
 
   const renderHexagons = () => {
@@ -250,6 +316,10 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
         let color = '#eeeeee';                              // vacía: gris
         if (boardState[id] === 'human') color = '#3b82f6'; // J1: azul
         if (boardState[id] === 'bot')   color = '#ef4444'; // J2/bot: rojo
+
+        // La casilla sugerida se pinta en dorado solo si sigue vacía (si el bot u otro jugador
+        // la ocupara, prevalece su color de ocupación)
+        if (suggestedCell === id && !boardState[id]) color = '#fbbf24'; // sugerencia: dorado
 
         hexElements.push(
           <Hexagon key={id} cx={cx} cy={cy} size={size} color={color} onClick={() => handleHexClick(x, y, z)} />
@@ -303,6 +373,42 @@ export const Board = ({botId, difficulty, boardSize, gameMode, player1Name, play
       <svg width={SVG_W} height={SVG_H} style={{ backgroundColor: '#fafafa', borderRadius: '10px' }}>
         {renderHexagons()}
       </svg>
+
+      {/* Botón de sugerencia: aparece durante la partida. Una sugerencia por partida y jugador.
+          En modo bot solo el humano puede pedirla; en PvP la pide quien tenga el turno actual. */}
+      {!winner && (() => {
+        const currentTurn: 'human' | 'bot' = gameMode === 'pvp' ? pvpTurn : 'human';
+        const alreadyUsed = currentTurn === 'human' ? humanSuggestionUsed : pvpBotSuggestionUsed;
+        const disabled = alreadyUsed || isFetchingSuggestion || isBotThinking;
+
+        let label: string;
+        if (isFetchingSuggestion) {
+          label = 'Calculando sugerencia...';
+        } else if (alreadyUsed) {
+          label = 'Sugerencia ya utilizada';
+        } else {
+          label = 'Sugerir movimiento';
+        }
+
+        return (
+          <button
+            onClick={askSuggestion}
+            disabled={disabled}
+            style={{
+              marginTop: '15px',
+              padding: '8px 16px',
+              backgroundColor: disabled ? '#9ca3af' : '#f59e0b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            {label}
+          </button>
+        );
+      })()}
 
       {/* Botón de reinicio: solo aparece cuando la partida ha terminado */}
       {winner && (
