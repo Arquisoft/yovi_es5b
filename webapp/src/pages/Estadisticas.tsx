@@ -68,93 +68,84 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
   }, [user.nom_usuario]);
 
   const fetchRanking = async () => {
-    const response = await fetch(`${USERS_URL}/ranking`, { credentials: 'include' });
-    if (response.ok) {
-        const data = await response.json();
-        console.log('Datos ranking:', data);
-        
+    try {
+      const response = await fetch(`${USERS_URL}/ranking`, { credentials: 'include' });
+      if (response.ok) {      
         setRanking(await response.json()); // guarda los datos en el estado
+        setShowRanking(true); // cambia la vista al ranking
+      }
+      
+    } catch(err) {
+      console.error('Error en fetchRanking: ' + err); // Mostrar por consola el error
     }
-    setShowRanking(true); // cambia la vista al ranking
   };
 
   return (
     <div className='lobby-container'>
-      {/* Título con el nombre del usuario */}
-      <h2>Estadísticas de {user.nombre}</h2> 
-      
-      {/* Vista para cuando la página está cargando */} 
       {loading ? (
         <div className="status-badge checking">Cargando datos...</div>
       ) : showRanking ? (
         /* Vista para ranking */
-        <div className="card stats-card">
-          <h2>Ranking global</h2>
-          <table style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Usuario</th>
-                <th>Jugadas</th>
-                <th>Ganadas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ranking.map((entry, i) => (
-                <tr key={entry.nom_usuario}
-                  style={{ fontWeight: entry.nom_usuario === user.nom_usuario ? 'bold' : 'normal' }}>
-                  <td>{i + 1}</td>
-                  <td>{entry.nom_usuario}</td>
-                  <td>{entry.jugadas}</td>
-                  <td>{entry.ganadas}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={() => setShowRanking(false)} className="btn-play">
-              Ver mis estadísticas
-          </button>
-        </div>
-      ) : (
-        /* Vista para estadísitcas del usuario */
-        <div className="card">
-          {/* Fila de partidas totales */}
+        <>
+        <h2>Ranking global</h2>
+        <div className="card">  
           <div className="stats">
-            <label><strong>Partidas jugadas</strong></label>
-            <div className="stats-played">
-              {stats.jugadas}
-            </div>
+            <table style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Usuario</th>
+                  <th>Jugadas</th>
+                  <th>Ganadas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ranking.map((entry, i) => (
+                  <tr key={entry.nom_usuario}
+                    style={{ fontWeight: entry.nom_usuario === user.nom_usuario ? 'bold' : 'normal' }}>
+                    <td>{i + 1}</td>
+                    <td>{entry.nom_usuario}</td>
+                    <td>{entry.jugadas}</td>
+                    <td>{entry.ganadas}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          
-          {/* Fila de victorias */}
-          <div className="stats"> 
-            <label><strong>Partidas ganadas</strong></label>
-            <div className="stats-won">
-              {stats.ganadas}
-            </div>
-          </div>
-          
-          {/* Fila de derrotas */}
-          <div className="stats"> 
-            <label><strong>Partidas perdidas</strong></label>
-            <div className="stats-lost">
-              {stats.perdidas}
-            </div>
-          </div>
-
-          {/* Botón para ver el ranking */}
-          <button onClick={fetchRanking} className="btn-play">
-            Ver ranking global
+          <button onClick={() => setShowRanking(false)} className="btn-play">
+            Ver mis estadísticas
           </button>
         </div>
+        </>
+      ) : (
+        /* Vista para estadísticas del usuario — con h2 exterior */
+        <>
+          <h2>Estadísticas de {user.nombre}</h2>
+          <div className="card">
+            <div className="stats">
+              <label><strong>Partidas jugadas</strong></label>
+              <div className="stats-played">{stats.jugadas}</div>
+            </div>
+            <div className="stats">
+              <label><strong>Partidas ganadas</strong></label>
+              <div className="stats-won">{stats.ganadas}</div>
+            </div>
+            <div className="stats">
+              <label><strong>Partidas perdidas</strong></label>
+              <div className="stats-lost">{stats.perdidas}</div>
+            </div>
+            <button onClick={fetchRanking} className="btn-play">
+              Ver ranking global
+            </button>
+          </div>
+        </>
       )}
       
-      {/* Botón para regresar al lobby */}
       <button onClick={onBack} className="btn-play">
         Volver al Menú
       </button>
     </div>
-  );
+);
 };
 
 export default Estadisticas;
