@@ -26,7 +26,8 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería extraer el nombre de usuario de la sesión y mostrarlo en el título', async () => {
     render(
-        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}/>
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
     )
 
     // Comprobamos que el nombre aparece en la pantalla
@@ -36,7 +37,8 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería renderizar el componente Board (Tablero)', async () => {
     render(
-        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}/>
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
     )
 
     // Buscamos nuestro tablero "mockeado"
@@ -45,7 +47,8 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   it('debería mostrar los nombres de ambos jugadores en el título en modo PvP', async () => {
     render(
-      <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"Guille"}} botId="random_bot" gameMode="pvp" player2Name="Pepe" onBackToLobby={() => {}}/>
+      <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"Guille"}} botId="random_bot" gameMode="pvp" player2Name="Pepe" onBackToLobby={() => {}}
+            onChangeDifficulty={()=>{}}/>
     )
 
     expect(await screen.findByText('Guille')).toBeTruthy()
