@@ -22,6 +22,10 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve('OK'),
+    })
   })
 
   it('debería extraer el nombre de usuario de la sesión y mostrarlo en el título', async () => {
