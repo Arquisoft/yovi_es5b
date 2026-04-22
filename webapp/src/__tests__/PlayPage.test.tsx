@@ -1,4 +1,4 @@
-import { render, screen, userEvent, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { vi, beforeEach, describe, it, expect } from 'vitest'
 import PlayPage from '../pages/PlayPage'
 import GamePage from '../pages/GamePage'
