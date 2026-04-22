@@ -7,7 +7,10 @@ Given('Acceso a la página de inicio de sesión', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   await page.goto('http://localhost:5173')
-  await page.click('.btn-enter')
+  const botonComenzar = page.locator('.btn-enter');
+  await botonComenzar.waitFor({ state: 'visible' });
+  await botonComenzar.click({ force: true });
+
   await page.click('.login-page-button')
 })
 
