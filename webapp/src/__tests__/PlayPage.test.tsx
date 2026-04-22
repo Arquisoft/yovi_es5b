@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, userEvent, fireEvent, waitFor } from '@testing-library/react'
 import { vi, beforeEach, describe, it, expect } from 'vitest'
 import PlayPage from '../pages/PlayPage'
 import GamePage from '../pages/GamePage'
@@ -76,5 +76,16 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     await waitFor(() => {
       expect(screen.getByText('Juego Y')).toBeTruthy()
     })
+  })
+
+  it('debería cambiar de dificultad correctamente', async () => {
+    render(
+      <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"Guille"}} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={() => {}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    expect(screen.getByText('Dificultad: Fácil')).toBeTruthy()
+    screen.getByRole('option', { name: /Dificultad: Medio/i }).click();
+    expect(screen.getByText('Dificultad: Medio')).toBeTruthy()
   })
 })
