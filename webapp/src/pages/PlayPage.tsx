@@ -6,11 +6,6 @@ import '../css/Estilo.css';
 // Dificultades de los bots
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
-const urlToDifficulty: Record<string, DifficultyLevel> = {
-  'random_bot': 'easy',
-  'mediumbot': 'medium',
-  'bridgebot': 'hard',
-};
 
 type PlayPageProps = {
     user: User;
@@ -20,15 +15,14 @@ type PlayPageProps = {
     gameMode: 'bot' | 'pvp';
     // Nombre del segundo jugador en modo PvP (por defecto 'Invitado' si se dejó vacío en el lobby)
     player2Name: string;
-    onBackToLobby: () => void;
+    onBackToLobby: any;
+    onChangeDifficulty: any;
 };
 
-const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby }: PlayPageProps) => {
+const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby, onChangeDifficulty }: PlayPageProps) => {
   // Inicializa basándose en botId recibido como prop
-  const initialDifficulty = urlToDifficulty[botId] || 'easy';
-  // Estado para controlar la dificultad actual del bot
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
-  // Clave para forzar el re-renderizado del componente Board cuando cambie la dificultad
+  const initialDifficulty = botId || 'random_bot';
+  const [difficulty, setDifficulty] = useState<string>(initialDifficulty);
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = async () => {
@@ -40,6 +34,7 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
     const newDifficulty = event.target.value as DifficultyLevel;
     setDifficulty(newDifficulty);
     setGameKey(prev => prev + 1);
+    onChangeDifficulty(newDifficulty);
   };
 
   return (
@@ -60,9 +55,9 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
               onChange={handleChangeDifficulty}
               className="combobox"
             >
-              <option value="easy">Dificultad: Fácil</option>
-              <option value="medium">Dificultad: Medio</option>
-              <option value="hard">Dificultad: Difícil</option>
+              <option value="random_bot">Dificultad: Fácil</option>
+              <option value="mediumbot">Dificultad: Medio</option>
+              <option value="bridgebot">Dificultad: Difícil</option>
             </select>
           )}
 
@@ -85,7 +80,6 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
       <div key={gameKey} className="card board-container">
         <Board 
           botId={botId} 
-          difficulty={difficulty} 
           boardSize={boardSize} 
           gameMode={gameMode} 
           player1Name={user.nom_usuario || 'Jugador 1'} 

@@ -87,4 +87,36 @@ describe('GamePage', () => {
       expect(screen.getByPlaceholderText(/Nombre del Jugador 2/i)).toBeTruthy()
     })
   })
+
+  it('debería funcionar correctamente el botón de jugar', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    const playButton = await screen.findByRole('button', { name: /JUGAR/i })
+    playButton.click();
+
+    // Texto de PlayPage
+    expect(await screen.findByText(/Es tu turno/i))
+  })
+
+  it('debería funcionar correctamente el botón de seleccionar dificultad', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    expect(screen.getByText('Bot Aleatorio (Fácil)')).toBeTruthy()
+    screen.getByRole('option', { name: /Bot Medio \(Medio\)/i }).click();
+    expect(screen.getByText('Bot Medio (Medio)')).toBeTruthy()
+  })
+
+  it('debería funcionar correctamente el botón de selector tamaño de tablero', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    expect(screen.getByText('Tablero pequeño')).toBeTruthy()
+    screen.getByRole('option', { name: /Tablero mediano/i }).click();
+    expect(screen.getByText('Tablero grande')).toBeTruthy()
+  })
 })

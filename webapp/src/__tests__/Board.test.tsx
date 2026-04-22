@@ -22,7 +22,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería renderizar el tablero inicial correctamente', () => {
-    const { container } = render(<Board boardSize={5} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={5} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
 
     expect(screen.getByText(/Tu turno \(Juegas con Azul\)/i)).toBeTruthy()
     // Tablero tamaño 5 = 15 hexágonos
@@ -31,7 +31,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería llamar a la API y cambiar el estado al hacer clic en un hexágono', async () => {
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -56,7 +56,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -78,7 +78,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     fireEvent.click(hexagons[0])
@@ -93,7 +93,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     global.fetch = vi.fn().mockRejectedValueOnce(new Error('Bot server down'))
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -115,7 +115,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -126,7 +126,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
 
   it('debería renderizar el número correcto de hexágonos para un tamaño de tablero personalizado', () => {
     // Tablero tamaño 3 = 3*4/2 = 6 hexágonos
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
 
     const hexagons = container.querySelectorAll('polygon')
     expect(hexagons.length).toBe(6)
@@ -148,13 +148,13 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
   })
 
   it('debería mostrar el turno del Jugador 1 al inicio en modo PvP', () => {
-    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    render(<Board boardSize={3} botId="random_bot"  gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
 
     expect(screen.getByText(/Turno de Guille \(Azul\)/i)).toBeTruthy()
   })
 
   it('debería alternar al turno del Jugador 2 tras el movimiento del Jugador 1', async () => {
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
 
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
@@ -173,7 +173,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
     })
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     await waitFor(() => {
@@ -199,7 +199,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
         }),
       } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
     const hexagons = container.querySelectorAll('polygon')
 
     // J1 mueve
@@ -226,7 +226,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
       }),
     } as Response)
 
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="pvp" player1Name="Guille" player2Name="Pepe"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
 
     // La partida continúa: se muestra el turno de J2
@@ -255,7 +255,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
   })
  
   it('debería mostrar el botón de sugerencia habilitado al inicio de la partida', () => {
-    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
     const btn = screen.getByRole('button', { name: /Sugerir movimiento/i }) as HTMLButtonElement
     expect(btn).toBeTruthy()
@@ -263,7 +263,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
   })
  
   it('debería llamar al endpoint de bridgebot con turn=0 cuando el humano pide sugerencia', async () => {
-    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
     fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
  
@@ -279,7 +279,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
   })
  
   it('debería resaltar en dorado la casilla sugerida por el bridgebot', async () => {
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
     // Antes de pedir sugerencia, ningún hexágono está dorado
     const doradosAntes = Array.from(container.querySelectorAll('polygon'))
@@ -297,7 +297,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
   })
  
   it('debería deshabilitar el botón tras pedir la sugerencia y mostrar "Sugerencia ya utilizada"', async () => {
-    render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
     fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
  
@@ -332,7 +332,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
       } as Response)
     })
  
-    const { container } = render(<Board boardSize={3} botId="random_bot" difficulty="easy" gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
+    const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
     // Pide sugerencia y espera a que aparezca el dorado
     fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
