@@ -100,15 +100,27 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
                 </tr>
               </thead>
               <tbody>
-                {ranking.map((entry, i) => (
-                  <tr key={entry.nom_usuario}
-                    style={{ fontWeight: entry.nom_usuario === user.nom_usuario ? 'bold' : 'normal' }}>
-                    <td>{i + 1}</td>
-                    <td>{entry.nom_usuario}</td>
-                    <td>{entry.jugadas}</td>
-                    <td>{entry.ganadas}</td>
-                  </tr>
-                ))}
+                {ranking.map((entry, i) => {
+                  // Color de fondo según posición
+                  const rowBackground = 
+                    i === 0 ? '#ffd900' :  // oro
+                    i === 1 ? '#C0C0C0' :  // plata
+                    i === 2 ? '#CD7F32' :  // bronce
+                    'transparent';
+
+                  return (
+                    <tr key={entry.nom_usuario}
+                      style={{
+                        fontWeight: entry.nom_usuario === user.nom_usuario ? 'bold' : 'normal',
+                        backgroundColor: rowBackground,
+                      }}>
+                      <td>{i + 1}</td>
+                      <td>{entry.nom_usuario}</td>
+                      <td>{entry.jugadas}</td>
+                      <td>{entry.ganadas ?? 0}</td>  {/* Si el jugador no tiene partidas jugadas, ponemos que tiene 0 ganadas */}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
