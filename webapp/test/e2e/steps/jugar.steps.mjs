@@ -30,9 +30,10 @@ async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
 
 async function loginYAccederAlLobby(page, nom_usuario, password) {
   await page.goto('http://localhost:5173')
-await superarBienvenida(page);
+  await superarBienvenida(page);
   await page.click('.login-page-button')
-await page.waitForSelector('#login-username', { state: 'visible' });
+  await page.waitForSelector('#login-username', { state: 'visible' });
+  await page.fill('#login-username', nom_usuario)
   await page.fill('#login-password', password)
   //await page.click('button:has-text("Iniciar Sesión")');
   //await page.waitForSelector('.lobby-container')
@@ -65,7 +66,8 @@ When('Selecciono la estrategia {string} y pulso en JUGAR', async function (estra
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Seleccionar la estrategia en el desplegable del lobby
-  await page.selectOption('#botSelect', { label: estrategia })
+  const selectorDificultad = page.locator('select.combobox').filter({ hasText: 'Bot' });
+  await selectorDificultad.selectOption({ label: estrategia });
   await page.click('.btn-play')
   // Esperamos a que el tablero esté visible
   await page.waitForSelector('svg')
