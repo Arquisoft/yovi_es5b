@@ -100,11 +100,12 @@ const obtenerRanking = async () => {
             attributes: [
                 'nom_usuario',
                 'nombre',
-                [sequelize.fn('COUNT', sequelize.col('Partida.id_partida')), 'jugadas'], // Obtiene las partidas jugadas de cada usuario
-                [sequelize.fn('SUM', sequelize.col('Partida.ganada')), 'ganadas'], // Obtiene las partidas ganadas de cada usuario
+                [sequelize.fn('COUNT', sequelize.col('Partidas.id_partida')), 'jugadas'], // Obtiene las partidas jugadas de cada usuario
+                [sequelize.fn('SUM', sequelize.col('Partidas.ganada')), 'ganadas'], // Obtiene las partidas ganadas de cada usuario
             ],
             include: [{
                 model: Partida,
+                as: 'Partidas',
                 attributes: []
             }],
             group: ['Usuario.id_usuario'], // Hace GROUPBY id_usuario
