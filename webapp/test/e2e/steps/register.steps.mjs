@@ -11,7 +11,9 @@ Given('Acceso a la página de registro', async function () {
 When('Relleno el formulario nombre de usuario como {string}, nombre {string}, contraseña {string} y pulso en Registrar', async function (nombre, nom_usuario, password) {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
-  await page.click('button:has-text("COMENZAR")');
+  const botonComenzar = page.locator('.btn-enter');
+  await botonComenzar.waitFor({ state: 'visible' });
+  await botonComenzar.click({ force: true });
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
