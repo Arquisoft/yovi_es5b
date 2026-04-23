@@ -85,7 +85,7 @@ export const resources = {
         connectionUsers: 'No se pudo conectar con el servidor de usuarios.',
         generic: 'Ha ocurrido un error.',
         codes: {
-          AUTH_INVALID_CREDENTIALS: 'Credenciales incorrectas.',
+          AUTH_INVALID_CREDENTIALS: 'Error al iniciar sesión. Credenciales no válidas.',
           REGISTER_FAILED: 'No se pudo completar el registro.',
           LOGIN_FAILED: 'No se pudo iniciar sesión.',
           USER_NAME_INVALID: 'El nombre debe tener entre 4 y 30 caracteres.',
