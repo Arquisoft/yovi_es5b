@@ -38,7 +38,7 @@ pub use game_status::StatusResponse;
 pub use error::ErrorResponse;
 pub use version::*;
 
-use crate::{GameYError, RandomBot, LapaBot, MediumBot, BridgeBot, YBotRegistry, state::AppState};
+use crate::{GameYError, RandomBot, LapaBot, MirrorBot, MediumBot, BridgeBot, YBotRegistry, state::AppState};
 
 /// Creates the Axum router with the given state.
 ///
@@ -101,6 +101,7 @@ pub fn create_default_state() -> AppState {
         .with_bot(Arc::new(RandomBot))
         .with_bot(Arc::new(LapaBot::default()))
         .with_bot(Arc::new(MediumBot::default()))
+        .with_bot(Arc::new(MirrorBot::default()))
         .with_bot(Arc::new(BridgeBot::default()));
     AppState::new(bots)
 }

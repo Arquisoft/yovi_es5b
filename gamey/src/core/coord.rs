@@ -157,6 +157,11 @@ impl Coordinates {
 
         adjancet_cells
     }
+
+    // Returns this coords mirrored on the vertical plane. 
+    pub fn get_mirrored_coords(&self) -> Coordinates {
+        Coordinates::new(self.x, self.z, self.y)
+    }
 }
 
 impl From<Coordinates> for Vec<u32> {
@@ -258,6 +263,68 @@ mod tests {
         assert!(!interior.touches_side_a());
         assert!(!interior.touches_side_b());
         assert!(!interior.touches_side_c());
+    }
+
+    // Generate adjacent coordinates for the case that all adjacent cells are valid
+    #[test]
+    fn test_get_adjacent_coords_all_valid() {
+        let board_size = 5;
+        let coords = Coordinates::from_index(4, board_size);
+        let adjacent_coords = coords.get_adjacent_coords();
+        assert_eq!(adjacent_coords.len(), 6);
+        assert_eq!(adjacent_coords[0].to_index(board_size), 3);
+        assert_eq!(adjacent_coords[1].to_index(board_size), 5);
+        assert_eq!(adjacent_coords[2].to_index(board_size), 1);
+        assert_eq!(adjacent_coords[3].to_index(board_size), 2);
+        assert_eq!(adjacent_coords[4].to_index(board_size), 7);
+        assert_eq!(adjacent_coords[5].to_index(board_size), 8);
+    }
+
+    // Generate adjacent coordinates for the case that it touches side A
+    #[test]
+    fn test_get_adjacent_coords_toches_a() {
+        let board_size = 5;
+        let coords = Coordinates::from_index(12, board_size);
+        let adjacent_coords = coords.get_adjacent_coords();
+        assert_eq!(adjacent_coords.len(), 4);
+        assert_eq!(adjacent_coords[0].to_index(board_size), 11);
+        assert_eq!(adjacent_coords[1].to_index(board_size), 13);
+        assert_eq!(adjacent_coords[2].to_index(board_size), 7);
+        assert_eq!(adjacent_coords[3].to_index(board_size), 8);
+    }
+
+    // Generate adjacent coordinates for the case that it touches side B and C (corner)
+    #[test]
+    fn test_get_adjacent_coords_toches_b_and_c() {
+        let board_size = 5;
+        let coords = Coordinates::from_index(0, board_size);
+        let adjacent_coords = coords.get_adjacent_coords();
+        assert_eq!(adjacent_coords.len(), 2);
+        assert_eq!(adjacent_coords[0].to_index(board_size), 1);
+        assert_eq!(adjacent_coords[1].to_index(board_size), 2);
+    }
+
+    // Check the mirror of a given coordinate
+    #[test]
+    fn test_get_mirrored_coords() {
+        let vec_coords = vec![2,0,2];
+        let coords = Coordinates::from_vec(&vec_coords).unwrap();
+        let mirrored_coords = coords.get_mirrored_coords();
+        assert_eq!(mirrored_coords.x(), 2);
+        assert_eq!(mirrored_coords.y(), 2);
+        assert_eq!(mirrored_coords.z(), 0);
+    }
+
+
+    // Check the mirror of a center coordinate; it should be the same coordinates
+    #[test]
+    fn test_get_mirrored_coords_center() {
+        let vec_coords = vec![2,1,1];
+        let coords = Coordinates::from_vec(&vec_coords).unwrap();
+        let mirrored_coords = coords.get_mirrored_coords();
+        assert_eq!(mirrored_coords.x(), 2);
+        assert_eq!(mirrored_coords.y(), 1);
+        assert_eq!(mirrored_coords.z(), 1);
     }
 
     // Property-based tests using proptest
