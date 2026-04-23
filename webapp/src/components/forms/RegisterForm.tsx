@@ -22,6 +22,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   
   // Estados auxiliares para feedback visual y errores
   const [errorState, setErrorState] = useState<FormErrorState>(null);
@@ -41,6 +42,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     //Antes de ir al servidor, comprobamos que no haya campos vacíos
     if (!fullName.trim() || !username.trim() || !password.trim()) {
       setErrorState({ kind: 'i18n-key', key: 'errors.requiredFields' });
+      return;
+    }
+
+    //Veririfca que la contraseña en introducir y repetir coinciden
+    if (password !== confirmPassword) {
+      setErrorState({ kind: 'i18n-key', key: 'errors.passwordMismatch' });
+      setLoading(false);
       return;
     }
 
@@ -115,6 +123,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="form-input"
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="confirmPassword">{t('auth.confirmPassword')}:</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className="form-input"
         />
       </div>

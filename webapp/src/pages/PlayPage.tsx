@@ -1,30 +1,31 @@
 import { useState } from 'react';
-import { Board } from '../components/Board'; 
+import { Board } from '../components/Board';
 import type { User } from "../types/user";
 import { useTranslation } from 'react-i18next';
-import LanguageSelector from '../components/LanguageSelector';
+import '../css/Estilo.css';
 
-// Mantén tus diccionarios de mapeo
+
+// Dificultades de los bots
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
-const urlToDifficulty: Record<string, DifficultyLevel> = {
-  'random_bot': 'easy',
-  'mediumbot': 'medium',
-  'bridgebot': 'hard',
-};
 
 type PlayPageProps = {
     user: User;
     botId: string;
     boardSize: number;
+    // Modo de juego recibido del lobby: determina si se juega contra bot o contra otro jugador
+    gameMode: 'bot' | 'pvp';
+    // Nombre del segundo jugador en modo PvP (por defecto 'Invitado' si se dejó vacío en el lobby)
+    player2Name: string;
     onBackToLobby: any;
+    onChangeDifficulty: any;
 };
 
-const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
+const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby, onChangeDifficulty }: PlayPageProps) => {
   const { t } = useTranslation();
   // Inicializa basándose en botId recibido como prop
-  const initialDifficulty = urlToDifficulty[botId] || 'easy';
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialDifficulty);
+  const initialDifficulty = botId || 'random_bot';
+  const [difficulty, setDifficulty] = useState<string>(initialDifficulty);
   const [gameKey, setGameKey] = useState(0);
 
   const handleAbandon = async () => {
@@ -36,68 +37,60 @@ const PlayPage = ({ user, botId, boardSize, onBackToLobby }: PlayPageProps) => {
     const newDifficulty = event.target.value as DifficultyLevel;
     setDifficulty(newDifficulty);
     setGameKey(prev => prev + 1);
+    onChangeDifficulty(newDifficulty);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
-      <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', marginBottom: '20px' }}>
-        <h2>{t('play.titlePrefix')} <strong>{user.nom_usuario || t('play.defaultPlayer')}</strong></h2>
-        
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <LanguageSelector username={user.nom_usuario} />
-          <select 
-            value={difficulty} 
-            onChange={handleChangeDifficulty}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#3b82f6', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-          >
-            <option value="easy">{t('play.difficultyEasy')}</option>
-            <option value="medium">{t('play.difficultyMedium')}</option>
-            <option value="hard">{t('play.difficultyHard')}</option>
-          </select>
-          
-          <button 
-            onClick={handleAbandon}
-            style={{ 
-              padding: '8px 16px', 
-              backgroundColor: '#ef4444', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
+    <div className='lobby-container'>
+      <div className='play-header'>
+        <h2 className='play-title'>
+          {gameMode === 'pvp' ? (
+            <>
+              <strong>{user.nom_usuario || t('play.defaultPlayer1')}</strong> {t('play.versus')} <strong>{player2Name}</strong>
+            </>
+          ) : (
+            <>
+              {t('play.titlePrefix')} <strong>{user.nom_usuario || t('play.defaultPlayer')}</strong>
+            </>
+          )}
+        </h2>
+
+        <div className='auth-selector'>
+          {gameMode === 'bot' && (
+            <select value={difficulty} onChange={handleChangeDifficulty} className='combobox'>
+              <option value='random_bot'>{t('play.difficultyEasy')}</option>
+              <option value='mediumbot'>{t('play.difficultyMedium')}</option>
+              <option value='bridgebot'>{t('play.difficultyHard')}</option>
+            </select>
+          )}
+
+          <button onClick={handleAbandon} className='btn-logout'>
             {t('play.abandon')}
           </button>
         </div>
       </div>
-      
-      <p style={{ marginBottom: '30px', fontSize: '18px' }}>{t('play.turnHelp')}</p>
 
-      <div key={gameKey} style={{ 
-        padding: '20px', 
-        backgroundColor: '#ffffff', 
-        borderRadius: '12px', 
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' 
-      }}>
-        <Board botId={botId} difficulty={difficulty} boardSize={boardSize}/>
+      <p className='turn-indicator'>
+        {gameMode === 'pvp' ? t('play.turnHelpPvp') : t('play.turnHelp')}
+      </p>
+
+      <div key={gameKey} className='card board-container'>
+        <Board
+          botId={botId}
+          boardSize={boardSize}
+          gameMode={gameMode}
+          player1Name={user.nom_usuario || t('play.defaultPlayer1')}
+          player2Name={player2Name}
+        />
       </div>
 
-        <div>
+      <div className='info-section'>
         <h3>{t('play.rulesTitle')}</h3>
         <p>
-          {t('play.rulesTextBeforeHighlight')} <strong>{t('play.rulesTextHighlight')}</strong>{t('play.rulesTextAfterHighlight')}
+          {t('play.rulesTextBeforeHighlight')} <strong>{t('play.rulesTextHighlight')}</strong>
+          {t('play.rulesTextAfterHighlight')}
         </p>
       </div>
-
     </div>
   );
 };

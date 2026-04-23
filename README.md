@@ -6,11 +6,13 @@
 
 [Deployment in Azure](http://20.199.9.107)
 
+[OpenAPI docs](http://20.199.9.107:3000/api-docs)
+
 [Documentation](https://arquisoft.github.io/yovi_es5b/)
 
 [Decision log](https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones)
 
-## Contributors
+## Colaboradores
 
 | Name  | UO  | Github username |
 |---|---|---|
@@ -20,7 +22,7 @@
 | **Ignacio** Torre Suárez | UO245469 | [NachoTS](https://github.com/NachoTS) |
 | **Pedro** Díaz González | UO294790 | [Gedepe](https://github.com/Gedepe) |
 
-## Project Structure
+## Estructura del proyecto
 
 El proyecto se divide en cuatro subdirectorios principales:
 
@@ -37,9 +39,13 @@ El proyecto se divide en cuatro subdirectorios principales:
 `webapp` es una single-page application (SPA) creada con [Vite](https://vitejs.dev/) y [React](https://reactjs.org/).
 
 - `src/App.tsx`: Componente principal de la aplicación.
+- `src/__tests__/`: Directorio que contiene los archivos de pruebas unitarias de webapp.
 - `package.json`: Contiene los scripts necesarios para ejecutar, compilar y probar webapp.
 - `vite.config.ts`: Archivo de configuración para Vite.
 - `Dockerfile`: Archivo que define la imagen de Docker para webapp.
+- `test/e2e/features/`: Archivos cucumber para la descripción de casos de pruebas de aceptación (e2e).
+- `test/e2e/steps/`: Archivos JavaScript para la ejecución de pruebas de aceptación con Playwright.
+- `test/e2e/support/`: Archivos de configuración del entorno de pruebas de aceptación.
 
 ### Users
 
@@ -48,6 +54,10 @@ El proyecto se divide en cuatro subdirectorios principales:
 - `users-service.js`: Archivo principal de `users` desde donde se lanzará el módulo.
 - `package.json`: Contiene los scripts necesarios para iniciar y probar el servicio.
 - `Dockerfile`: Archivo que define la imagen de Docker para users.
+- `__tests__/`: Directorio que contiene los archivos de pruebas unitarias de users.
+- `config/`: Directorio que contiene los archivos de configuración de Express y Sequelize.
+- `models/`: Directorio que contiene los archivos de definición de modelos para el ORM Sequelize.
+- `openapi.yaml`: Archivo que contiene la especificación de la API del proyecto en el estándar OpenAPI.
 
 ### Gamey
 
@@ -58,6 +68,7 @@ El proyecto se divide en cuatro subdirectorios principales:
 - `src/bot/`: Registro e implementación de bots.
 - `src/core/`: Lógica base del juego, incluyendo acciones, coordenadas, estado y gestión de jugadores.
 - `src/notation/`: Notación del juego (YEN, YGN).
+- `tests/`: Notación del juego (YEN, YGN).
 - `Cargo.toml`: Dependencias y metadatos del módulo.
 - `Dockerfile`: Archivo que define la imagen de Docker para gamey.
 
@@ -69,7 +80,7 @@ El proyecto se divide en cuatro subdirectorios principales:
 
 ## Ejecutar el proyecto
 
-Se puede ejecutar el proyecto en local usando Docker o sin Docker. Si da problemas con Docker, probar a ejecutarlo de la otra forma.
+Se puede ejecutar el proyecto en local usando Docker o sin Docker. 
 
 ### Sin Docker
 
@@ -82,25 +93,24 @@ Finalmente, entrar en [http://localhost:5173/](http://localhost:5173/).
 
 **NOTA**: recordar ejecutar **npm install** en `users` y `webapp` por si hay alguna dependencia nueva pendiente de instalar.
 
-**NOTA**: como arreglo temporal para que arranque la base de datos en local, cambiar en `users/config/db.js`, línea 7, el valor de la IP por `127.0.0.1`. **No subir este cambio a master**.
+### Con Docker
 
-### With Docker
+Primero, se debe haber instalado [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/) en la máquina.
 
-This is the easiest way to get the project running. You need to have [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed.
-
-1. **Build and run the containers:**
-    From the root directory of the project, run:
+1. **Construir y arrancar los contenedores:**
+    Desde el directorio raíz del proyecto, ejecutar:
 
 ```bash
 docker-compose up --build
 ```
 
-This command will build the Docker images for both the `webapp` and `users` services and start them.
+Esta orden construirá las imágenes para webapp, gamey, users y database y arrancará los respectivos contenedores.
 
-2.**Access the application:**
-- Web application: [http://localhost](http://localhost)
-- User service API: [http://localhost:3000](http://localhost:3000)
-- Gamey API: [http://localhost:4000](http://localhost:4000)
+2.**Acceder a la aplicación:**
+- Aplicación web: [http://localhost](http://localhost)
+- API users: [http://localhost:3000](http://localhost:3000)
+- API gamey: [http://localhost:4000](http://localhost:4000)
+- Documentación OpenAPI: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
 ## Scripts disponibles
 
@@ -111,7 +121,6 @@ Cada módulo posee su conjunto de scripts. A continuación se listan los scripts
 - `npm run dev`: Starts the development server for the webapp.
 - `npm test`: Runs the unit tests.
 - `npm run test:e2e`: Runs the end-to-end tests.
-- `npm run start:all`: A convenience script to start both the `webapp` and the `users` service concurrently.
 
 ### Users (`users/package.json`)
 

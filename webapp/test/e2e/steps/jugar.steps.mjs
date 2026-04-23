@@ -1,23 +1,42 @@
 import { Given, When, Then } from '@cucumber/cucumber'
 import { expect } from '@playwright/test'
 
+//Para pulsar bienvenida y superar la animación
+async function superarBienvenida(page) {
+  //Esperamos a que el mensaje de "Cargando sesión..." desaparezca
+ await page.waitForSelector('text=Cargando sesión...', { state: 'detached', timeout: 10000 });
+  
+  //Localizar el botón COMENZAR
+  const botonComenzar = page.locator('.btn-enter');
+  await botonComenzar.waitFor({ state: 'visible' });
+
+  // Usamos force: true porque la clase .welcome-card tiene una 
+  // animación de CSS  que hace que Playwright crea que el botón no es estable.
+  await botonComenzar.click({ force: true });
+}
+
 // Helper reutilizable: registra un usuario y deja la sesión iniciada en el lobby
 async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.goto('http://localhost:5173')
+  await superarBienvenida(page);
   await page.fill('#fullName', nombre)
   await page.fill('#username', nom_usuario)
   await page.fill('#password', password)
-  await page.click('.submit-button')
-  await page.waitForSelector('.lobby-main')
+  await page.fill('#confirmPassword', password);
+  await page.click('.submit-button');  
+  await page.waitForSelector('.btn-logout', { timeout: 10000 });
 }
 
 async function loginYAccederAlLobby(page, nom_usuario, password) {
   await page.goto('http://localhost:5173')
+  await superarBienvenida(page);
   await page.click('.login-page-button')
+  await page.waitForSelector('#login-username', { state: 'visible' });
   await page.fill('#login-username', nom_usuario)
   await page.fill('#login-password', password)
-  await page.click('.submit-button')
-  await page.waitForSelector('.lobby-main')
+  await page.click('.submit-button');
+  await page.waitForSelector('.btn-logout', { timeout: 10000 });
+
 }
 
 // Respuesta mock que devuelve el servidor de gamey cuando el jugador gana.
@@ -43,7 +62,9 @@ When('Selecciono la estrategia {string} y pulso en JUGAR', async function (estra
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Seleccionar la estrategia en el desplegable del lobby
-  await page.selectOption('.lobby-select', { label: estrategia })
+  const combos = page.locator('select.combobox'); 
+  const selectorDificultad = combos.nth(1); //solo cogemos el primer combobox para asegurar que sea el de bot
+  await selectorDificultad.selectOption({ label: estrategia });
   await page.click('.btn-play')
   // Esperamos a que el tablero esté visible
   await page.waitForSelector('svg')
@@ -87,10 +108,7 @@ Then('Debería aparecer mi pieza en azul en esa casilla y el bot debería respon
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Tras el clic, esperamos a que el bot haya respondido (el indicador de "pensando" desaparece)
-  await page.waitForFunction(() => {
-    const p = document.querySelector('p[style]')
-    return p && !p.textContent.includes('pensando')
-  }, { timeout: 15000 })
+  await page.locator('.board-status', { hasText: 'Tu turno (Juegas con Azul)' }).click()
   // Debe haber al menos una casilla azul (pieza del jugador, color #3b82f6)
   const casillasAzules = page.locator('svg polygon[fill="#3b82f6"]')
   await expect(casillasAzules).toHaveCount(1)
@@ -157,7 +175,7 @@ Then('Debería mostrarse el mensaje de victoria y el botón de volver a jugar', 
 
 // ─── Step compartido del escenario de casilla ocupada ────────────────────────
 
-Then('And Intento hacer clic de nuevo en esa misma casilla', async function () {
+Then('Intento hacer clic de nuevo en esa misma casilla', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Localizamos de nuevo la casilla por sus puntos (ahora tendrá fill azul o rojo)
@@ -167,13 +185,13 @@ Then('And Intento hacer clic de nuevo en esa misma casilla', async function () {
   await casillaOcupada.click()
 })
 
-When('Intento hacer clic de nuevo en esa misma casilla', async function () {
+/*When('Intento hacer clic de nuevo en esa misma casilla', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   const casillaOcupada = page.locator(`svg polygon[points="${this.puntosCasilla}"]`)
   this.azulesAntes = await page.locator('svg polygon[fill="#3b82f6"]').count()
   await casillaOcupada.click()
-})
+})*/
 
 Then('El número de piezas azules en el tablero no debería haber aumentado', async function () {
   const page = this.page

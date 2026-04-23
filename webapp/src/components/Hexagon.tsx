@@ -22,11 +22,11 @@ export const Hexagon: React.FC<HexagonProps> = ({ cx, cy, size, color = '#eeeeee
   return (
     <polygon
       points={points.join(' ')}
-      fill={color}
+      fill={color} // Recibe desde Board.tsx
       stroke="#333333"
       strokeWidth="2"
       onClick={onClick}
-      style={{ cursor: 'pointer', transition: 'fill 0.2s' }}
+      className="hexagon-cell"
     />
   );
 };

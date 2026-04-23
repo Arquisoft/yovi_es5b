@@ -16,13 +16,18 @@ export const resources = {
         fullName: 'Nombre Completo',
         username: 'Nombre de Usuario',
         password: 'Contraseña',
+        confirmPassword: 'Repetir Contraseña',
         submitLogin: 'Iniciar Sesión',
         submitLoginLoading: 'Iniciando Sesión...',
         submitRegister: 'Aceptar Registro',
         submitRegisterLoading: 'Registrando...'
       },
       start: {
-        loadingSession: 'Cargando sesión...'
+        loadingSession: 'Cargando sesión...',
+        welcomeTitle: '¡Bienvenido!',
+        welcomeIntro: 'Estás a punto de entrar en el proyecto',
+        welcomeDescription: 'Aquí podrás jugar al juego Y tanto contra bots como contra otra persona en local.',
+        begin: 'COMENZAR'
       },
       lobby: {
         connected: 'Conectado',
@@ -31,6 +36,9 @@ export const resources = {
         logout: 'Salir',
         title: 'Juego Y',
         welcomeUser: 'Bienvenido, {{name}}',
+        modeBot: 'Jugador vs Bot',
+        modePvp: 'Jugador vs Jugador',
+        player2Placeholder: 'Nombre del Jugador 2 (opcional)',
         botRandom: 'Bot Aleatorio (Fácil)',
         botMedium: 'Bot Medio (Medio)',
         botBridge: 'Bot Puente (Difícil)',
@@ -38,6 +46,7 @@ export const resources = {
         boardMedium: 'Tablero mediano',
         boardLarge: 'Tablero grande',
         play: 'JUGAR',
+        withoutConexion: 'SIN CONEXIÓN',
         boardHelpLabel: 'Board:',
         boardHelpText: 'Pinche para seleccionar el tamaño del tablero, configurado mediante número de hexágonos',
         botHelpLabel: 'Bot:',
@@ -54,11 +63,14 @@ export const resources = {
       play: {
         titlePrefix: 'Partida de:',
         defaultPlayer: 'Jugador',
+        defaultPlayer1: 'Jugador 1',
+        versus: 'vs',
         difficultyEasy: 'Dificultad: Fácil',
         difficultyMedium: 'Dificultad: Medio',
         difficultyHard: 'Dificultad: Difícil',
         abandon: 'Abandonar Partida',
         turnHelp: 'Es tu turno. Selecciona una casilla del tablero.',
+        turnHelpPvp: 'Los jugadores se turnan. Selecciona una casilla del tablero.',
         rulesTitle: 'Reglas del Juego Y',
         rulesTextBeforeHighlight: 'Pulsa un hexágono para rellenarlo de tu color. Debes intentar trazar una línea de tu color que logre conectar los tres bordes del triángulo que compone el tablero.',
         rulesTextHighlight: 'Los hexágonos de la esquina valen por los dos lados',
@@ -82,6 +94,7 @@ export const resources = {
       },
       errors: {
         requiredFields: 'Por favor, rellena todos los campos.',
+        passwordMismatch: 'Las contraseñas no coinciden.',
         connectionUsers: 'No se pudo conectar con el servidor de usuarios.',
         generic: 'Ha ocurrido un error.',
         codes: {
@@ -122,13 +135,18 @@ export const resources = {
         fullName: 'Full Name',
         username: 'Username',
         password: 'Password',
+        confirmPassword: 'Confirm Password',
         submitLogin: 'Log In',
         submitLoginLoading: 'Signing In...',
         submitRegister: 'Create Account',
         submitRegisterLoading: 'Registering...'
       },
       start: {
-        loadingSession: 'Loading session...'
+        loadingSession: 'Loading session...',
+        welcomeTitle: 'Welcome!',
+        welcomeIntro: 'You are about to enter the project',
+        welcomeDescription: 'Here you can play Y both against bots and against another local player.',
+        begin: 'START'
       },
       lobby: {
         connected: 'Connected',
@@ -137,6 +155,9 @@ export const resources = {
         logout: 'Log out',
         title: 'Y Game',
         welcomeUser: 'Welcome, {{name}}',
+        modeBot: 'Player vs Bot',
+        modePvp: 'Player vs Player',
+        player2Placeholder: 'Player 2 name (optional)',
         botRandom: 'Random Bot (Easy)',
         botMedium: 'Medium Bot (Medium)',
         botBridge: 'Bridge Bot (Hard)',
@@ -144,6 +165,7 @@ export const resources = {
         boardMedium: 'Medium board',
         boardLarge: 'Large board',
         play: 'PLAY',
+        withoutConexion: 'WITHOUT CONNECTION',
         boardHelpLabel: 'Board:',
         boardHelpText: 'Click to select the board size, configured by number of hexagons',
         botHelpLabel: 'Bot:',
@@ -160,11 +182,14 @@ export const resources = {
       play: {
         titlePrefix: 'Game of:',
         defaultPlayer: 'Player',
+        defaultPlayer1: 'Player 1',
+        versus: 'vs',
         difficultyEasy: 'Difficulty: Easy',
         difficultyMedium: 'Difficulty: Medium',
         difficultyHard: 'Difficulty: Hard',
         abandon: 'Leave Game',
         turnHelp: 'It is your turn. Select a board cell.',
+        turnHelpPvp: 'Players take turns. Select a board cell.',
         rulesTitle: 'Y Game Rules',
         rulesTextBeforeHighlight: 'Click a hexagon to fill it with your color. You must try to draw a line of your color connecting the three edges of the triangle-shaped board.',
         rulesTextHighlight: 'Corner hexagons count for both sides',
@@ -188,6 +213,7 @@ export const resources = {
       },
       errors: {
         requiredFields: 'Please complete all fields.',
+        passwordMismatch: 'Passwords do not match.',
         connectionUsers: 'Could not connect to the user service.',
         generic: 'An error occurred.',
         codes: {

@@ -40,7 +40,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
         // Si la respuesta es correcta, guardamos los datos
         if (response.ok) {
           const data = await response.json();
-          setStats(data);
+          setStats(data);  // Guardamos datos si la respuesta es correcta
         }
       } catch {
         // Si hay error (backend no listo), avisamos por consola y dejamos los ceros
@@ -55,40 +55,46 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
   }, [user.nom_usuario]);
 
   return (
-    <div className="lobby-container stats-view">
-      {/* Título con el nombre del usuario */}
-      <h1 className="stats-title">{t('stats.title', { name: user.nombre })}</h1> 
-      
-      {/* Si está cargando muestra el badge, si no muestra la tarjeta de datos */}
-      {loading ? (
-        <div className="status-badge checking">{t('stats.loading')}</div>
-      ) : (
-        <div className="card stats-card">
-          {/* Fila de partidas totales */}
-          <div className="stats-row">
-            <span className="stats-label">{t('stats.played')}</span>
-            <span className="stats-number">{stats.jugadas}</span>
-          </div>
-          
-          {/* Fila de victorias */}
-          <div className="stats-row">
-            <span className="stats-label">{t('stats.won')}</span>
-            <span className="stats-number win-text">{stats.ganadas}</span>
-          </div>
-          
-          {/* Fila de derrotas */}
-          <div className="stats-row">
-            <span className="stats-label">{t('stats.lost')}</span>
-            <span className="stats-number lose-text">{stats.perdidas}</span>
-          </div>
+  <div className='lobby-container'>
+    {/* Titulo con i18n, manteniendo el h2 de master */}
+    <h2>{t('stats.title', { name: user.nombre })}</h2>
+
+    {/* Si esta cargando muestra el badge, si no muestra la tarjeta de datos */}
+    {loading ? (
+      <div className='status-badge checking'>{t('stats.loading')}</div>
+    ) : (
+      <div className='card'>
+        {/* Fila de partidas totales */}
+        <div className='stats'>
+          <label>
+            <strong>{t('stats.played')}</strong>
+          </label>
+          <div className='stats-played'>{stats.jugadas}</div>
         </div>
-      )}
-      
-      {/* Botón para regresar al lobby */}
-      <button onClick={onBack} className="btn-play stats-back-btn">
-        {t('stats.backToMenu')}
-      </button>
-    </div>
+
+        {/* Fila de victorias */}
+        <div className='stats'>
+          <label>
+            <strong>{t('stats.won')}</strong>
+          </label>
+          <div className='stats-won'>{stats.ganadas}</div>
+        </div>
+
+        {/* Fila de derrotas */}
+        <div className='stats'>
+          <label>
+            <strong>{t('stats.lost')}</strong>
+          </label>
+          <div className='stats-lost'>{stats.perdidas}</div>
+        </div>
+      </div>
+    )}
+
+    {/* Boton para regresar al lobby */}
+    <button onClick={onBack} className='btn-play'>
+      {t('stats.backToMenu')}
+    </button>
+  </div>
   );
 };
 

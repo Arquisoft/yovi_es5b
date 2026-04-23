@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { User } from '../types/user';
 import PlayPage from './PlayPage';
-import '../css/Estilo.css'; 
+import '../css/Estilo.css';
 import Estadisticas from './Estadisticas.tsx';
-import LanguageSelector from '../components/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 
 interface GamePageProps {
@@ -18,11 +17,14 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   // Controlan qué vista mostrar (Partida, Estadísticas o Menú)
   const [playGame, setPlayGame] = useState(false);
   const [viewStats, setViewStats] = useState(false);
-  
-// botId guardará el nombre del archivo (sin .rs) que usará gamey
+
+// botId es el nombre de bot de gamey
   const [botId, setBotId] = useState("random_bot");
-  const [strategy, setStrategy] = useState('random_bot');
   const [size, setSize] = useState('5');
+  // Modo de juego seleccionado en el lobby: 'bot' para jugar contra IA, 'pvp' para dos jugadores locales
+  const [gameMode, setGameMode] = useState<'bot' | 'pvp'>('bot');
+  // Nombre del segundo jugador en modo PvP; si se deja vacío se usará 'Invitado'
+  const [player2Name, setPlayer2Name] = useState('');
 
   useEffect(() => {
     // Función asíncrona para verificar si el servidor de juegos está en línea
@@ -45,11 +47,13 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Inicia la partida guardando la estrategia actual y cambiando de vista
+  // Inicia la partida cambiando de vista
   const handleStartGame = () => {
-      setBotId(strategy);
       setPlayGame(true);
   };
+
+  // Nombre efectivo del J2: usa lo que escribió el usuario o 'Invitado' si lo dejó en blanco
+  const effectivePlayer2Name = player2Name.trim() || 'Invitado';
 
   // Función callback para que PlayPage pueda volver al menú principal
   const handleBackToLobby = () => setPlayGame(false);
@@ -57,12 +61,13 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   // Eliminar cookie de sesión
   const handleLogout = () => {
     document.cookie = "JSESSIONID="
-    window.location.href = '/'; 
+    window.location.href = '/';
   };
 
   // Renderizado condicional: Prioridad 1 - La pantalla de juego
   if (playGame) {
-      return <PlayPage botId={botId} user={user} boardSize={Number(size)} onBackToLobby={handleBackToLobby}/>;
+      return <PlayPage botId={botId} user={user} boardSize={Number(size)} gameMode={gameMode} player2Name={effectivePlayer2Name} onBackToLobby={handleBackToLobby}
+                onChangeDifficulty={(botId: string) => setBotId(botId)}/>;
   }
 
   // Renderizado condicional: Prioridad 2 - La pantalla de estadísticas
@@ -72,16 +77,16 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
   // Renderizado por defecto: El Menú Principal (Lobby)
   return (
-    <div className="lobby-container">
-      <header className="lobby-header">
+    <div>
+      <header className="lobby-container">
         {/* Badge dinámico que cambia de color según el estado del servidor */}
         <div className={`status-badge ${gameyStatus}`}>
             {gameyStatus === 'ok' ? t('lobby.connected') : t('lobby.disconnected')}
         </div>
-        
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <LanguageSelector username={user.nom_usuario} />
-          <button onClick={() => setViewStats(true)} className="btn-secondary">
+
+        {/* Agrupamos botones con tu clase auth-selector para el layout */}
+        <div className="auth-selector">
+          <button onClick={() => setViewStats(true)} className="selector-button">
             {t('lobby.stats')}
           </button>
           <button onClick={handleLogout} className="btn-logout">
@@ -94,41 +99,65 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         <h1>{t('lobby.title')}</h1>
         <p>{t('lobby.welcomeUser', { name: user.nombre })}</p>
 
-        <div className="selectors-container">
-          {/* Selectores vinculados a los estados locales para configurar la partida */}
-          <select value={strategy} onChange={(e) => setStrategy(e.target.value)} className="lobby-select">
-            <option value="random">{t('lobby.botRandom')}</option>
-            <option value="mediumbot">{t('lobby.botMedium')}</option>
-            <option value="bridgebot">{t('lobby.botBridge')}</option>
+        <div className="register-form">
+          <select
+            value={gameMode}
+            onChange={(e) => setGameMode(e.target.value as 'bot' | 'pvp')}
+            className="combobox"
+          >
+            <option value="bot">{t('lobby.modeBot')}</option>
+            <option value="pvp">{t('lobby.modePvp')}</option>
           </select>
 
-          <select value={size} onChange={(e) => setSize(e.target.value)} className="lobby-select">
+          {gameMode === 'pvp' && (
+            <input
+              type="text"
+              placeholder={t('lobby.player2Placeholder')}
+              value={player2Name}
+              onChange={(e) => setPlayer2Name(e.target.value)}
+              className="combobox"
+            />
+          )}
+
+          {gameMode === 'bot' && (
+            <select
+              value={botId}
+              onChange={(e) => setBotId(e.target.value)}
+              className="combobox"
+            >
+              <option value="random_bot">{t('lobby.botRandom')}</option>
+              <option value="mediumbot">{t('lobby.botMedium')}</option>
+              <option value="bridgebot">{t('lobby.botBridge')}</option>
+            </select>
+          )}
+
+          <select
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
+            className="combobox"
+          >
             <option value="5">{t('lobby.boardSmall')}</option>
             <option value="10">{t('lobby.boardMedium')}</option>
             <option value="15">{t('lobby.boardLarge')}</option>
           </select>
 
-          <button 
-            onClick={handleStartGame} 
+          <button
+            onClick={handleStartGame}
             className="btn-play"
-            // Deshabilita el botón si no hay conexión con el servidor de juegos
             disabled={gameyStatus !== 'ok'}
           >
-            {t('lobby.play')}
+            {gameyStatus === 'ok' ? t('lobby.play') : t('lobby.withoutConexion')}
           </button>
         </div>
 
-        <div>
+        <div className="info-section">
           <p>
             <strong>{t('lobby.boardHelpLabel')}</strong> {t('lobby.boardHelpText')}
           </p>
-        </div>      
-        <div>
           <p>
             <strong>{t('lobby.botHelpLabel')}</strong> {t('lobby.botHelpText')}
           </p>
         </div>
-
       </main>
     </div>
   );

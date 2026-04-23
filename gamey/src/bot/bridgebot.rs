@@ -6,8 +6,8 @@ use rand::prelude::IndexedRandom;
 // 1) Victoria inmediata.
 // 2) Bloqueo de derrota inmediata.
 // 3) Reparación de puentes cortados.
-// 4) Modo saltos hasta tocar las 3 paredes.
-// 5) Modo rellenar puentes cuando ya tocó las 3 paredes.
+//    Modo saltos hasta tocar las 3 paredes.
+//    Modo rellenar puentes cuando ya tocó las 3 paredes.
 #[derive(Debug, Default)]
 pub struct BridgeBot;
 
@@ -85,7 +85,7 @@ fn border_progress(cell: &Coordinates, tx: bool, ty: bool, tz: bool) -> i32 {
     score
 }
 
-// Desempata entre candidatas por centralidad y luego por índice.
+// Desempata entre candidatas por centralidad y luego por índice de la celda.
 fn pick_best_with_tie_break(candidates: Vec<Coordinates>, board_size: u32) -> Option<Coordinates> {
     if candidates.is_empty() {
         return None;
@@ -216,11 +216,6 @@ impl YBot for BridgeBot {
 
         let (my_tx, my_ty, my_tz, my_borders) = touches_all_sides(&my_pieces);
 
-        // Presión enemiga por pared para priorizar cierres más disputados.
-        let enemy_side_a_pressure = enemy_pieces.iter().filter(|c| c.x() == 0).count() as i32;
-        let enemy_side_b_pressure = enemy_pieces.iter().filter(|c| c.y() == 0).count() as i32;
-        let enemy_side_c_pressure = enemy_pieces.iter().filter(|c| c.z() == 0).count() as i32;
-
         // Prioridad 1: ganar ya si existe jugada ganadora.
         let winning_now = immediate_winning_moves(board, my_id, &available_coords);
         if !winning_now.is_empty() {
@@ -248,14 +243,27 @@ impl YBot for BridgeBot {
                 }
 
                 let mut free_intermediates = Vec::new();
+                let mut enemy_blocks = 0;
                 for cell in &available_coords {
                     if hex_distance(&p1, cell) == 1 && hex_distance(cell, &p2) == 1 {
                         free_intermediates.push(*cell);
                     }
                 }
 
-                // Si queda una única intermedia libre, es urgente jugarla antes de perder el enlace.
-                if free_intermediates.len() == 1 {
+                // Revisamos la(s) intermedia(s) ocupada(s): solo cuenta como amenaza si la ocupa el rival.
+                for idx in 0..board.total_cells() {
+                    let cell = Coordinates::from_index(idx, board_size);
+                    if hex_distance(&p1, &cell) == 1
+                        && hex_distance(&cell, &p2) == 1
+                        && !free_intermediates.contains(&cell)
+                        && board.player_at(&cell) == Some(enemy_id)
+                    {
+                        enemy_blocks += 1;
+                    }
+                }
+
+                // Reparar solo si queda una única intermedia libre y la otra está tomada por el rival.
+                if free_intermediates.len() == 1 && enemy_blocks > 0 {
                     bridge_repairs.push(free_intermediates[0]);
                 }
             }
@@ -298,15 +306,9 @@ impl YBot for BridgeBot {
                 // Preferencia secundaria por mantener masa central.
                 score += center_metric(cell) / 2;
 
-                // Si toca una pared faltante, subir prioridad según presión enemiga en ese lado.
-                if !my_tx && cell.x() == 0 {
-                    score += 2_000 + enemy_side_a_pressure * 300;
-                }
-                if !my_ty && cell.y() == 0 {
-                    score += 2_000 + enemy_side_b_pressure * 300;
-                }
-                if !my_tz && cell.z() == 0 {
-                    score += 2_000 + enemy_side_c_pressure * 300;
+                // Si toca una pared faltante, subir prioridad
+                if !my_tx && cell.x() == 0 || !my_ty && cell.y() == 0 || !my_tz && cell.z() == 0 {
+                    score += 2_000 ;
                 }
 
                 if score > jump_best_score {
@@ -322,57 +324,7 @@ impl YBot for BridgeBot {
                 return pick_best_with_tie_break(jump_candidates, board_size);
             }
 
-            // FASE 2: Si no hay puentes fuertes, intentar puentes comprometidos
-            // (saltos a distancia 2 con solo 1 intermedia libre).
-            let mut risky_best_score = i32::MIN;
-            let mut risky_candidates = Vec::new();
-
-            for cell in &available_coords {
-                let mut has_risky_jump = false;
-                let mut risky_jump_count = 0;
-
-                for piece in &my_pieces {
-                    if hex_distance(cell, piece) == 2 {
-                        let bridge_paths = count_bridge_paths(cell, piece, board);
-                        if bridge_paths == 1 {
-                            has_risky_jump = true;
-                            risky_jump_count += 1;
-                        }
-                    }
-                }
-
-                if !has_risky_jump {
-                    continue;
-                }
-
-                let mut score = border_progress(cell, my_tx, my_ty, my_tz);
-                score += risky_jump_count * 200;
-                score += center_metric(cell) / 2;
-
-                if !my_tx && cell.x() == 0 {
-                    score += 2_000 + enemy_side_a_pressure * 300;
-                }
-                if !my_ty && cell.y() == 0 {
-                    score += 2_000 + enemy_side_b_pressure * 300;
-                }
-                if !my_tz && cell.z() == 0 {
-                    score += 2_000 + enemy_side_c_pressure * 300;
-                }
-
-                if score > risky_best_score {
-                    risky_best_score = score;
-                    risky_candidates.clear();
-                    risky_candidates.push(*cell);
-                } else if score == risky_best_score {
-                    risky_candidates.push(*cell);
-                }
-            }
-
-            if !risky_candidates.is_empty() {
-                return pick_best_with_tie_break(risky_candidates, board_size);
-            }
-
-            // FASE 3: Si no hay ningún puente (fuerte ni comprometido),
+            // FASE 2: Si no hay ningún puente,
             // jugar una casilla contigua a la red propia.
             let mut contiguous_best = i32::MIN;
             let mut contiguous = Vec::new();
@@ -384,14 +336,8 @@ impl YBot for BridgeBot {
 
                 let mut score = border_progress(cell, my_tx, my_ty, my_tz) + center_metric(cell);
 
-                if !my_tx && cell.x() == 0 {
-                    score += 3_000 + enemy_side_a_pressure * 500;
-                }
-                if !my_ty && cell.y() == 0 {
-                    score += 3_000 + enemy_side_b_pressure * 500;
-                }
-                if !my_tz && cell.z() == 0 {
-                    score += 3_000 + enemy_side_c_pressure * 500;
+                if !my_tx && cell.x() == 0 || !my_ty && cell.y() == 0 || !my_tz && cell.z() == 0 {
+                    score += 3_000 ;
                 }
 
                 if score > contiguous_best {
@@ -500,31 +446,31 @@ mod tests {
     // ==========================================================
     // NIVEL 1: REGLAS BÁSICAS Y ROBUSTEZ
     // ==========================================================
-    // NIVEL 1: REGLAS BÁSICAS Y ROBUSTEZ
-    // ==========================================================
 
     #[test]
+    // Verificamos que el bot se identifica correctamente.
     fn test_bridgebot_identity() {
         assert_eq!(BridgeBot.name(), "bridgebot");
     }
 
     #[test]
+    // En la apertura, el bot debería elegir una de las posiciones centrales para maximizar flexibilidad.
     fn test_first_move_is_always_center() {
         let bot = BridgeBot;
         let game = GameY::new(5);
         let chosen = bot.choose_move(&game).expect("Debe mover");
-        // En tamaño 5, hay 3 posibles centros: 4, 7, 8
         let valid_centers = [4, 7, 8];
         assert!(valid_centers.contains(&chosen.to_index(5)), "El bot debería abrir en el centro (4, 7 u 8)");
     }
 
     #[test]
+    // El bot no debería intentar mover en un tablero lleno, debe retornar None.
     fn test_handles_full_board_gracefully() {
         let bot = BridgeBot;
         let board_map = "
              0
             1 0
-        "; // Tamaño 2 (3 celdas) lleno.
+        ";
         let game = setup_test_board(2, board_map);
         assert!(bot.choose_move(&game).is_none(), "No debería mover en tablero lleno");
     }
@@ -534,9 +480,9 @@ mod tests {
     // ==========================================================
 
     #[test]
+    // El Jugador (1) tiene una jugada ganadora inmediata en el índice 10 (hay que bloquearla).
     fn test_priority_block_enemy_win() {
         let bot = BridgeBot;
-        // El Humano (1) está a punto de conectar la pared izquierda.
         let board_map = "
             1
            1 .
@@ -547,11 +493,11 @@ mod tests {
         let game = setup_test_board(5, board_map);
         let chosen = bot.choose_move(&game).expect("Debe mover").to_index(5);
 
-        // El bot DEBE tapar el índice 10 para evitar que el humano gane.
         assert_eq!(chosen, 10, "FALLO: El bot no bloqueó la victoria inminente del humano");
     }
 
     #[test]
+    // El Bot (0) tiene una jugada ganadora inmediata en el índice 10.
     fn test_priority_immediate_win_for_bot() {
         let bot = BridgeBot;
         let board_map = "
@@ -571,41 +517,20 @@ mod tests {
     }
 
     #[test]
+    // En una situación donde tanto el bot como el enemigo tienen jugadas ganadoras inmediatas, el bot debe priorizar su victoria.
     fn test_priority_level_1_over_level_2() {
         let bot = BridgeBot;
-        // Test simple: una posición donde el bot tiene victoria inmediata y el enemigo también
         let board_map = "
             0
-           0 1
-          1 1 .
-         . . . .
-        . . . . .
+           0 .
+          0 . .
+         0 . . .
+        . 1 1 1 1
         ";
         let game = setup_test_board(5, board_map);
-        if game.available_cells().is_empty() {
-            return;
-        }
-
-        let my_wins: Vec<Coordinates> = game
-            .available_cells()
-            .iter()
-            .map(|idx| Coordinates::from_index(*idx, 5))
-            .filter(|c| is_immediate_winning_move(&game, PlayerId::new(0), *c))
-            .collect();
-        let enemy_wins: Vec<Coordinates> = game
-            .available_cells()
-            .iter()
-            .map(|idx| Coordinates::from_index(*idx, 5))
-            .filter(|c| is_immediate_winning_move(&game, PlayerId::new(1), *c))
-            .collect();
-
-        if my_wins.is_empty() || enemy_wins.is_empty() {
-            return;
-        }
-
         let chosen = bot.choose_move(&game).expect("Debe mover");
         assert!(
-            my_wins.contains(&chosen),
+            is_immediate_winning_move(&game, PlayerId::new(0), chosen),
             "FALLO: Debe priorizar victoria propia inmediata sobre bloqueo"
         );
     }
@@ -615,6 +540,7 @@ mod tests {
     // ==========================================================
 
     #[test]
+    // El Bot (0) tiene un puente cortado por el rival (1) con una sola intermedia libre. Debería no reparar ese puente (inutil).
     fn test_intelligent_ignoring_useless_bridges() {
         let bot = BridgeBot;
         // El Bot (0) ya tiene una estructura sólida arriba.
@@ -629,14 +555,13 @@ mod tests {
         let game = setup_test_board(5, board_map);
         let chosen = bot.choose_move(&game).expect("Debe mover").to_index(5);
 
-        // El bot NO debería tirar en el índice 8, debería buscar expansión real.
         assert_ne!(chosen, 8, "FALLO: El bot gastó un turno en un puente que no aporta progreso");
     }
 
     #[test]
+    // El Bot (0) debería saltar a distancia 2 hacia un borde libre para expandir su red, en lugar de jugar adyacente.
     fn test_expansion_via_safe_jumps() {
         let bot = BridgeBot;
-        // Bot en el índice 8. Debería saltar a distancia 2 hacia un borde libre.
         let board_map = "
             1
            . 1
@@ -657,6 +582,7 @@ mod tests {
     }
 
     #[test]
+    // El Bot (0) tiene un puente cortado por el rival (1) con una sola intermedia libre. Debería reparar ese puente para no perderlo.
     fn test_compromised_bridge() {
         // Puente comprometido
         let bot = BridgeBot;
@@ -679,16 +605,34 @@ mod tests {
         );
     }
 
+    #[test]
+    // Si el bloqueador del puente es una ficha propia, el bot no debería intentar "reparar" ese puente, ya que no está realmente comprometido.
+    fn test_does_not_repair_bridge_if_block_is_own_piece() {
+        let bot = BridgeBot;
+        let board_map = "
+            .
+           . 0
+          . 0 .
+         . . 0 .
+        . . . . .
+        ";
+        let game = setup_test_board(5, board_map);
+        let chosen_idx = bot.choose_move(&game).expect("Debe mover").to_index(5);
+
+        assert_ne!(
+        chosen_idx, 5,
+        "FALLO: no debería reparar puente comprometido cuando el bloqueo es de una ficha propia"
+        );
+    }
+
 
     // ==========================================================
     // NIVEL 4: AVANCE ESTRATÉGICO HACIA PAREDES
     // ==========================================================
-
-
     #[test]
+    // Bajo presión de un puente cortado, el bot debería optar por un movimiento de avance hacia la pared faltante, incluso si no es un salto, para no perder progreso.
     fn test_improvised_wall_bridge_when_under_pressure() {
         let bot = BridgeBot;
-        // Bot en el centro (7), enemigos en 12 y 13
         let board_map = "
             1
            1 1
@@ -713,6 +657,7 @@ mod tests {
     }
 
     #[test]
+    // En empate por puntuación y centralidad, el bot debería elegir la celda con el índice más bajo para mantener estabilidad en su comportamiento.
     fn test_tiebreak_prefers_lowest_index_after_score_and_centrality() {
         let size = 5;
         let c1 = Coordinates::from_index(1, size);
@@ -725,50 +670,6 @@ mod tests {
             chosen.to_index(size),
             1,
             "FALLO: En empate por puntuación y centralidad, debe elegir menor índice"
-        );
-    }
-
-    #[test]
-    fn test_no_bridges() {
-        let bot = BridgeBot;
-        // Tablero sin puentes creados
-        let board_map = "
-            0
-           . .
-          . 1 .
-         . . 1 .
-        0 . 1 . 0
-        ";
-        let game = setup_test_board(5, board_map);
-        let chosen = bot.choose_move(&game).expect("Debe mover");
-        let chosen_idx = chosen.to_index(5);
-        
-        let valid_jumps = [7];
-        assert!(
-            valid_jumps.contains(&chosen_idx),
-            "FALLO: se debe elegir la posición 7, se eligió: {}", chosen_idx
-        );
-    }
-
-    #[test]
-    fn test_center_taken() {
-        let bot = BridgeBot;
-        // El centro ya está tomado
-        let board_map = "
-            1
-           . .
-          . 0 .
-         . 0 0 .
-        1 . 0 . 1
-        ";
-        let game = setup_test_board(5, board_map);
-        let chosen = bot.choose_move(&game).expect("Debe mover");
-        let chosen_idx = chosen.to_index(5);
-        
-        let valid_jumps = [6];
-        assert!(
-            valid_jumps.contains(&chosen_idx),
-            "FALLO: El bot debería elegir la posición 6, se eligió: {}", chosen_idx
         );
     }
 

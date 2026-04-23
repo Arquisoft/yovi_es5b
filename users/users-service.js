@@ -11,7 +11,7 @@ import { ERROR_CODES, apiError } from './errors.js';
  * - 200: información del usuario activo
  * - 403: error si no hay usuario autenticado
  **/
-app.get(['/getuser', '/bot/getuser'], async (req, res) => {
+app.get('/getuser', async (req, res) => {
     res.status(200).json(req.session.user);
 });
 
@@ -25,7 +25,7 @@ app.get(['/getuser', '/bot/getuser'], async (req, res) => {
  * - 200: usuario registrado
  * - 400: objecto con errores del registro
  **/
-app.post(['/register', '/bot/register'], async (req, res) => {
+app.post('/register', async (req, res) => {
     const errores = await validarRegistrarUsuario(req?.body?.nombre, req?.body?.nom_usuario, req?.body?.contrasena);
     if (Object.keys(errores).length > 0) {
         res.status(400).json(apiError(
@@ -54,7 +54,7 @@ app.post(['/register', '/bot/register'], async (req, res) => {
  * - 200: usuario con el que se inicia sesión
  * - 400: objecto con información de error
  **/
-app.post(['/login', '/bot/login'], async (req, res) => {
+app.post('/login', async (req, res) => {
     const errores = await validarIniciarSesion(req?.body?.nom_usuario, req?.body?.contrasena);
     if (Object.keys(errores).length > 0) {
         res.status(400).json(apiError(
@@ -92,7 +92,7 @@ app.post(['/login', '/bot/login'], async (req, res) => {
  * - 404: error si el usuario no existe
  * - 500: error al obtener estadísticas
 **/
-app.get(['/stats/:nom_usuario', '/bot/stats/:nom_usuario'], async (req, res) => {
+app.get('/stats/:nom_usuario', async (req, res) => {
     if (!req.session.user) {
         res.status(403).json(apiError(ERROR_CODES.USER_NOT_AUTHENTICATED, "No hay usuario autenticado."));
         return;
@@ -129,7 +129,7 @@ app.get(['/stats/:nom_usuario', '/bot/stats/:nom_usuario'], async (req, res) => 
  * - 403: error si no hay usuario autenticado
  * - 500: error al guardar la partida
 **/
-app.post(['/guardar-partida', '/bot/guardar-partida'], async (req, res) => {
+app.post('/guardar-partida', async (req, res) => {
     if (!req.session.user) {
         res.status(403).json(apiError(ERROR_CODES.USER_NOT_AUTHENTICATED, "No hay usuario autenticado."));
         return;

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import GamePage from '../pages/GamePage'
 import { vi, beforeEach, describe, it, expect, afterEach } from 'vitest'
 
@@ -20,7 +20,7 @@ describe('GamePage', () => {
     render(
         <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
-    
+
     const title = await screen.findByText(/Juego Y/i)
     expect(title).toBeTruthy()
   })
@@ -71,5 +71,49 @@ describe('GamePage', () => {
 
     const backButton = await screen.findByRole('button', { name: /JUGAR/i })
     expect(backButton).toBeTruthy()
+  })
+
+  it('debería mostrar el input del nombre del Jugador 2 al seleccionar modo PvP', async () => {
+    render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
+
+    const selects = await screen.findAllByRole('combobox')
+    // El primer selector es el de modo de juego
+    fireEvent.change(selects[0], { target: { value: 'pvp' } })
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/Nombre del Jugador 2/i)).toBeTruthy()
+    })
+  })
+
+  it('debería funcionar correctamente el botón de jugar', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    const playButton = await screen.findByRole('button', { name: /JUGAR/i })
+    playButton.click();
+
+    // Texto de PlayPage
+    expect(await screen.findByText(/Es tu turno/i))
+  })
+
+  it('debería funcionar correctamente el botón de seleccionar dificultad', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    expect(screen.getByText('Bot Aleatorio (Fácil)')).toBeTruthy()
+    screen.getByRole('option', { name: /Bot Medio \(Medio\)/i }).click();
+    expect(screen.getByText('Bot Medio (Medio)')).toBeTruthy()
+  })
+
+  it('debería funcionar correctamente el botón de selector tamaño de tablero', async () => {
+    render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    expect(screen.getByText('Tablero pequeño')).toBeTruthy()
+    screen.getByRole('option', { name: /Tablero mediano/i }).click();
+    expect(screen.getByText('Tablero grande')).toBeTruthy()
   })
 })

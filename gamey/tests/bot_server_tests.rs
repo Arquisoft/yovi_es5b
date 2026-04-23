@@ -2,7 +2,7 @@ use axum::{
     body::Body,
     http::{Request, StatusCode},
 };
-use gamey::{YBotRegistry, YEN, create_default_state, create_router, state::AppState, RandomBot, MoveResponse, ErrorResponse};
+use gamey::{YBotRegistry, YEN, create_default_state, create_router, state::AppState, RandomBot, MoveResponse, ErrorResponse, StatusResponse};
 use http_body_util::BodyExt;
 use std::sync::Arc;
 use tower::ServiceExt;
@@ -80,7 +80,7 @@ async fn test_choose_endpoint_with_partially_filled_board() {
     let app = test_app();
 
     // Board with some cells already filled: B in first cell, R in second
-    let yen = YEN::new(3, 2, vec!['B', 'R'], "B/R./.B.".to_string());
+    let yen = YEN::new(3, 1, vec!['B', 'R'], "B/R./.B.".to_string());
 
     let response = app
         .oneshot(
@@ -554,4 +554,140 @@ async fn test_get_on_choose_endpoint_returns_method_not_allowed() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::METHOD_NOT_ALLOWED);
+}
+
+// ============================================================================
+// Tests del endpoint de estado PvP (/v1/ybot/status)
+// ============================================================================
+
+/// Prueba: partida en curso devuelve Ongoing
+#[tokio::test]
+async fn test_status_endpoint_ongoing_game() {
+    let app = test_app();
+
+    let yen = YEN::new(3, 0, vec!['B', 'R'], "./../...".to_string());
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v1/ybot/status")
+                .header("content-type", "application/json")
+                .body(Body::from(serde_json::to_string(&yen).unwrap()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let status_response: StatusResponse = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(status_response.api_version, "v1");
+    assert!(matches!(status_response.status, gamey::GameStatus::Ongoing { .. }));
+}
+
+/// Prueba: partida terminada devuelve Finished con el ganador correcto
+#[tokio::test]
+async fn test_status_endpoint_finished_game() {
+    let app = test_app();
+
+    // Tablero de tamaño 3 donde B ha ganado conectando los tres lados
+    let yen = YEN::new(3, 0, vec!['B', 'R'], "R/BB/RBR".to_string());
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v1/ybot/status")
+                .header("content-type", "application/json")
+                .body(Body::from(serde_json::to_string(&yen).unwrap()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let status_response: StatusResponse = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(status_response.api_version, "v1");
+    assert!(matches!(status_response.status, gamey::GameStatus::Finished { .. }));
+}
+
+/// Prueba: versión de API no válida
+#[tokio::test]
+async fn test_status_endpoint_invalid_api_version() {
+    let app = test_app();
+
+    let yen = YEN::new(3, 0, vec!['B', 'R'], "./../...".to_string());
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v2/ybot/status")
+                .header("content-type", "application/json")
+                .body(Body::from(serde_json::to_string(&yen).unwrap()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
+
+    assert!(error_response.message.contains("Unsupported API version"));
+    assert_eq!(error_response.api_version, Some("v2".to_string()));
+}
+
+/// Prueba: JSON no válido devuelve error de cliente
+#[tokio::test]
+async fn test_status_endpoint_invalid_json() {
+    let app = test_app();
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v1/ybot/status")
+                .header("content-type", "application/json")
+                .body(Body::from("{ invalid json }"))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert!(response.status().is_client_error());
+}
+
+/// Prueba: YEN sintácticamente válido pero con layout incorrecto
+#[tokio::test]
+async fn test_status_endpoint_invalid_yen_layout() {
+    let app = test_app();
+
+    let yen = YEN::new(3, 0, vec!['B', 'R'], "xxx".to_string());
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v1/ybot/status")
+                .header("content-type", "application/json")
+                .body(Body::from(serde_json::to_string(&yen).unwrap()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let error_response: ErrorResponse = serde_json::from_slice(&body).unwrap();
+
+    assert!(error_response.message.contains("Invalid YEN format"));
 }
