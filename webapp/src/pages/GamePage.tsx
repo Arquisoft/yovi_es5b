@@ -128,7 +128,9 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
               onChange={(e) => setBotId(e.target.value)} 
               className="combobox"
             >
-              <option value="random">Bot Aleatorio (Fácil)</option>
+              <option value="random_bot">Bot Aleatorio (Fácil)</option>
+              <option value="mirrorbot">Bot Espejo (Fácil)</option>
+              <option value="lapabot">Bot Lapa (Medio)</option>
               <option value="mediumbot">Bot Medio (Medio)</option>
               <option value="bridgebot">Bot Puente (Difícil)</option>
             </select>
