@@ -98,6 +98,65 @@ impl Coordinates {
     pub fn touches_side_c(&self) -> bool {
         self.z == 0
     }
+
+    // Returns a vector with the coordinates of the adjacent cells of this cell.
+    pub fn get_adjacent_coords(&self) -> Vec<Coordinates> {
+
+        // There are six possible adjacent cells, but depending on where the cell is located, some
+        // adjacent cells might not be available.
+        // For example, the cell on the top of the triangle only has 2 adjacent cells available.
+        // So we make sure that we only generate the available adjacent cells by checking whether
+        // the cell is touching some sides of the triangle or not.
+        let mut add_left_cell = true;
+        let mut add_right_cell = true;
+        let mut add_upper_left_cell = true;
+        let mut add_upper_right_cell = true;
+        let mut add_lower_left_cell = true;
+        let mut add_lower_right_cell = true;
+
+        if self.touches_side_a() {
+            add_lower_left_cell = false;
+            add_lower_right_cell = false;
+        }
+
+        if self.touches_side_b() {
+            add_left_cell = false;
+            add_upper_left_cell = false;
+        }
+
+        if self.touches_side_c() {
+            add_right_cell = false;
+            add_upper_right_cell = false;
+        }
+
+        let mut adjancet_cells = Vec::new();
+        if add_left_cell {
+            let left_cell = Coordinates::new(self.x, self.y-1, self.z+1);
+            adjancet_cells.push(left_cell);
+        }
+        if add_right_cell {
+            let right_cell = Coordinates::new(self.x, self.y+1, self.z-1);
+            adjancet_cells.push(right_cell);
+        }
+        if add_upper_left_cell {
+            let upper_left_cell = Coordinates::new(self.x+1, self.y-1, self.z);
+            adjancet_cells.push(upper_left_cell);
+        }
+        if add_upper_right_cell {
+            let upper_right_cell = Coordinates::new(self.x+1, self.y, self.z-1);
+            adjancet_cells.push(upper_right_cell);
+        }
+        if add_lower_left_cell {
+            let lower_left_cell = Coordinates::new(self.x-1, self.y, self.z+1);
+            adjancet_cells.push(lower_left_cell);
+        }
+        if add_lower_right_cell {
+            let lower_right_cell = Coordinates::new(self.x-1, self.y+1, self.z);
+            adjancet_cells.push(lower_right_cell);
+        }
+
+        adjancet_cells
+    }
 }
 
 impl From<Coordinates> for Vec<u32> {

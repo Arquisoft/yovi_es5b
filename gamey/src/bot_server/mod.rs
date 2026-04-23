@@ -38,7 +38,7 @@ pub use game_status::StatusResponse;
 pub use error::ErrorResponse;
 pub use version::*;
 
-use crate::{GameYError, RandomBot, MediumBot, BridgeBot, YBotRegistry, state::AppState};
+use crate::{GameYError, RandomBot, LapaBot, MediumBot, BridgeBot, YBotRegistry, state::AppState};
 
 /// Creates the Axum router with the given state.
 ///
@@ -97,7 +97,11 @@ async fn add_headers_middleware(request: Request, next: Next) -> impl IntoRespon
 ///
 /// The default state includes the `RandomBot` which selects moves randomly.
 pub fn create_default_state() -> AppState {
-    let bots = YBotRegistry::new().with_bot(Arc::new(RandomBot)).with_bot(Arc::new(MediumBot::default())).with_bot(Arc::new(BridgeBot::default()));
+    let bots = YBotRegistry::new()
+        .with_bot(Arc::new(RandomBot))
+        .with_bot(Arc::new(LapaBot::default()))
+        .with_bot(Arc::new(MediumBot::default()))
+        .with_bot(Arc::new(BridgeBot::default()));
     AppState::new(bots)
 }
 

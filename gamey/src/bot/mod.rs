@@ -9,11 +9,13 @@
 
 pub mod bridgebot;
 pub mod mediumbot;
+pub mod lapabot;
 pub mod random;
 pub mod ybot;
 pub mod ybot_registry;
 pub use bridgebot::*;
 pub use mediumbot::*;
+pub use lapabot::*;
 pub use random::*;
 pub use ybot::*;
 pub use ybot_registry::*;
