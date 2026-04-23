@@ -5,6 +5,7 @@ body, html {
   width: 100%;
   background-color: dimgray; 
   font-family: sans-serif;
+  color:white;
 }
 
 /* Contenedor principal: Centra todo el contenido de la página */
