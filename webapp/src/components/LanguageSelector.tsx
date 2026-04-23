@@ -6,6 +6,7 @@ type LanguageSelectorProps = {
   containerClassName?: string;
   labelClassName?: string;
   selectClassName?: string;
+  showLabel?: boolean;
 };
 
 // Componente para seleccionar el idioma de la aplicación
@@ -14,6 +15,7 @@ const LanguageSelector = ({
   containerClassName,
   labelClassName,
   selectClassName,
+  showLabel = false,
 }: LanguageSelectorProps) => {
   const { t, i18n } = useTranslation();
 
@@ -25,16 +27,16 @@ const LanguageSelector = ({
   };
 
   return (
-    <label className={containerClassName ?? 'language-selector'}>
-      <span className={labelClassName ?? 'language-selector-label'}>{t('language.label')}:</span>
+    <label className={containerClassName ?? 'language-selector'} title={t('language.changeHint')}>
+      {showLabel && <span className={labelClassName ?? 'language-selector-label'}>{t('language.label')}:</span>}
       <select
         aria-label={t('language.label')}
         className={selectClassName ?? 'language-selector-select'}
         value={currentLanguage}
         onChange={(event) => onChangeLanguage(event.target.value as AppLanguage)}
       >
-        <option value="es">{t('language.spanish')}</option>
-        <option value="en">{t('language.english')}</option>
+        <option value="es">ES | {t('language.spanish')}</option>
+        <option value="en">EN | {t('language.english')}</option>
       </select>
     </label>
   );

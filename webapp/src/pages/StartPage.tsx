@@ -3,6 +3,7 @@ import GamePage from "../pages/GamePage";
 import RegisterPage from "../pages/RegisterPage";
 import "../css/Estilo.css"; 
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../components/LanguageSelector';
 
 import type { User } from "../types/user";
 
@@ -58,6 +59,9 @@ const StartPage = () => {
   if (loading) {
     return (
       <div className="lobby-container">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <LanguageSelector selectClassName='combobox language-combobox' />
+        </div>
         <p>{t('start.loadingSession')}</p>
       </div>
     );
@@ -66,6 +70,9 @@ const StartPage = () => {
   if (!hasStarted) {
     return (
       <div className="welcome-screen">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <LanguageSelector selectClassName='combobox language-combobox' />
+        </div>
         <h1 className="main-title">Yovi_es5B</h1>
         <div className="welcome-card">
           <h2 className="welcome-title">{t('start.welcomeTitle')}</h2>

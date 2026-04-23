@@ -326,30 +326,30 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
   if (gameMode === 'pvp') {
     if (winner === 'human') {
-      statusMessage = `¡${player1Name} GANA LA PARTIDA!`;
+      statusMessage = t('board.pvpWinner', { name: player1Name });
       statusClass = 'status-winner';
     } else if (winner === 'bot') {
-      statusMessage = `¡${player2Name} GANA LA PARTIDA!`;
+      statusMessage = t('board.pvpWinner', { name: player2Name });
       statusClass = 'status-bot';
     } else if (pvpTurn === 'human') {
-      statusMessage = `Turno de ${player1Name} (Azul)`;
+      statusMessage = t('board.pvpTurnHuman', { name: player1Name });
       statusClass = 'status-human';
     } else {
-      statusMessage = `Turno de ${player2Name} (Rojo)`;
+      statusMessage = t('board.pvpTurnBot', { name: player2Name });
       statusClass = 'status-bot';
     }
   } else {
     if (winner === 'human') {
-      statusMessage = '¡HAS GANADO LA PARTIDA!';
+      statusMessage = t('board.won');
       statusClass = 'status-winner';
     } else if (winner === 'bot') {
-      statusMessage = 'El Bot te ha ganado...';
+      statusMessage = t('board.lost');
       statusClass = 'status-bot';
     } else if (isBotThinking) {
-      statusMessage = 'El bot está pensando...';
+      statusMessage = t('board.thinking');
       statusClass = 'status-bot';
     } else {
-      statusMessage = 'Tu turno (Juegas con Azul)';
+      statusMessage = t('board.yourTurn');
       statusClass = 'status-human';
     }
   }
@@ -375,11 +375,11 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
         let label: string;
         if (isFetchingSuggestion) {
-          label = 'Calculando sugerencia...';
+          label = t('board.suggestionLoading');
         } else if (alreadyUsed) {
-          label = 'Sugerencia ya utilizada';
+          label = t('board.suggestionUsed');
         } else {
-          label = 'Sugerir movimiento';
+          label = t('board.suggestionCta');
         }
 
         return (

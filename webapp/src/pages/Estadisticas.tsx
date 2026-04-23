@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { User } from '../types/user';
 import '../css/Estilo.css';
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../components/LanguageSelector';
 
 // Interfaz para las propiedades que recibe el componente
 interface EstadisticasProps {
@@ -56,6 +57,10 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
 
   return (
   <div className='lobby-container'>
+    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+      <LanguageSelector username={user.nom_usuario} selectClassName='combobox language-combobox' />
+    </div>
+
     {/* Titulo con i18n, manteniendo el h2 de master */}
     <h2>{t('stats.title', { name: user.nombre })}</h2>
 

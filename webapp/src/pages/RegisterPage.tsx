@@ -32,7 +32,7 @@ const RegisterPage = () => {
     <div className="lobby-container">
 
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <LanguageSelector />
+        <LanguageSelector selectClassName='combobox language-combobox' />
       </div>
 
       <h2>{t('auth.welcome')}</h2>

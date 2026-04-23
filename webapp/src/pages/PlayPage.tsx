@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Board } from '../components/Board';
 import type { User } from "../types/user";
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../components/LanguageSelector';
 import '../css/Estilo.css';
 
 
@@ -56,6 +57,8 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
         </h2>
 
         <div className='auth-selector'>
+          <LanguageSelector username={user.nom_usuario} selectClassName='combobox language-combobox' />
+
           {gameMode === 'bot' && (
             <select value={difficulty} onChange={handleChangeDifficulty} className='combobox'>
               <option value='random_bot'>{t('play.difficultyEasy')}</option>

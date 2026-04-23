@@ -3,6 +3,7 @@ import type { User } from '../types/user';
 import PlayPage from './PlayPage';
 import '../css/Estilo.css';
 import Estadisticas from './Estadisticas.tsx';
+import LanguageSelector from '../components/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 
 interface GamePageProps {
@@ -86,6 +87,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
         {/* Agrupamos botones con tu clase auth-selector para el layout */}
         <div className="auth-selector">
+          <LanguageSelector username={user.nom_usuario} selectClassName="combobox language-combobox" />
           <button onClick={() => setViewStats(true)} className="selector-button">
             {t('lobby.stats')}
           </button>

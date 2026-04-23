@@ -4,6 +4,7 @@ export const resources = {
     translation: {
       language: {
         label: 'Idioma',
+        changeHint: 'Cambiar idioma',
         spanish: 'Español',
         english: 'Inglés'
       },
@@ -82,6 +83,9 @@ export const resources = {
         lost: 'El Bot te ha ganado...',
         thinking: 'El bot está pensando...',
         playAgain: 'Volver a jugar',
+        suggestionLoading: 'Cargando sugerencias...',
+        suggestionUsed: 'Sugerencia usada',
+        suggestionCta: 'Usar sugerencia',
         requestBotError: 'Error en el servidor al pedir movimiento al bot: {{bot}}. Revisa la consola.',
         logs: {
           botMissingCoords: 'El bot devolvió una respuesta válida pero sin coordenadas.',
@@ -123,6 +127,7 @@ export const resources = {
     translation: {
       language: {
         label: 'Language',
+        changeHint: 'Change language',
         spanish: 'Spanish',
         english: 'English'
       },
@@ -201,6 +206,9 @@ export const resources = {
         lost: 'The bot beat you...',
         thinking: 'The bot is thinking...',
         playAgain: 'Play again',
+        suggestionLoading: 'Loading suggestions...',
+        suggestionUsed: 'Suggestion used',
+        suggestionCta: 'Use suggestion',
         requestBotError: 'Server error while requesting move from bot: {{bot}}. Check console.',
         logs: {
           botMissingCoords: 'The bot returned a valid response but without coordinates.',
