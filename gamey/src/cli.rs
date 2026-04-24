@@ -74,6 +74,7 @@ pub fn run_cli_game() -> Result<()> {
         .with_bot(Arc::new(MediumBot::default()))
         .with_bot(Arc::new(MirrorBot::default()))
         .with_bot(Arc::new(BridgeBot::default()))
+        .with_bot(Arc::new(BridgeBot::lax_repair_mode()))
         .with_bot(Arc::new(RandomBot));
     let bot: Arc<dyn YBot> = match bots_registry.find(&args.bot) {
         Some(b) => b,

@@ -102,7 +102,8 @@ pub fn create_default_state() -> AppState {
         .with_bot(Arc::new(LapaBot::default()))
         .with_bot(Arc::new(MediumBot::default()))
         .with_bot(Arc::new(MirrorBot::default()))
-        .with_bot(Arc::new(BridgeBot::default()));
+        .with_bot(Arc::new(BridgeBot::default()))
+        .with_bot(Arc::new(BridgeBot::lax_repair_mode()));
     AppState::new(bots)
 }
 
