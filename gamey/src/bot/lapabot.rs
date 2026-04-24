@@ -1,4 +1,5 @@
 use crate::core::{Coordinates, GameY, PlayerId};
+use crate::bot::bot_helper;
 use crate::YBot;
 use rand::prelude::IndexedRandom;
 
@@ -44,30 +45,14 @@ impl YBot for LapaBot {
     }
 
     fn choose_move(&self, board: &GameY) -> Option<Coordinates> {
-        // 1) Obtener celdas libres
-        let available_cells = board.available_cells();
-        if available_cells.is_empty() {
-            return None;
-        }
-
-
-        // 2) Obtener el ID de jugador del bot
-        let board_size = board.board_size();
-        let our_player_id = match board.next_player() {
-            Some(id) => id,
-            None => return None,
+        let game_data = match bot_helper::get_basic_game_data(board) {
+            Some(data) => data,
+            None => return None
         };
 
-        // 3) Obtener las celdas del rival
-        let mut rival_cells = Vec::new();
-        for idx in 0..board.total_cells() {
-            let coords = Coordinates::from_index(idx, board_size);
-            if let Some(player_id) = board.player_at(&coords) {
-                if player_id != our_player_id {
-                    rival_cells.push(coords);
-                } 
-            }
-        }
+        let available_cells = game_data.available_cells;
+        let rival_cells = game_data.rival_cells;
+        let our_player_id = game_data.player_bot_id;
 
         // 4) Puntuar las celdas del rival según el algoritmo descrito en weight_cell
         // y ordenarlas de más prioritarias a menos (más peso, más prioritaria)

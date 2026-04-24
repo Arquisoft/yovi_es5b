@@ -7,6 +7,8 @@
 //! - [`YBotRegistry`] - A registry for managing multiple bot implementations
 //! - [`RandomBot`] - A simple bot that makes random valid moves
 
+mod bot_helper;
+
 pub mod bridgebot;
 pub mod mediumbot;
 pub mod mirrorbot;
