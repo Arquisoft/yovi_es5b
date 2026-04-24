@@ -1,5 +1,5 @@
 // Funciones para manejar el almacenamiento de la preferencia de idioma del usuario
-export type AppLanguage = 'es' | 'en';
+export type AppLanguage = 'es' | 'en' | 'pt' | 'fr' | 'de';
 
 const GLOBAL_LANGUAGE_KEY = 'yovi_lang';
 
@@ -32,7 +32,13 @@ export const normalizeLanguage = (value?: string | null): AppLanguage => {
     return 'es';
   }
 
-  return value.toLowerCase().startsWith('en') ? 'en' : 'es';
+  const normalizedValue = value.toLowerCase();
+
+  if (normalizedValue.startsWith('en')) return 'en';
+  if (normalizedValue.startsWith('pt')) return 'pt';
+  if (normalizedValue.startsWith('fr')) return 'fr';
+  if (normalizedValue.startsWith('de')) return 'de';
+  return 'es';
 };
 
 export const getLanguageStorageKey = (username?: string): string => {

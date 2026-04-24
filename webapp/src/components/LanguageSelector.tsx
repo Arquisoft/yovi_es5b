@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { setStoredLanguage, type AppLanguage } from '../i18n/storage';
+import { normalizeLanguage, setStoredLanguage, type AppLanguage } from '../i18n/storage';
 
 type LanguageSelectorProps = {
   username?: string;
@@ -19,7 +19,7 @@ const LanguageSelector = ({
 }: LanguageSelectorProps) => {
   const { t, i18n } = useTranslation();
 
-  const currentLanguage: AppLanguage = i18n.language.toLowerCase().startsWith('en') ? 'en' : 'es';
+  const currentLanguage: AppLanguage = normalizeLanguage(i18n.language);
 
   const onChangeLanguage = async (language: AppLanguage) => {
     setStoredLanguage(language, username);
@@ -37,6 +37,9 @@ const LanguageSelector = ({
       >
         <option value="es">ES | {t('language.spanish')}</option>
         <option value="en">EN | {t('language.english')}</option>
+        <option value="pt">PT | {t('language.portuguese')}</option>
+        <option value="fr">FR | {t('language.french')}</option>
+        <option value="de">DE | {t('language.german')}</option>
       </select>
     </label>
   );

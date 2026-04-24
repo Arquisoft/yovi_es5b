@@ -6,7 +6,10 @@ export const resources = {
         label: 'Idioma',
         changeHint: 'Cambiar idioma',
         spanish: 'Español',
-        english: 'Inglés'
+        english: 'Inglés',
+        portuguese: 'Portugués',
+        french: 'Francés',
+        german: 'Alemán'
       },
       auth: {
         welcome: 'Bienvenido a Yovi',
@@ -132,7 +135,10 @@ export const resources = {
         label: 'Language',
         changeHint: 'Change language',
         spanish: 'Spanish',
-        english: 'English'
+        english: 'English',
+        portuguese: 'Portuguese',
+        french: 'French',
+        german: 'German'
       },
       auth: {
         welcome: 'Welcome to Yovi',
@@ -248,6 +254,393 @@ export const resources = {
           INVALID_YEN_FORMAT: 'Invalid game position format.',
           BOT_NOT_FOUND: 'Selected bot is not available.',
           GAME_ENGINE_ERROR: 'Could not process the bot move.'
+        }
+      }
+    }
+  },
+  pt: {
+    translation: {
+      language: {
+        label: 'Idioma',
+        changeHint: 'Mudar idioma',
+        spanish: 'Espanhol',
+        english: 'Inglês',
+        portuguese: 'Português',
+        french: 'Francês',
+        german: 'Alemão'
+      },
+      auth: {
+        welcome: 'Bem-vindo ao Yovi',
+        registerTab: 'Registrar-se',
+        loginTab: 'Entrar',
+        loginTitle: 'Iniciar Sessão',
+        registerTitle: 'Registro de Usuário',
+        fullName: 'Nome Completo',
+        username: 'Nome de Usuário',
+        password: 'Senha',
+        confirmPassword: 'Confirmar Senha',
+        submitLogin: 'Entrar',
+        submitLoginLoading: 'Entrando...',
+        submitRegister: 'Criar Conta',
+        submitRegisterLoading: 'Registrando...'
+      },
+      start: {
+        loadingSession: 'Carregando sessão...',
+        welcomeTitle: 'Bem-vindo!',
+        welcomeIntro: 'Você está prestes a entrar no projeto',
+        welcomeDescription: 'Aqui você pode jogar Y tanto contra bots quanto contra outro jogador local.',
+        begin: 'COMEÇAR'
+      },
+      lobby: {
+        connected: 'Conectado',
+        disconnected: 'Desconectado',
+        stats: 'Estatísticas',
+        logout: 'Sair',
+        title: 'Jogo Y',
+        welcomeUser: 'Bem-vindo, {{name}}',
+        modeBot: 'Jogador vs Bot',
+        modePvp: 'Jogador vs Jogador',
+        player2Placeholder: 'Nome do Jogador 2 (opcional)',
+        botRandom: 'Bot Aleatório (Fácil)',
+        botMedium: 'Bot Médio (Médio)',
+        botBridge: 'Bot Ponte (Difícil)',
+        boardSmall: 'Tabuleiro pequeno',
+        boardMedium: 'Tabuleiro médio',
+        boardLarge: 'Tabuleiro grande',
+        play: 'JOGAR',
+        withoutConexion: 'SEM CONEXÃO',
+        boardHelpLabel: 'Tabuleiro:',
+        boardHelpText: 'Clique para selecionar o tamanho do tabuleiro, configurado pelo número de hexágonos',
+        botHelpLabel: 'Bot:',
+        botHelpText: 'Clique para escolher contra qual bot você quer jogar'
+      },
+      stats: {
+        title: 'Estatísticas de {{name}}',
+        loading: 'Carregando dados...',
+        played: 'Partidas jogadas',
+        won: 'Partidas ganhas',
+        lost: 'Partidas perdidas',
+        backToMenu: 'Voltar ao Menu'
+      },
+      play: {
+        titlePrefix: 'Partida de:',
+        defaultPlayer: 'Jogador',
+        defaultPlayer1: 'Jogador 1',
+        versus: 'vs',
+        difficultyEasy: 'Dificuldade: Fácil',
+        difficultyMedium: 'Dificuldade: Médio',
+        difficultyHard: 'Dificuldade: Difícil',
+        abandon: 'Abandonar Partida',
+        turnHelp: 'É a sua vez. Selecione uma célula do tabuleiro.',
+        turnHelpPvp: 'Os jogadores se alternam. Selecione uma célula do tabuleiro.',
+        rulesTitle: 'Regras do Jogo Y',
+        rulesTextBeforeHighlight: 'Clique em um hexágono para preenchê-lo com sua cor. Você deve tentar traçar uma linha da sua cor conectando as três bordas do triângulo do tabuleiro.',
+        rulesTextHighlight: 'Os hexágonos dos cantos contam para os dois lados',
+        rulesTextAfterHighlight: '.'
+      },
+      board: {
+        yourTurn: 'Sua vez (Você joga com Azul)',
+        pvpTurnHuman: 'Vez de {{name}} (Azul)',
+        pvpTurnBot: 'Vez de {{name}} (Vermelho)',
+        pvpWinner: '{{name}} GANHOU A PARTIDA!',
+        won: 'VOCÊ GANHOU A PARTIDA!',
+        lost: 'O bot venceu você...',
+        thinking: 'O bot está pensando...',
+        playAgain: 'Jogar novamente',
+        suggestionLoading: 'Carregando sugestões...',
+        suggestionUsed: 'Sugestão usada',
+        suggestionCta: 'Usar sugestão',
+        requestBotError: 'Erro no servidor ao solicitar movimento do bot: {{bot}}. Verifique o console.',
+        logs: {
+          botMissingCoords: 'O bot retornou uma resposta válida, mas sem coordenadas.',
+          serverError: 'Erro do servidor ({{status}}):',
+          requestBotFailed: 'Erro ao contactar o bot:',
+          matchSaved: 'Partida salva no banco de dados com sucesso.',
+          matchSaveError: 'Erro ao salvar a partida ({{status}}):',
+          matchSaveFailed: 'Erro ao salvar a partida no BD:'
+        }
+      },
+      errors: {
+        requiredFields: 'Por favor, preencha todos os campos.',
+        passwordMismatch: 'As senhas não coincidem.',
+        connectionUsers: 'Não foi possível conectar ao serviço de usuários.',
+        generic: 'Ocorreu um erro.',
+        codes: {
+          AUTH_INVALID_CREDENTIALS: 'Credenciais inválidas.',
+          REGISTER_FAILED: 'Não foi possível concluir o registro.',
+          LOGIN_FAILED: 'Não foi possível iniciar sessão.',
+          USER_NAME_INVALID: 'O nome deve ter entre 4 e 30 caracteres.',
+          USERNAME_INVALID_LENGTH: 'O usuário deve ter entre 4 e 30 caracteres.',
+          USERNAME_TAKEN: 'Este nome de usuário já está em uso.',
+          PASSWORD_TOO_SHORT: 'A senha deve ter pelo menos 8 caracteres.',
+          VALIDATION_ERROR: 'Há erros de validação no formulário.',
+          USER_NOT_AUTHENTICATED: 'Nenhum usuário autenticado encontrado.',
+          USER_NOT_FOUND: 'Usuário não encontrado.',
+          STATS_FETCH_FAILED: 'Não foi possível obter estatísticas.',
+          MATCH_SAVE_FAILED: 'Não foi possível salvar a partida.',
+          MISSING_MATCH_PARAMS: 'Parâmetros obrigatórios ausentes para salvar a partida.',
+          UNSUPPORTED_API_VERSION: 'Versão da API não suportada.',
+          INVALID_YEN_FORMAT: 'Formato da posição da partida inválido.',
+          BOT_NOT_FOUND: 'O bot selecionado não está disponível.',
+          GAME_ENGINE_ERROR: 'Não foi possível processar a jogada do bot.'
+        }
+      }
+    }
+  },
+  fr: {
+    translation: {
+      language: {
+        label: 'Langue',
+        changeHint: 'Changer de langue',
+        spanish: 'Espagnol',
+        english: 'Anglais',
+        portuguese: 'Portugais',
+        french: 'Français',
+        german: 'Allemand'
+      },
+      auth: {
+        welcome: 'Bienvenue sur Yovi',
+        registerTab: 'S\'inscrire',
+        loginTab: 'Se connecter',
+        loginTitle: 'Connexion',
+        registerTitle: 'Inscription utilisateur',
+        fullName: 'Nom complet',
+        username: 'Nom d\'utilisateur',
+        password: 'Mot de passe',
+        confirmPassword: 'Confirmer le mot de passe',
+        submitLogin: 'Se connecter',
+        submitLoginLoading: 'Connexion en cours...',
+        submitRegister: 'Créer un compte',
+        submitRegisterLoading: 'Inscription en cours...'
+      },
+      start: {
+        loadingSession: 'Chargement de la session...',
+        welcomeTitle: 'Bienvenue !',
+        welcomeIntro: 'Vous êtes sur le point d\'entrer dans le projet',
+        welcomeDescription: 'Ici, vous pouvez jouer à Y contre des bots ou contre un autre joueur en local.',
+        begin: 'COMMENCER'
+      },
+      lobby: {
+        connected: 'Connecté',
+        disconnected: 'Déconnecté',
+        stats: 'Statistiques',
+        logout: 'Se déconnecter',
+        title: 'Jeu Y',
+        welcomeUser: 'Bienvenue, {{name}}',
+        modeBot: 'Joueur vs Bot',
+        modePvp: 'Joueur vs Joueur',
+        player2Placeholder: 'Nom du Joueur 2 (optionnel)',
+        botRandom: 'Bot Aléatoire (Facile)',
+        botMedium: 'Bot Moyen (Moyen)',
+        botBridge: 'Bot Pont (Difficile)',
+        boardSmall: 'Petit plateau',
+        boardMedium: 'Plateau moyen',
+        boardLarge: 'Grand plateau',
+        play: 'JOUER',
+        withoutConexion: 'HORS LIGNE',
+        boardHelpLabel: 'Plateau :',
+        boardHelpText: 'Cliquez pour sélectionner la taille du plateau, définie par le nombre d\'hexagones',
+        botHelpLabel: 'Bot :',
+        botHelpText: 'Cliquez pour choisir le bot contre lequel vous voulez jouer'
+      },
+      stats: {
+        title: 'Statistiques de {{name}}',
+        loading: 'Chargement des données...',
+        played: 'Parties jouées',
+        won: 'Parties gagnées',
+        lost: 'Parties perdues',
+        backToMenu: 'Retour au menu'
+      },
+      play: {
+        titlePrefix: 'Partie de :',
+        defaultPlayer: 'Joueur',
+        defaultPlayer1: 'Joueur 1',
+        versus: 'vs',
+        difficultyEasy: 'Difficulté : Facile',
+        difficultyMedium: 'Difficulté : Moyenne',
+        difficultyHard: 'Difficulté : Difficile',
+        abandon: 'Quitter la partie',
+        turnHelp: 'C\'est votre tour. Sélectionnez une case du plateau.',
+        turnHelpPvp: 'Les joueurs jouent à tour de rôle. Sélectionnez une case du plateau.',
+        rulesTitle: 'Règles du jeu Y',
+        rulesTextBeforeHighlight: 'Cliquez sur un hexagone pour le remplir avec votre couleur. Vous devez tracer une ligne de votre couleur qui relie les trois bords du triangle du plateau.',
+        rulesTextHighlight: 'Les hexagones des coins comptent pour les deux côtés',
+        rulesTextAfterHighlight: '.'
+      },
+      board: {
+        yourTurn: 'À votre tour (Vous jouez en bleu)',
+        pvpTurnHuman: 'Tour de {{name}} (Bleu)',
+        pvpTurnBot: 'Tour de {{name}} (Rouge)',
+        pvpWinner: '{{name}} GAGNE LA PARTIE !',
+        won: 'VOUS AVEZ GAGNÉ LA PARTIE !',
+        lost: 'Le bot vous a battu...',
+        thinking: 'Le bot réfléchit...',
+        playAgain: 'Rejouer',
+        suggestionLoading: 'Chargement des suggestions...',
+        suggestionUsed: 'Suggestion utilisée',
+        suggestionCta: 'Utiliser la suggestion',
+        requestBotError: 'Erreur du serveur lors de la demande de coup au bot : {{bot}}. Vérifiez la console.',
+        logs: {
+          botMissingCoords: 'Le bot a renvoyé une réponse valide mais sans coordonnées.',
+          serverError: 'Erreur serveur ({{status}}) :',
+          requestBotFailed: 'Erreur lors du contact du bot :',
+          matchSaved: 'Partie enregistrée en base de données avec succès.',
+          matchSaveError: 'Erreur lors de l\'enregistrement de la partie ({{status}}) :',
+          matchSaveFailed: 'Erreur lors de l\'enregistrement de la partie en BD :'
+        }
+      },
+      errors: {
+        requiredFields: 'Veuillez remplir tous les champs.',
+        passwordMismatch: 'Les mots de passe ne correspondent pas.',
+        connectionUsers: 'Impossible de se connecter au service utilisateurs.',
+        generic: 'Une erreur est survenue.',
+        codes: {
+          AUTH_INVALID_CREDENTIALS: 'Identifiants invalides.',
+          REGISTER_FAILED: 'Impossible de terminer l\'inscription.',
+          LOGIN_FAILED: 'Impossible de se connecter.',
+          USER_NAME_INVALID: 'Le nom doit contenir entre 4 et 30 caractères.',
+          USERNAME_INVALID_LENGTH: 'Le nom d\'utilisateur doit contenir entre 4 et 30 caractères.',
+          USERNAME_TAKEN: 'Ce nom d\'utilisateur est déjà utilisé.',
+          PASSWORD_TOO_SHORT: 'Le mot de passe doit contenir au moins 8 caractères.',
+          VALIDATION_ERROR: 'Il y a des erreurs de validation dans le formulaire.',
+          USER_NOT_AUTHENTICATED: 'Aucun utilisateur authentifié trouvé.',
+          USER_NOT_FOUND: 'Utilisateur non trouvé.',
+          STATS_FETCH_FAILED: 'Impossible de récupérer les statistiques.',
+          MATCH_SAVE_FAILED: 'Impossible d\'enregistrer la partie.',
+          MISSING_MATCH_PARAMS: 'Paramètres requis manquants pour enregistrer la partie.',
+          UNSUPPORTED_API_VERSION: 'Version d\'API non prise en charge.',
+          INVALID_YEN_FORMAT: 'Format de position de jeu invalide.',
+          BOT_NOT_FOUND: 'Le bot sélectionné n\'est pas disponible.',
+          GAME_ENGINE_ERROR: 'Impossible de traiter le coup du bot.'
+        }
+      }
+    }
+  },
+  de: {
+    translation: {
+      language: {
+        label: 'Sprache',
+        changeHint: 'Sprache ändern',
+        spanish: 'Spanisch',
+        english: 'Englisch',
+        portuguese: 'Portugiesisch',
+        french: 'Französisch',
+        german: 'Deutsch'
+      },
+      auth: {
+        welcome: 'Willkommen bei Yovi',
+        registerTab: 'Registrieren',
+        loginTab: 'Anmelden',
+        loginTitle: 'Anmeldung',
+        registerTitle: 'Benutzerregistrierung',
+        fullName: 'Vollständiger Name',
+        username: 'Benutzername',
+        password: 'Passwort',
+        confirmPassword: 'Passwort bestätigen',
+        submitLogin: 'Anmelden',
+        submitLoginLoading: 'Anmeldung läuft...',
+        submitRegister: 'Konto erstellen',
+        submitRegisterLoading: 'Registrierung läuft...'
+      },
+      start: {
+        loadingSession: 'Sitzung wird geladen...',
+        welcomeTitle: 'Willkommen!',
+        welcomeIntro: 'Du bist dabei, das Projekt zu betreten',
+        welcomeDescription: 'Hier kannst du Y sowohl gegen Bots als auch gegen einen lokalen Mitspieler spielen.',
+        begin: 'STARTEN'
+      },
+      lobby: {
+        connected: 'Verbunden',
+        disconnected: 'Getrennt',
+        stats: 'Statistiken',
+        logout: 'Abmelden',
+        title: 'Y-Spiel',
+        welcomeUser: 'Willkommen, {{name}}',
+        modeBot: 'Spieler vs Bot',
+        modePvp: 'Spieler vs Spieler',
+        player2Placeholder: 'Name von Spieler 2 (optional)',
+        botRandom: 'Zufalls-Bot (Leicht)',
+        botMedium: 'Mittel-Bot (Mittel)',
+        botBridge: 'Brücken-Bot (Schwer)',
+        boardSmall: 'Kleines Brett',
+        boardMedium: 'Mittleres Brett',
+        boardLarge: 'Großes Brett',
+        play: 'SPIELEN',
+        withoutConexion: 'KEINE VERBINDUNG',
+        boardHelpLabel: 'Brett:',
+        boardHelpText: 'Klicke, um die Brettgröße anhand der Anzahl der Hexagone auszuwählen',
+        botHelpLabel: 'Bot:',
+        botHelpText: 'Klicke, um auszuwählen, gegen welchen Bot du spielen möchtest'
+      },
+      stats: {
+        title: 'Statistiken von {{name}}',
+        loading: 'Daten werden geladen...',
+        played: 'Gespielte Partien',
+        won: 'Gewonnene Partien',
+        lost: 'Verlorene Partien',
+        backToMenu: 'Zurück zum Menü'
+      },
+      play: {
+        titlePrefix: 'Spiel von:',
+        defaultPlayer: 'Spieler',
+        defaultPlayer1: 'Spieler 1',
+        versus: 'vs',
+        difficultyEasy: 'Schwierigkeit: Leicht',
+        difficultyMedium: 'Schwierigkeit: Mittel',
+        difficultyHard: 'Schwierigkeit: Schwer',
+        abandon: 'Spiel verlassen',
+        turnHelp: 'Du bist am Zug. Wähle ein Feld auf dem Brett.',
+        turnHelpPvp: 'Die Spieler sind abwechselnd dran. Wähle ein Feld auf dem Brett.',
+        rulesTitle: 'Regeln des Y-Spiels',
+        rulesTextBeforeHighlight: 'Klicke auf ein Hexagon, um es mit deiner Farbe zu füllen. Du musst versuchen, eine Linie in deiner Farbe zu ziehen, die die drei Kanten des dreieckigen Bretts verbindet.',
+        rulesTextHighlight: 'Eck-Hexagone zählen für beide Seiten',
+        rulesTextAfterHighlight: '.'
+      },
+      board: {
+        yourTurn: 'Du bist am Zug (Du spielst Blau)',
+        pvpTurnHuman: '{{name}} ist dran (Blau)',
+        pvpTurnBot: '{{name}} ist dran (Rot)',
+        pvpWinner: '{{name}} GEWINNT DIE PARTIE!',
+        won: 'DU HAST DIE PARTIE GEWONNEN!',
+        lost: 'Der Bot hat dich besiegt...',
+        thinking: 'Der Bot denkt nach...',
+        playAgain: 'Erneut spielen',
+        suggestionLoading: 'Vorschläge werden geladen...',
+        suggestionUsed: 'Vorschlag verwendet',
+        suggestionCta: 'Vorschlag verwenden',
+        requestBotError: 'Serverfehler beim Anfordern eines Bot-Zugs: {{bot}}. Prüfe die Konsole.',
+        logs: {
+          botMissingCoords: 'Der Bot hat eine gültige Antwort, aber ohne Koordinaten, zurückgegeben.',
+          serverError: 'Serverfehler ({{status}}):',
+          requestBotFailed: 'Fehler beim Kontaktieren des Bots:',
+          matchSaved: 'Partie erfolgreich in der Datenbank gespeichert.',
+          matchSaveError: 'Fehler beim Speichern der Partie ({{status}}):',
+          matchSaveFailed: 'Fehler beim Speichern der Partie in der DB:'
+        }
+      },
+      errors: {
+        requiredFields: 'Bitte alle Felder ausfüllen.',
+        passwordMismatch: 'Die Passwörter stimmen nicht überein.',
+        connectionUsers: 'Verbindung zum Benutzerdienst konnte nicht hergestellt werden.',
+        generic: 'Ein Fehler ist aufgetreten.',
+        codes: {
+          AUTH_INVALID_CREDENTIALS: 'Ungültige Anmeldedaten.',
+          REGISTER_FAILED: 'Registrierung konnte nicht abgeschlossen werden.',
+          LOGIN_FAILED: 'Anmeldung fehlgeschlagen.',
+          USER_NAME_INVALID: 'Der Name muss zwischen 4 und 30 Zeichen lang sein.',
+          USERNAME_INVALID_LENGTH: 'Der Benutzername muss zwischen 4 und 30 Zeichen lang sein.',
+          USERNAME_TAKEN: 'Dieser Benutzername ist bereits vergeben.',
+          PASSWORD_TOO_SHORT: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
+          VALIDATION_ERROR: 'Im Formular gibt es Validierungsfehler.',
+          USER_NOT_AUTHENTICATED: 'Kein authentifizierter Benutzer gefunden.',
+          USER_NOT_FOUND: 'Benutzer nicht gefunden.',
+          STATS_FETCH_FAILED: 'Statistiken konnten nicht geladen werden.',
+          MATCH_SAVE_FAILED: 'Partie konnte nicht gespeichert werden.',
+          MISSING_MATCH_PARAMS: 'Erforderliche Parameter zum Speichern der Partie fehlen.',
+          UNSUPPORTED_API_VERSION: 'Nicht unterstützte API-Version.',
+          INVALID_YEN_FORMAT: 'Ungültiges Spielfeldpositionsformat.',
+          BOT_NOT_FOUND: 'Der ausgewählte Bot ist nicht verfügbar.',
+          GAME_ENGINE_ERROR: 'Der Bot-Zug konnte nicht verarbeitet werden.'
         }
       }
     }

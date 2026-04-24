@@ -6,7 +6,7 @@ import "../css/Estilo.css";
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import LanguageSelector from '../components/LanguageSelector';
-import { setStoredLanguage } from '../i18n/storage';
+import { normalizeLanguage, setStoredLanguage } from '../i18n/storage';
 
 import type {User} from "../types/user";
 
@@ -19,7 +19,7 @@ const RegisterPage = () => {
 
   //Manejador único para el éxito de ambos formularios, redirige al usuario a la ruta del juego pasando su nombre de usuario.
   const handleAuthSuccess = (data: User) => {
-    setStoredLanguage(i18n.language.toLowerCase().startsWith('en') ? 'en' : 'es', data.nom_usuario);
+    setStoredLanguage(normalizeLanguage(i18n.language), data.nom_usuario);
     setUser(data); // Guarda los datos del usuario en el estado
   };
 
