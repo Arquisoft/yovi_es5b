@@ -132,6 +132,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
               <option value="mirrorbot">Bot Espejo (Fácil)</option>
               <option value="lapabot">Bot Lapa (Medio)</option>
               <option value="mediumbot">Bot Medio (Medio)</option>
+              <option value="bridgebot_lax">Bot Puente continuo (Difícil)</option>
               <option value="bridgebot">Bot Puente (Difícil)</option>
             </select>
           )}
