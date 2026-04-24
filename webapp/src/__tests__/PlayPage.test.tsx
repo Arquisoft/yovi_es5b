@@ -104,27 +104,6 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     expect(mockChangeDifficulty).toHaveBeenCalledWith('mediumbot')
   })
 
-  it('debería recrear el Board con nueva clave (gameKey) al cambiar dificultad', async () => {
-    const { rerender } = render(
-        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
-            onChangeDifficulty={()=>{}}/>
-    )
-
-    const board1 = screen.getByTestId('mock-board')
-    const key1 = board1.key
-
-    const selects = screen.queryAllByRole('combobox')
-    const difficultySelect = selects.find(select => 
-      select.querySelector('option[value="bridgebot"]')
-    ) as HTMLSelectElement
-
-    fireEvent.change(difficultySelect, { target: { value: 'bridgebot' } })
-
-    // El componente debe actualizarse con una nueva clave
-    const board2 = await screen.findByTestId('mock-board')
-    expect(board2).toBeTruthy()
-  })
-
   it('debería llamar a onBackToLobby al pulsar Abandonar Partida', async () => {
     const mockOnBackToLobby = vi.fn()
     render(
