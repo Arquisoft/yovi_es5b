@@ -80,7 +80,7 @@ impl YBot for LapaBot {
         // 5) Buscamos la celda rival con más puntuación y que tenga alguna celda adyacente libre.
         // Si no existe ninguna, se hace un movimiento aleatorio.
         for rival_cell in heap {
-            let adjacent_coords = rival_cell.coords.get_adjacent_coords();
+            let adjacent_coords = board.get_neighbors(&rival_cell.coords);
             // Elegimos la primera celda adyacente libre que encontremos
             let adjacent_free_cell = adjacent_coords.iter().find(|&coord| board.player_at(coord).is_none());
             if let Some(adjacent_free_cords) = adjacent_free_cell {
@@ -107,7 +107,7 @@ fn weight_cell(cell: Coordinates, board: &GameY, id: PlayerId) -> WeightedCell {
     // Obtener todas las celdas adyacentes válidas
     // Empezamos con una base de 1000 puntos, y restamos 50 por cada casilla adyacente nuestra.
     let mut weight = 1000;
-    let adjancet_cells = cell.get_adjacent_coords();
+    let adjancet_cells =  board.get_neighbors(&cell);
     for cell in adjancet_cells {
         if let Some(id) = board.player_at(&cell) {
             if id == our_id {
@@ -204,8 +204,8 @@ mod tests {
         assert!(game.available_cells().contains(&index));
         // The chosen coords should be next to the player coordinates
         assert_eq!(coords.x(), 1);
-        assert_eq!(coords.y(), 0);
-        assert_eq!(coords.z(), 1);
+        assert_eq!(coords.y(), 1);
+        assert_eq!(coords.z(), 0);
     }
 
     #[test]
