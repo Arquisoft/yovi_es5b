@@ -6,7 +6,7 @@ describe('GamePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Mock fetch globalmente antes de cada test
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       text: async () => 'OK',
     })
@@ -40,7 +40,7 @@ describe('GamePage', () => {
     )
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status')
+      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:4000/status')
     })
   })
 
@@ -54,7 +54,7 @@ describe('GamePage', () => {
   })
 
   it('should display disconnected status when gamey is down', async () => {
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Connection failed'))
+    globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Connection failed'))
 
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>

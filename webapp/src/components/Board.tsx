@@ -127,7 +127,7 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
         const data: MoveResponse = await res.json();
 
         const humanWon = data.status.Finished?.winner === 0;
-        if (!humanWon && data.coords && data.coords.x !== undefined) {
+        if (!humanWon && data.coords?.x !== undefined) {
           const botMoveId = String(data.coords.x) + '-' + String(data.coords.y) + '-' + String(data.coords.z);
           setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
         } else if (!humanWon) {
@@ -173,12 +173,12 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
       if (res.ok) {
         const data: StatusResponse = await res.json();
 
-        if (data.status.Finished !== undefined) {
+        if (data.status.Finished === undefined) {
+          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human');
+        } else {
           const playerWon: CellState = data.status.Finished.winner === 0 ? 'human' : 'bot';
           setWinner(playerWon);
           salvarPartidaEnBD(playerWon === 'human', player2Name);
-        } else {
-          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human');
         }
       } else {
         const errorText = await res.text();
@@ -213,7 +213,9 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
       if (res.ok) {
         const data: MoveResponse = await res.json();
-        if (data.coords && data.coords.x !== undefined) {
+        if (data.coords?.x === undefined) {
+          console.warn(t('board.logs.botMissingCoords'));
+        } else {
           const cellId = String(data.coords.x) + '-' + String(data.coords.y) + '-' + String(data.coords.z);
           setSuggestedCell(cellId);
 
@@ -222,8 +224,6 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
           } else {
             setPvpBotSuggestionUsed(true);
           }
-        } else {
-          console.warn(t('board.logs.botMissingCoords'));
         }
       } else {
         const errorText = await res.text();
@@ -338,8 +338,7 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
       statusMessage = t('board.pvpTurnBot', { name: player2Name });
       statusClass = 'status-bot';
     }
-  } else {
-    if (winner === 'human') {
+  } else if (winner === 'human') {
       statusMessage = t('board.won');
       statusClass = 'status-winner';
     } else if (winner === 'bot') {
@@ -352,7 +351,6 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
       statusMessage = t('board.yourTurn');
       statusClass = 'status-human';
     }
-  }
 
   return (
     <div className="board-wrapper">

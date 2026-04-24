@@ -62,7 +62,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   // Eliminar cookie de sesión
   const handleLogout = () => {
     document.cookie = "JSESSIONID="
-    window.location.href = '/';
+    globalThis.location.href = '/';
   };
 
   // Renderizado condicional: Prioridad 1 - La pantalla de juego

@@ -28,11 +28,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const [errorState, setErrorState] = useState<FormErrorState>(null);
   const [loading, setLoading] = useState(false);
 
-  const errorMessage = errorState
-    ? errorState.kind === 'i18n-key'
-      ? t(errorState.key)
-      : translateApiError(errorState.payload, t)
-    : null;
+  let errorMessage: string | null = null;
+  if (errorState) {
+    if (errorState.kind === 'i18n-key') {
+      errorMessage = t(errorState.key);
+    } else {
+      errorMessage = translateApiError(errorState.payload, t);
+    }
+  }
 
   //Manejador del envío del formulario, se marca como 'async' porque realiza una petición de red (fetch).
   const handleSubmit = async (event: React.FormEvent) => {

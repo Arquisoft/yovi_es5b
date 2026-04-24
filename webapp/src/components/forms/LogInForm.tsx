@@ -26,13 +26,16 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
   const [errorState, setErrorState] = useState<FormErrorState>(null);
   const [loading, setLoading] = useState(false);
 
-  const errorMessage = errorState
-    ? errorState.kind === 'i18n-key'
-      ? t(errorState.key)
-      : translateApiError(errorState.payload, t)
-    : null;
+  let errorMessage: string | null = null;
+  if (errorState) {
+    if (errorState.kind === 'i18n-key') {
+      errorMessage = t(errorState.key);
+    } else {
+      errorMessage = translateApiError(errorState.payload, t);
+    }
+  }
 
-   //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
+  //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Evita la recarga de la página
     setErrorState(null);    // Limpia intentos anteriores

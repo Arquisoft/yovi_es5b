@@ -10,7 +10,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     vi.clearAllMocks()
 
     // Configuramos un mock de fetch por defecto (Ongoing)
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
         api_version: 'v1',
@@ -37,7 +37,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
     fireEvent.click(hexagons[0])
 
     expect(screen.getByText(/El bot está pensando.../i)).toBeTruthy()
-    expect(global.fetch).toHaveBeenCalledTimes(1) // Verificamos la llamada a la API
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1) // Verificamos la llamada a la API
 
     await waitFor(() => {
       expect(screen.getByText(/Tu turno \(Juegas con Azul\)/i)).toBeTruthy()
@@ -46,7 +46,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
 
   it('debería detectar la victoria del jugador (Humano) y permitir resetear', async () => {
     // Sobrescribimos el mock para simular victoria
-    global.fetch = vi.fn().mockResolvedValueOnce({
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
@@ -68,7 +68,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   })
 
   it('debería detectar la victoria del Bot', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
@@ -91,7 +91,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   it('debería manejar el error de red si el bot server falla (catch)', async () => {
     // Espiamos el console.error para ver si nuestro catch lo llama
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Bot server down'))
+    globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Bot server down'))
 
     const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
     fireEvent.click(container.querySelectorAll('polygon')[0])
@@ -105,7 +105,7 @@ describe('Pruebas unitarias del Tablero (Board)', () => {
   it('debería detectar la victoria del humano cuando llena el tablero con el último movimiento', async () => {
     // Simulamos que el backend devuelve status Finished con winner 0 (humano)
     // y coords vacías porque el tablero está lleno y el bot no puede mover
-    global.fetch = vi.fn().mockResolvedValueOnce({
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
@@ -138,7 +138,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Mock por defecto: partida en curso, nadie ha ganado todavía
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: async () => ({
         api_version: 'v1',
@@ -165,7 +165,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
 
   it('debería detectar la victoria del Jugador 1 en modo PvP', async () => {
     // winner:0 → J1 (Guille) gana
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: async () => ({
         api_version: 'v1',
@@ -184,7 +184,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
 
   it('debería detectar la victoria del Jugador 2 en modo PvP', async () => {
     // J1 mueve primero (Ongoing) y luego J2 mueve (Finished winner:1 → J2 gana)
-    global.fetch = vi.fn().mockResolvedValueOnce({
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
           api_version: 'v1',
@@ -218,7 +218,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
 
   it('debería continuar la partida cuando el backend devuelve Ongoing', async () => {
     // Ongoing → nadie ganó, se alterna el turno
-    global.fetch = vi.fn().mockResolvedValueOnce({
+    globalThis.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         api_version: 'v1',
@@ -243,7 +243,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
     // Mock por defecto: bridgebot devuelve una sugerencia válida.
     // Los tests individuales pueden sobreescribirlo con mockImplementation
     // para distinguir entre la llamada de bot normal y la de sugerencia según la URL.
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
         api_version: 'v1',
@@ -268,7 +268,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Usar sugerencia/i }))
  
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringMatching(/\/v1\/ybot\/choose\/bridgebot$/),
         expect.objectContaining({
           method: 'POST',
@@ -309,7 +309,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
  
   it('debería limpiar el resaltado dorado al hacer clic en cualquier hexágono', async () => {
     // fetch diferenciado: bridgebot devuelve (1,0,1), random_bot (0,0,2)
-    global.fetch = vi.fn().mockImplementation((url: string) => {
+    globalThis.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('bridgebot')) {
         return Promise.resolve({
           ok: true,
