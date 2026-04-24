@@ -34,10 +34,12 @@ export const normalizeLanguage = (value?: string | null): AppLanguage => {
 
   const normalizedValue = value.toLowerCase();
 
-  if (normalizedValue.startsWith('en')) return 'en';
-  if (normalizedValue.startsWith('pt')) return 'pt';
-  if (normalizedValue.startsWith('fr')) return 'fr';
-  if (normalizedValue.startsWith('de')) return 'de';
+  // Check for language codes
+  if (normalizedValue.startsWith('en') || normalizedValue === 'english') return 'en';
+  if (normalizedValue.startsWith('pt') || normalizedValue === 'portuguese') return 'pt';
+  if (normalizedValue.startsWith('fr') || normalizedValue === 'french') return 'fr';
+  if (normalizedValue.startsWith('de') || normalizedValue === 'deutsch') return 'de';
+  if (normalizedValue.startsWith('es') || normalizedValue === 'spanish') return 'es';
   return 'es';
 };
 

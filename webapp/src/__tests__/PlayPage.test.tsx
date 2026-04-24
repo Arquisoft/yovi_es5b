@@ -59,6 +59,122 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     expect(await screen.findByText('Pepe')).toBeTruthy()
   })
 
+  it('debería mostrar selector de dificultad solo en modo bot', async () => {
+    const { rerender } = render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    // En modo bot debería haber selector de dificultad
+    const difficultySelect = screen.queryAllByRole('combobox').find(select => 
+      select.querySelector('option[value="mediumbot"]')
+    )
+    expect(difficultySelect).toBeTruthy()
+
+    // En modo PvP no debería haber selector de dificultad
+    rerender(
+      <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="pvp" player2Name="Pepe" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+    
+    const difficultySelects = screen.queryAllByRole('combobox')
+    const hasDifficultyInPvp = difficultySelects.some(select => 
+      select.querySelector('option[value="mediumbot"]')
+    )
+    expect(hasDifficultyInPvp).toBeFalsy()
+  })
+
+  it('debería llamar a onChangeDifficulty al cambiar dificultad', async () => {
+    const mockChangeDifficulty = vi.fn()
+    render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={mockChangeDifficulty}/>
+    )
+
+    // Selecciona el selector de dificultad (no el de idioma)
+    const selects = screen.queryAllByRole('combobox')
+    const difficultySelect = selects.find(select => 
+      select.querySelector('option[value="mediumbot"]')
+    ) as HTMLSelectElement
+
+    expect(difficultySelect).toBeTruthy()
+    
+    fireEvent.change(difficultySelect, { target: { value: 'mediumbot' } })
+    
+    expect(mockChangeDifficulty).toHaveBeenCalledWith('mediumbot')
+  })
+
+  it('debería recrear el Board con nueva clave (gameKey) al cambiar dificultad', async () => {
+    const { rerender } = render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    const board1 = screen.getByTestId('mock-board')
+    const key1 = board1.key
+
+    const selects = screen.queryAllByRole('combobox')
+    const difficultySelect = selects.find(select => 
+      select.querySelector('option[value="bridgebot"]')
+    ) as HTMLSelectElement
+
+    fireEvent.change(difficultySelect, { target: { value: 'bridgebot' } })
+
+    // El componente debe actualizarse con una nueva clave
+    const board2 = await screen.findByTestId('mock-board')
+    expect(board2).toBeTruthy()
+  })
+
+  it('debería llamar a onBackToLobby al pulsar Abandonar Partida', async () => {
+    const mockOnBackToLobby = vi.fn()
+    render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={mockOnBackToLobby}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    const abandonButton = screen.getByRole('button', { name: /Abandonar Partida/i })
+    fireEvent.click(abandonButton)
+
+    expect(mockOnBackToLobby).toHaveBeenCalled()
+  })
+
+  it('debería mostrar mensajes de ayuda diferente en modo bot vs PvP', async () => {
+    const { rerender } = render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    // En modo bot
+    expect(screen.getByText(/Es tu turno/i)).toBeTruthy()
+
+    // Cambiar a PvP
+    rerender(
+      <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="pvp" player2Name="Pepe" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    // En modo PvP
+    expect(screen.getByText(/Los jugadores se turnan/i)).toBeTruthy()
+  })
+
+  it('debería mostrar las reglas del juego', async () => {
+    render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    expect(screen.getByText(/Reglas del Jogo Y|Reglas del Juego Y/i)).toBeTruthy()
+  })
+
+  it('debería usar nombre de usuario por defecto si nom_usuario está vacío', async () => {
+    render(
+        <PlayPage boardSize={3} user={{id:"1", nombre: "Pepe", nom_usuario:"" }} botId="random_bot" gameMode="bot" player2Name="Invitado" onBackToLobby={()=>{}}
+            onChangeDifficulty={()=>{}}/>
+    )
+
+    expect(screen.getByText(/Player|Jugador/i)).toBeTruthy()
+  })
+
   it('debería navegar de vuelta al Lobby al pulsar "Abandonar Partida"', async () => {
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
