@@ -13,7 +13,7 @@ pub struct GameData<'a> {
 
 // Devuelve la información básica de la partida asociada al tablero, de tipo Option<GameData>.
 // Si no se puede obtener esta información parcial o totalmente, devuelve None.
-pub fn get_basic_game_data(board: &GameY) -> Option<GameData> {
+pub fn get_basic_game_data(board: &GameY) -> Option<GameData<'_>> {
 
     // 1) Obtener celdas libres
     let available_cells = board.available_cells();
