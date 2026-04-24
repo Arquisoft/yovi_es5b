@@ -257,7 +257,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
   it('debería mostrar el botón de sugerencia habilitado al inicio de la partida', () => {
     render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
-    const btn = screen.getByRole('button', { name: /Sugerir movimiento/i }) as HTMLButtonElement
+    const btn = screen.getByRole('button', { name: /Usar sugerencia/i }) as HTMLButtonElement
     expect(btn).toBeTruthy()
     expect(btn.disabled).toBe(false)
   })
@@ -265,7 +265,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
   it('debería llamar al endpoint de bridgebot con turn=0 cuando el humano pide sugerencia', async () => {
     render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
-    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Usar sugerencia/i }))
  
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
@@ -286,7 +286,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
       .filter(p => p.getAttribute('fill') === '#fbbf24')
     expect(doradosAntes.length).toBe(0)
  
-    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Usar sugerencia/i }))
  
     // Después de pedir sugerencia, exactamente un hexágono se pinta en dorado
     await waitFor(() => {
@@ -296,13 +296,13 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
     })
   })
  
-  it('debería deshabilitar el botón tras pedir la sugerencia y mostrar "Sugerencia ya utilizada"', async () => {
+  it('debería deshabilitar el botón tras pedir la sugerencia y mostrar "Sugerencia usada"', async () => {
     render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
-    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Usar sugerencia/i }))
  
     await waitFor(() => {
-      const btn = screen.getByRole('button', { name: /Sugerencia ya utilizada/i }) as HTMLButtonElement
+      const btn = screen.getByRole('button', { name: /Sugerencia usada/i }) as HTMLButtonElement
       expect(btn.disabled).toBe(true)
     })
   })
@@ -335,7 +335,7 @@ describe('Pruebas de la sugerencia de movimiento (bridgebot)', () => {
     const { container } = render(<Board boardSize={3} botId="random_bot"  gameMode="bot" player1Name="Jugador" player2Name="Invitado"/>)
  
     // Pide sugerencia y espera a que aparezca el dorado
-    fireEvent.click(screen.getByRole('button', { name: /Sugerir movimiento/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Usar sugerencia/i }))
     await waitFor(() => {
       const dorados = Array.from(container.querySelectorAll('polygon'))
         .filter(p => p.getAttribute('fill') === '#fbbf24')

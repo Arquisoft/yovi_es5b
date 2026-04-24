@@ -79,6 +79,9 @@ export const resources = {
       },
       board: {
         yourTurn: 'Tu turno (Juegas con Azul)',
+        pvpTurnHuman: 'Turno de {{name}} (Azul)',
+        pvpTurnBot: 'Turno de {{name}} (Rojo)',
+        pvpWinner: '¡{{name}} GANA LA PARTIDA!',
         won: '¡HAS GANADO LA PARTIDA!',
         lost: 'El Bot te ha ganado...',
         thinking: 'El bot está pensando...',
@@ -202,6 +205,9 @@ export const resources = {
       },
       board: {
         yourTurn: 'Your turn (You play Blue)',
+        pvpTurnHuman: '{{name}}\'s turn (Blue)',
+        pvpTurnBot: '{{name}}\'s turn (Red)',
+        pvpWinner: '{{name}} WINS THE GAME!',
         won: 'YOU WON THE GAME!',
         lost: 'The bot beat you...',
         thinking: 'The bot is thinking...',

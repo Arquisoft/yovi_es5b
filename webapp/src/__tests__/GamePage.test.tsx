@@ -74,11 +74,11 @@ describe('GamePage', () => {
   })
 
   it('debería mostrar el input del nombre del Jugador 2 al seleccionar modo PvP', async () => {
-    render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
+    const { container } = render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
 
-    const selects = await screen.findAllByRole('combobox')
-    // El primer selector es el de modo de juego
-    fireEvent.change(selects[0], { target: { value: 'pvp' } })
+    // Tomamos el selector de modo dentro del formulario de juego (ignora el selector de idioma del header)
+    const gameModeSelect = container.querySelector('.register-form select') as HTMLSelectElement
+    fireEvent.change(gameModeSelect, { target: { value: 'pvp' } })
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/Nombre del Jugador 2/i)).toBeTruthy()
