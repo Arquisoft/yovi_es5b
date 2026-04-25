@@ -55,9 +55,12 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
               onChange={handleChangeDifficulty}
               className="combobox"
             >
-              <option value="random_bot">Dificultad: Fácil</option>
-              <option value="mediumbot">Dificultad: Medio</option>
-              <option value="bridgebot">Dificultad: Difícil</option>
+              <option value="random_bot">Bot Aleatorio (Fácil)</option>
+              <option value="mirrorbot">Bot Espejo (Fácil)</option>
+              <option value="lapabot">Bot Lapa (Medio)</option>
+              <option value="mediumbot">Bot Medio (Medio)</option>
+              <option value="bridgebot_lax">Bot Puente continuo (Difícil)</option>
+              <option value="bridgebot">Bot Puente (Difícil)</option>
             </select>
           )}
 

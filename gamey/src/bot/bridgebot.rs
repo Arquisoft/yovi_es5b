@@ -1,6 +1,6 @@
-use crate::core::{Coordinates, GameStatus, GameY, Movement};
+use crate::core::{Coordinates, GameStatus, GameY, PlayerId, Movement};
 use crate::YBot;
-use rand::prelude::IndexedRandom;
+use rand::prelude::*;
 
 // BridgeBot aplica una estrategia por prioridades estrictas.
 // 1) Victoria inmediata.
@@ -9,7 +9,17 @@ use rand::prelude::IndexedRandom;
 //    Modo saltos hasta tocar las 3 paredes.
 //    Modo rellenar puentes cuando ya tocó las 3 paredes.
 #[derive(Debug, Default)]
-pub struct BridgeBot;
+pub struct BridgeBot {
+    // Si se habilita, el bot no priorizará tanto el reparar puentes cortados
+    lax_repair: bool
+}
+
+impl BridgeBot {
+    // Devuelve una instancia de BridgeBot con la variante de reparación de puentes laxa
+    pub fn lax_repair_mode() -> BridgeBot {
+        Self {lax_repair: true}
+    }
+}
 
 // Distancia hexagonal entre dos celdas del tablero.
 // Distancia 1 = adyacente, distancia 2 = salto de puente.
@@ -168,12 +178,56 @@ fn immediate_winning_moves(board: &GameY, player: crate::PlayerId, available: &[
         .collect()
 }
 
+fn calculate_bridge_repairs(my_pieces: &Vec<Coordinates>, available_coords: &Vec<Coordinates>, bridge_repairs: &mut Vec<Coordinates>, board: &GameY, enemy_id: PlayerId) {
+    let board_size = board.board_size();
+    for i in 0..my_pieces.len() {
+        for j in (i + 1)..my_pieces.len() {
+            let p1 = my_pieces[i];
+            let p2 = my_pieces[j];
+            // Un "puente" solo se analiza entre piezas a distancia exacta 2.
+            if hex_distance(&p1, &p2) != 2 {
+                continue;
+            }
+
+            let mut free_intermediates = Vec::new();
+            let mut enemy_blocks = 0;
+            for cell in available_coords {
+                if hex_distance(&p1, cell) == 1 && hex_distance(cell, &p2) == 1 {
+                    free_intermediates.push(*cell);
+                }
+            }
+
+            // Revisamos la(s) intermedia(s) ocupada(s): solo cuenta como amenaza si la ocupa el rival.
+            for idx in 0..board.total_cells() {
+                let cell = Coordinates::from_index(idx, board_size);
+                if hex_distance(&p1, &cell) == 1
+                    && hex_distance(&cell, &p2) == 1
+                    && !free_intermediates.contains(&cell)
+                    && board.player_at(&cell) == Some(enemy_id)
+                {
+                    enemy_blocks += 1;
+                }
+            }
+
+            // Reparar solo si queda una única intermedia libre y la otra está tomada por el rival.
+            if free_intermediates.len() == 1 && enemy_blocks > 0 {
+                bridge_repairs.push(free_intermediates[0]);
+            }
+        }
+    }
+}
+
 impl YBot for BridgeBot {
     fn name(&self) -> &str {
+        if self.lax_repair {
+            return "bridgebot_lax";
+        }
         "bridgebot"
     }
 
     fn choose_move(&self, board: &GameY) -> Option<Coordinates> {
+        let mut rng = rand::rng();
+
         // Recolectamos celdas libres en formato índice y validamos salida rápida.
         let available_cells = board.available_cells();
         if available_cells.is_empty() {
@@ -233,40 +287,8 @@ impl YBot for BridgeBot {
 
         // Prioridad 3: reparar puentes cortados con una sola intermedia libre.
         let mut bridge_repairs = Vec::new();
-        for i in 0..my_pieces.len() {
-            for j in (i + 1)..my_pieces.len() {
-                let p1 = my_pieces[i];
-                let p2 = my_pieces[j];
-                // Un "puente" solo se analiza entre piezas a distancia exacta 2.
-                if hex_distance(&p1, &p2) != 2 {
-                    continue;
-                }
-
-                let mut free_intermediates = Vec::new();
-                let mut enemy_blocks = 0;
-                for cell in &available_coords {
-                    if hex_distance(&p1, cell) == 1 && hex_distance(cell, &p2) == 1 {
-                        free_intermediates.push(*cell);
-                    }
-                }
-
-                // Revisamos la(s) intermedia(s) ocupada(s): solo cuenta como amenaza si la ocupa el rival.
-                for idx in 0..board.total_cells() {
-                    let cell = Coordinates::from_index(idx, board_size);
-                    if hex_distance(&p1, &cell) == 1
-                        && hex_distance(&cell, &p2) == 1
-                        && !free_intermediates.contains(&cell)
-                        && board.player_at(&cell) == Some(enemy_id)
-                    {
-                        enemy_blocks += 1;
-                    }
-                }
-
-                // Reparar solo si queda una única intermedia libre y la otra está tomada por el rival.
-                if free_intermediates.len() == 1 && enemy_blocks > 0 {
-                    bridge_repairs.push(free_intermediates[0]);
-                }
-            }
+        if !self.lax_repair || (self.lax_repair && rng.random::<bool>()) {
+            calculate_bridge_repairs(&my_pieces, &available_coords, &mut bridge_repairs, board, enemy_id);
         }
         if !bridge_repairs.is_empty() {
             return pick_best_with_tie_break(bridge_repairs, board_size);
@@ -450,13 +472,13 @@ mod tests {
     #[test]
     // Verificamos que el bot se identifica correctamente.
     fn test_bridgebot_identity() {
-        assert_eq!(BridgeBot.name(), "bridgebot");
+        assert_eq!(BridgeBot::default().name(), "bridgebot");
     }
 
     #[test]
     // En la apertura, el bot debería elegir una de las posiciones centrales para maximizar flexibilidad.
     fn test_first_move_is_always_center() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let game = GameY::new(5);
         let chosen = bot.choose_move(&game).expect("Debe mover");
         let valid_centers = [4, 7, 8];
@@ -466,7 +488,7 @@ mod tests {
     #[test]
     // El bot no debería intentar mover en un tablero lleno, debe retornar None.
     fn test_handles_full_board_gracefully() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
              0
             1 0
@@ -482,7 +504,7 @@ mod tests {
     #[test]
     // El Jugador (1) tiene una jugada ganadora inmediata en el índice 10 (hay que bloquearla).
     fn test_priority_block_enemy_win() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             1
            1 .
@@ -499,7 +521,7 @@ mod tests {
     #[test]
     // El Bot (0) tiene una jugada ganadora inmediata en el índice 10.
     fn test_priority_immediate_win_for_bot() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             0
            0 .
@@ -519,7 +541,7 @@ mod tests {
     #[test]
     // En una situación donde tanto el bot como el enemigo tienen jugadas ganadoras inmediatas, el bot debe priorizar su victoria.
     fn test_priority_level_1_over_level_2() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             0
            0 .
@@ -542,7 +564,7 @@ mod tests {
     #[test]
     // El Bot (0) tiene un puente cortado por el rival (1) con una sola intermedia libre. Debería no reparar ese puente (inutil).
     fn test_intelligent_ignoring_useless_bridges() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         // El Bot (0) ya tiene una estructura sólida arriba.
         // Un puente abajo (cerca del índice 8) no aporta nada a su victoria.
         let board_map = "
@@ -561,7 +583,7 @@ mod tests {
     #[test]
     // El Bot (0) debería saltar a distancia 2 hacia un borde libre para expandir su red, en lugar de jugar adyacente.
     fn test_expansion_via_safe_jumps() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             1
            . 1
@@ -585,7 +607,7 @@ mod tests {
     // El Bot (0) tiene un puente cortado por el rival (1) con una sola intermedia libre. Debería reparar ese puente para no perderlo.
     fn test_compromised_bridge() {
         // Puente comprometido
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             .
            . 0
@@ -608,7 +630,7 @@ mod tests {
     #[test]
     // Si el bloqueador del puente es una ficha propia, el bot no debería intentar "reparar" ese puente, ya que no está realmente comprometido.
     fn test_does_not_repair_bridge_if_block_is_own_piece() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             .
            . 0
@@ -632,7 +654,7 @@ mod tests {
     #[test]
     // Bajo presión de un puente cortado, el bot debería optar por un movimiento de avance hacia la pared faltante, incluso si no es un salto, para no perder progreso.
     fn test_improvised_wall_bridge_when_under_pressure() {
-        let bot = BridgeBot;
+        let bot = BridgeBot::default();
         let board_map = "
             1
            1 1
@@ -672,5 +694,13 @@ mod tests {
             "FALLO: En empate por puntuación y centralidad, debe elegir menor índice"
         );
     }
+
+    #[test]
+    // Inicializar bot con variante laxa
+    fn test_initialize_lax_mode() {
+        let bot = BridgeBot::lax_repair_mode();
+        assert!(bot.lax_repair);
+    }
+
 
 }
