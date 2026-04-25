@@ -117,7 +117,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
               placeholder={t('lobby.player2Placeholder')}
               value={player2Name}
               onChange={(e) => setPlayer2Name(e.target.value)}
-              className="combobox"
+              className="combobox combobox--player-name"
             />
           )}
 
@@ -127,9 +127,12 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
               onChange={(e) => setBotId(e.target.value)}
               className="combobox"
             >
-              <option value="random_bot">{t('lobby.botRandom')}</option>
-              <option value="mediumbot">{t('lobby.botMedium')}</option>
-              <option value="bridgebot">{t('lobby.botBridge')}</option>
+              <option value="random_bot">Bot Aleatorio (Fácil)</option>
+              <option value="mirrorbot">Bot Espejo (Fácil)</option>
+              <option value="lapabot">Bot Lapa (Medio)</option>
+              <option value="mediumbot">Bot Medio (Medio)</option>
+              <option value="bridgebot_lax">Bot Puente continuo (Difícil)</option>
+              <option value="bridgebot">Bot Puente (Difícil)</option>
             </select>
           )}
 

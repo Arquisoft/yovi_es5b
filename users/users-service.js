@@ -2,8 +2,8 @@ import { app, port } from "./config/app.js";
 import { sequelize, Usuario } from './models/index.js';
 import { registrarUsuario, iniciarSesion } from "./service/users.js";
 import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-validators.js";
-import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida } from "./service/stats.js";
 import { ERROR_CODES, apiError } from './errors.js';
+import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida, obtenerRanking } from "./service/stats.js";
 
 /**
  * Ruta para obtener información sobre el usuario actual.
@@ -147,6 +147,25 @@ app.post('/guardar-partida', async (req, res) => {
         res.status(200).json({ message: "Partida guardada correctamente.", partida });
     } catch (err) {
         res.status(500).json(apiError(ERROR_CODES.MATCH_SAVE_FAILED, "Error al guardar la partida."));
+    }
+});
+
+/**
+ * Ruta para obtener el ranking global.
+ * Devuelve la lista de todos los usuarios de la aplicación y sus partidas jugadas y ganadas.
+ * La lista está ordenada de más partidas ganadas a menos.
+ * (id_usuario, nom_usuario, jugadas, ganadas)
+ * 
+ * Devuelve:
+ * - 200: ranking global 
+ * - 500: error al obtener el ranking
+**/
+app.get('/ranking', async (req, res) => {
+    try {
+        const ranking = await obtenerRanking();
+        res.json(ranking);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener el ranking' });
     }
 });
 

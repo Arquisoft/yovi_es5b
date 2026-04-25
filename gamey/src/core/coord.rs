@@ -98,6 +98,11 @@ impl Coordinates {
     pub fn touches_side_c(&self) -> bool {
         self.z == 0
     }
+
+    // Returns this coords mirrored on the vertical plane. 
+    pub fn get_mirrored_coords(&self) -> Coordinates {
+        Coordinates::new(self.x, self.z, self.y)
+    }
 }
 
 impl From<Coordinates> for Vec<u32> {
@@ -199,6 +204,29 @@ mod tests {
         assert!(!interior.touches_side_a());
         assert!(!interior.touches_side_b());
         assert!(!interior.touches_side_c());
+    }
+
+    // Check the mirror of a given coordinate
+    #[test]
+    fn test_get_mirrored_coords() {
+        let vec_coords = vec![2,0,2];
+        let coords = Coordinates::from_vec(&vec_coords).unwrap();
+        let mirrored_coords = coords.get_mirrored_coords();
+        assert_eq!(mirrored_coords.x(), 2);
+        assert_eq!(mirrored_coords.y(), 2);
+        assert_eq!(mirrored_coords.z(), 0);
+    }
+
+
+    // Check the mirror of a center coordinate; it should be the same coordinates
+    #[test]
+    fn test_get_mirrored_coords_center() {
+        let vec_coords = vec![2,1,1];
+        let coords = Coordinates::from_vec(&vec_coords).unwrap();
+        let mirrored_coords = coords.get_mirrored_coords();
+        assert_eq!(mirrored_coords.x(), 2);
+        assert_eq!(mirrored_coords.y(), 1);
+        assert_eq!(mirrored_coords.z(), 1);
     }
 
     // Property-based tests using proptest

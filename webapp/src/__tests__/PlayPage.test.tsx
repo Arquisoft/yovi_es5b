@@ -209,8 +209,8 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
             onChangeDifficulty={()=>{}}/>
     )
 
-    expect(screen.getByText('Dificultad: Fácil')).toBeTruthy()
-    screen.getByRole('option', { name: /Dificultad: Medio/i }).click();
-    expect(screen.getByText('Dificultad: Medio')).toBeTruthy()
+    expect(screen.getByText('Bot Aleatorio (Fácil)')).toBeTruthy()
+    screen.getByRole('option', { name: /Bot Medio \(Medio\)/i }).click();
+    expect(screen.getByText('Bot Medio (Medio)')).toBeTruthy()
   })
 })

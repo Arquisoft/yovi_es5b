@@ -60,10 +60,17 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
           <LanguageSelector username={user.nom_usuario} selectClassName='combobox language-combobox' />
 
           {gameMode === 'bot' && (
-            <select value={difficulty} onChange={handleChangeDifficulty} className='combobox'>
-              <option value='random_bot'>{t('play.difficultyEasy')}</option>
-              <option value='mediumbot'>{t('play.difficultyMedium')}</option>
-              <option value='bridgebot'>{t('play.difficultyHard')}</option>
+            <select 
+              value={difficulty} 
+              onChange={handleChangeDifficulty}
+              className="combobox"
+            >
+              <option value="random_bot">Bot Aleatorio (Fácil)</option>
+              <option value="mirrorbot">Bot Espejo (Fácil)</option>
+              <option value="lapabot">Bot Lapa (Medio)</option>
+              <option value="mediumbot">Bot Medio (Medio)</option>
+              <option value="bridgebot_lax">Bot Puente continuo (Difícil)</option>
+              <option value="bridgebot">Bot Puente (Difícil)</option>
             </select>
           )}
 

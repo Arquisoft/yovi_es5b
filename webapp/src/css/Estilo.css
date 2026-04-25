@@ -178,6 +178,11 @@ body, html {
   padding: 0.55rem 0.8rem;
   font-size: 0.9rem;
 }
+/* Para nombre del jugador 2 */
+.combobox--player-name{
+  height: auto;
+  width: auto;
+}
 
 /* TIPOGRAFÍA Y TEXTOS*/
 

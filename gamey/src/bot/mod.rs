@@ -7,13 +7,19 @@
 //! - [`YBotRegistry`] - A registry for managing multiple bot implementations
 //! - [`RandomBot`] - A simple bot that makes random valid moves
 
+mod bot_helper;
+
 pub mod bridgebot;
 pub mod mediumbot;
+pub mod mirrorbot;
+pub mod lapabot;
 pub mod random;
 pub mod ybot;
 pub mod ybot_registry;
 pub use bridgebot::*;
 pub use mediumbot::*;
+pub use mirrorbot::*;
+pub use lapabot::*;
 pub use random::*;
 pub use ybot::*;
 pub use ybot_registry::*;

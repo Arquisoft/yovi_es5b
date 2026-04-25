@@ -1,4 +1,4 @@
-import { Partida } from '../models/index.js'
+import { Partida, Usuario, sequelize } from '../models/index.js'
 
 /**
  * Obtiene el número total de partidas jugadas por un usuario.
@@ -88,4 +88,35 @@ const guardarPartida = async (id_usuario, oponente, ganada) => {
     }
 }
 
-export { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida }
+/**
+ * Obtiene el ranking global de todos los usuarios ordenado por partidas ganadas.
+ * 
+ * @returns {Promise<Array<{nom_usuario: string, nombre: string, jugadas: number, ganadas: number}>>}
+ * @throws Error si hay problemas al acceder a la base de datos
+ */
+const obtenerRanking = async () => {
+    try {
+        const ranking = await Usuario.findAll({
+            attributes: [
+                'nom_usuario',
+                'nombre',
+                [sequelize.fn('COUNT', sequelize.col('Partidas.id_partida')), 'jugadas'], // Obtiene las partidas jugadas de cada usuario
+                [sequelize.fn('SUM', sequelize.col('Partidas.ganada')), 'ganadas'], // Obtiene las partidas ganadas de cada usuario
+            ],
+            include: [{
+                model: Partida,
+                as: 'Partidas',
+                attributes: []
+            }],
+            group: ['Usuario.id_usuario'], // Hace GROUPBY id_usuario
+            order: [[sequelize.literal('ganadas'), 'DESC']], // Hace ORDERBY por partidas ganadas, de más a menos
+            raw: true // Quita metadatos innecesarios de Sequelize
+        });
+        return ranking;
+    } catch (err) {
+        console.error('Error al obtener ranking:', err);
+        throw err;
+    }
+}
+
+export { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida, obtenerRanking }
