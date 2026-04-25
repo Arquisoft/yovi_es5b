@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida } from '../service/stats.js'
+import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida, obtenerRanking } from '../service/stats.js'
 import { Partida, Usuario } from '../models/index.js'
 import {  iniciarSesion } from '../service/users.js'
 import request from 'supertest'
@@ -18,7 +18,10 @@ vi.mock('../models/index.js', () => ({
     },
     sequelize: {
         authenticate: vi.fn().mockResolvedValue(),
-        sync: vi.fn().mockResolvedValue()
+        sync: vi.fn().mockResolvedValue(),
+        fn: vi.fn(),
+        col: vi.fn(),
+        literal: vi.fn()
     }
 }))
 
@@ -741,5 +744,48 @@ describe('Pruebas de Endpoints de Estadísticas', () => {
             expect(res.body.perdidas).toBe(250)
             expect(res.body.ganadas + res.body.perdidas).toBe(res.body.jugadas)
         })
+    })
+})
+
+describe('Pruebas unitarias del Ranking', () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+    })
+
+    describe('GET /ranking', () => {
+
+        it('debería devolver el ranking con los datos correctos y status 200', async () => {
+            const mockRanking = [
+                { nom_usuario: 'pepe', nombre: 'Pepe', jugadas: 7, ganadas: 5 },
+                { nom_usuario: 'juan', nombre: 'Juan', jugadas: 4, ganadas: 3 },
+            ]
+            Usuario.findAll.mockResolvedValue(mockRanking)
+
+            const response = await request(app).get('/ranking')
+
+            expect(response.status).toBe(200) // comprueba respuesta HTTP
+            expect(response.body).toEqual(mockRanking) // comprueba datos del ranking
+            expect(Usuario.findAll).toHaveBeenCalledOnce() // comprueba que se ha llamado a la base de datos
+        })
+
+        it('debería devolver un array vacío y status 200 si no hay usuarios', async () => {
+            Usuario.findAll.mockResolvedValue([])
+
+            const response = await request(app).get('/ranking')
+
+            expect(response.status).toBe(200)
+            expect(response.body).toEqual([])
+            expect(Usuario.findAll).toHaveBeenCalledOnce()
+        })
+
+        it('debería devolver status 500 si falla la BD', async () => {
+            Usuario.findAll.mockRejectedValue(new Error("Database connection failed"))
+
+            const response = await request(app).get('/ranking')
+
+            expect(response.status).toBe(500)
+            expect(response.body).toHaveProperty('error')      // comprueba que devuelve mensaje de error
+        })
+
     })
 })
