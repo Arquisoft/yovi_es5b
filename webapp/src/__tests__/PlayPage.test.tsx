@@ -22,7 +22,7 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       text: async () => 'OK',
     })
@@ -103,6 +103,32 @@ describe('Pruebas unitarias de la página de Partida (PlayPage)', () => {
     
     expect(mockChangeDifficulty).toHaveBeenCalledWith('mediumbot')
   })
+
+  it('debería recrear el Board con nueva clave (gameKey) al cambiar dificultad', async () => {
+    render(
+      <PlayPage
+        boardSize={3}
+        user={{ id: "1", nombre: "Pepe", nom_usuario: "pepe" }}
+        botId="random_bot"
+        gameMode="bot"
+        player2Name="Invitado"
+        onBackToLobby={() => { } }
+        onChangeDifficulty={() => { } } />
+    )
+
+    const boardAntes = screen.getByTestId('mock-board');
+
+    const selects = screen.queryAllByRole('combobox');
+    const difficultySelect = selects.find(select => 
+      select.querySelector('option[value="bridgebot"]')
+    ) as HTMLSelectElement;
+
+    fireEvent.change(difficultySelect, { target: { value: 'bridgebot' } });
+
+    const boardDespues = await screen.findByTestId('mock-board');
+
+    expect(boardAntes).not.toBe(boardDespues);
+  });
 
   it('debería llamar a onBackToLobby al pulsar Abandonar Partida', async () => {
     const mockOnBackToLobby = vi.fn()
