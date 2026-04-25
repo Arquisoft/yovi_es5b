@@ -167,6 +167,12 @@ body, html {
   font-size: 1rem;
 }
 
+/* Para nombre del jugador 2 */
+.combobox--player-name{
+  height: auto;
+  width: auto;
+}
+
 /* TIPOGRAFÍA Y TEXTOS*/
 
 h2 { 
