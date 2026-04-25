@@ -130,7 +130,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
         </div>
         </>
       ) : (
-        /* Vista para estadísticas del usuario — con h2 exterior */
+        /* Vista para estadísticas del usuario */
         <>
           <h2>Estadísticas de {user.nombre}</h2>
           <div className="card">
