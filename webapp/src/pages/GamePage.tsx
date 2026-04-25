@@ -117,7 +117,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
               placeholder="Nombre del Jugador 2 (opcional)"
               value={player2Name}
               onChange={(e) => setPlayer2Name(e.target.value)}
-              className="combobox"
+              className="combobox combobox--player-name"
             />
           )}
 
