@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import type { User } from '../types/user';
 import '../css/Estilo.css';
 import { useTranslation } from 'react-i18next';
-import LanguageSelector from '../components/LanguageSelector';
 
 // Interfaz para las propiedades que recibe el componente
 interface EstadisticasProps {
