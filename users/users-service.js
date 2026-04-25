@@ -4,6 +4,13 @@ import { registrarUsuario, iniciarSesion } from "./service/users.js";
 import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-validators.js";
 import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida, obtenerRanking } from "./service/stats.js";
 
+import promBundle from 'express-prom-bundle';
+const metricsMiddleware = promBundle({
+    includeMethod: true,
+    includePath: true
+});
+app.use(metricsMiddleware);
+
 /**
  * Ruta para obtener información sobre el usuario actual.
  * Devuelve:
