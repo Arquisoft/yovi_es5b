@@ -121,7 +121,7 @@ describe('Pruebas unitarias de la página de ranking (Estadisticas)', () => {
     fireEvent.click(await screen.findByRole('button', { name: /VER RANKING GLOBAL/i }))
 
     // Comprobamos que aparecen las partidas jugadas en la tabla
-    expect(await screen.findByText("Jugadas")).toBeTruthy()
+    expect(await screen.findByText("Partidas jugadas")).toBeTruthy()
     expect(await screen.findByText("7")).toBeTruthy()
   });
 
@@ -137,7 +137,7 @@ describe('Pruebas unitarias de la página de ranking (Estadisticas)', () => {
     fireEvent.click(await screen.findByRole('button', { name: /VER RANKING GLOBAL/i }))
 
     // Comprobamos que aparecen las partidas ganadas en la tabla
-    expect(await screen.findByText("Ganadas")).toBeTruthy()
+    expect(await screen.findByText("Partidas ganadas")).toBeTruthy()
     expect(await screen.findByText("5")).toBeTruthy()
   });
 
