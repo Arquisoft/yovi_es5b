@@ -69,7 +69,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
     };
 
     fetchUserStats();
-  }, [user.nom_usuario]);
+  }, [user.nom_usuario, t, USERS_URL]);
 
   const fetchRanking = async () => {
     try {
@@ -87,20 +87,20 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
   return (
     <div className='lobby-container'>
       {loading ? (
-        <div className="status-badge checking">Cargando datos...</div>
+        <div className="status-badge checking">{t('stats.loading')}</div>
       ) : showRanking ? (
         /* Vista para ranking */
         <>
-        <h2>Ranking global</h2>
+        <h2>{t('stats.rankingTitle')}</h2>
         <div className="card">  
           <div className="stats">
             <table style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Usuario</th>
-                  <th>Jugadas</th>
-                  <th>Ganadas</th>
+                  <th>{t('auth.username')}</th>
+                  <th>{t('stats.played')}</th>
+                  <th>{t('stats.won')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -129,36 +129,36 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
             </table>
           </div>
           <button onClick={() => setShowRanking(false)} className="btn-play">
-            Ver mis estadísticas
+            {t('stats.viewStats')}
           </button>
         </div>
         </>
       ) : (
         /* Vista para estadísticas del usuario */
         <>
-          <h2>Estadísticas de {user.nombre}</h2>
+          <h2>{t('stats.title', { name: user.nombre })}</h2>
           <div className="card">
             <div className="stats">
-              <label><strong>Partidas jugadas</strong></label>
+              <label><strong>{t('stats.played')}</strong></label>
               <div className="stats-played">{stats.jugadas}</div>
             </div>
             <div className="stats">
-              <label><strong>Partidas ganadas</strong></label>
+              <label><strong>{t('stats.won')}</strong></label>
               <div className="stats-won">{stats.ganadas}</div>
             </div>
             <div className="stats">
-              <label><strong>Partidas perdidas</strong></label>
+              <label><strong>{t('stats.lost')}</strong></label>
               <div className="stats-lost">{stats.perdidas}</div>
             </div>
             <button onClick={fetchRanking} className="btn-play">
-              Ver ranking global
+              {t('stats.viewRanking')}
             </button>
           </div>
         </>
       )}
       
       <button onClick={onBack} className="btn-play">
-        Volver al Menú
+        {t('stats.backToMenu')}
       </button>
     </div>
 );

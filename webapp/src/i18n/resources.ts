@@ -62,7 +62,10 @@ export const resources = {
         played: 'Partidas jugadas',
         won: 'Partidas ganadas',
         lost: 'Partidas perdidas',
-        backToMenu: 'Volver al Menú'
+        backToMenu: 'Volver al Menú',
+        rankingTitle: 'Ranking global',
+        viewStats: 'Ver mis estadísticas',
+        viewRanking: 'Ver ranking global',
       },
       play: {
         titlePrefix: 'Partida de:',
@@ -191,7 +194,10 @@ export const resources = {
         played: 'Games played',
         won: 'Games won',
         lost: 'Games lost',
-        backToMenu: 'Back to Menu'
+        backToMenu: 'Back to Menu',
+        rankingTitle: 'Global Ranking',
+        viewStats: 'View my statistics',
+        viewRanking: 'View global ranking',
       },
       play: {
         titlePrefix: 'Game of:',
@@ -320,7 +326,10 @@ export const resources = {
         played: 'Partidas jogadas',
         won: 'Partidas ganhas',
         lost: 'Partidas perdidas',
-        backToMenu: 'Voltar ao Menu'
+        backToMenu: 'Voltar ao Menu',
+        rankingTitle: 'Ranking global',
+        viewStats: 'Ver minhas estatísticas',
+        viewRanking: 'Ver ranking global',
       },
       play: {
         titlePrefix: 'Partida de:',
@@ -449,7 +458,10 @@ export const resources = {
         played: 'Parties jouées',
         won: 'Parties gagnées',
         lost: 'Parties perdues',
-        backToMenu: 'Retour au menu'
+        backToMenu: 'Retour au menu',
+        rankingTitle: 'Classement mondial',
+        viewStats: 'Voir mes statistiques',
+        viewRanking: 'Voir le classement mondial',
       },
       play: {
         titlePrefix: 'Partie de :',
@@ -578,7 +590,10 @@ export const resources = {
         played: 'Gespielte Partien',
         won: 'Gewonnene Partien',
         lost: 'Verlorene Partien',
-        backToMenu: 'Zurück zum Menü'
+        backToMenu: 'Zurück zum Menü',
+        rankingTitle: 'Globale Rangliste',
+        viewStats: 'Meine Statistiken ansehen',
+        viewRanking: 'Globale Rangliste ansehen',
       },
       play: {
         titlePrefix: 'Spiel von:',
