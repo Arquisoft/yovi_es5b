@@ -5,9 +5,17 @@ import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-v
 import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida, obtenerRanking } from "./service/stats.js";
 
 import promBundle from 'express-prom-bundle';
+import { register } from 'prom-client';
+
+// limpiar el registro para evitar errores de duplicidad al reiniciar el servicio
+register.clear();
+
 const metricsMiddleware = promBundle({
     includeMethod: true,
-    includePath: true
+    includePath: true,
+    promClient: {
+        collectDefaultMetrics: {}
+    }
 });
 app.use(metricsMiddleware);
 
