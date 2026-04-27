@@ -1,0 +1,28 @@
+== Pruebas de Usabilidad
+
+=== Condiciones de realización de las pruebas
+Para realizar las pruebas, se ha usado un portátil personal donde se ha desplegado la aplicación en local. 
+
+Los participantes cumplen con el siguiente perfil:
+* **Experiencia:** Conocimiento y experiencia media en el uso de dispositivos tecnológicos.
+* **Información previa:** Con el fin de comprobar la curva de aprendizaje, la única información aportada fue que debían registrarse para poder jugar a un juego de tablero.
+* **Metodología:** Se dejó a los usuarios desenvolverse por la aplicación de forma autónoma, interviniendo únicamente en caso de bloqueo o dudas críticas.
+
+=== Registro de las pruebas
+
+[cols="1,4", options="header"]
+|===
+| Usuario | Observaciones y Feedback
+| **Primer usuario** | Completó el registro sin problemas. En la selección de bot/tablero no necesitó leer instrucciones. Al entrar al juego, tardó unos segundos en descubrir que debía hacer *scroll* hacia abajo para ver las reglas. Una vez localizadas, entendió el juego, aunque necesitó consultarlas varias veces. Presentó dificultades para comprender que los hexágonos de las esquinas computan para dos bordes simultáneamente.
+
+| **Segundo usuario** | Registro exitoso. Inicialmente no comprendió la pantalla de configuración (bot y tamaño), pero lo solventó leyendo las instrucciones integradas. Al entrar al juego, localizó las reglas mediante *scroll* de forma instantánea. Jugó varias partidas con normalidad, aunque, al igual que el primer usuario, le costó asimilar la lógica de los hexágonos de las esquinas.
+
+| **Tercer usuario** | Se desenvolvió con total destreza. Flujo de registro, configuración y lectura de reglas realizado con éxito a la primera. Comprendió el funcionamiento de la variante "Y" a la perfección desde el inicio de la partida.
+|===
+
+=== Cambios introducidos tras las pruebas
+
+[IMPORTANT]
+====
+**Mejora en las instrucciones:** En vista de la confusión recurrente sobre la mecánica de victoria, se ha modificado el apartado de instrucciones del juego para incluir una explicación explícita sobre los **hexágonos de las esquinas** y su contacto con dos bordes de forma simultánea.
+====
