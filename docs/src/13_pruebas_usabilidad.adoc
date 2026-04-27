@@ -23,7 +23,6 @@ Los participantes cumplen con el siguiente perfil:
 
 === Cambios introducidos tras las pruebas
 
-[IMPORTANT]
 ====
 **Mejora en las instrucciones:** En vista de la confusión recurrente sobre la mecánica de victoria, se ha modificado el apartado de instrucciones del juego para incluir una explicación explícita sobre los **hexágonos de las esquinas** y su contacto con dos bordes de forma simultánea.
 ====
