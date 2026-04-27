@@ -94,3 +94,30 @@ La aplicación responde correctamente bajo condiciones de carga normal y picos p
 El límite de la infraestructura actual se sitúa en torno a los 500 usuarios concurrentes navegando la web en conjunto (repartidos entre registro, jugando partidas y consultando estadísticas). A partir de ese punto, los servicios de **users** (puerto 3000) y **gamey** (puerto 4000) comienzan a saturarse, acumulando entre ambos más del 90% de los errores registrados en la prueba de 1000 usuarios.
 No obstante, si los 500 jugadores llevaran a cabo las mismas acciones al mismo tiempo, se ha podido observar que el servicio de gamey no soporta una carga tan elevada, siendo este el principal cuello de botella de la aplicación.
 Para dar servicio a un número mayor de usuarios, sería necesario escalar o replicar estos dos servicios, especialmente el de *gamey*.
+
+<<<
+=== Pruebas de Usabilidad
+
+==== Condiciones de realización de las pruebas
+
+* Para realizar las pruebas, se ha usado el portátil personal de un integrante del equipo, donde se desplegó la web en local.
+* Las tres personas que han realizado las pruebas tienen un grado de conocimiento y de experiencia media con el uso de dispositivos tecnológicos.
+* Con el fin de comprobar si una persona que nunca usó la aplicación puede desenvolverse bien con ella, la única información que se le aportó a los usuarios de prueba fue que deberían registrarse en la aplicación para poder jugar un juego de tablero.
+* Se les dejará a los usuarios desenvolverse por la aplicación por ellos mismos, solo interfiriendo si se comprueba que se atascan en un sitio o si tienen una duda que les dificulta demasiado el uso de la aplicación.
+
+==== Registro de las pruebas
+
+[cols="1,4", options="header"]
+|===
+| Usuario | Observaciones y Feedback
+| **Primer usuario** | El usuario vio la ventana de registro y procedió sin problema. En la pantalla de seleccionar el bot y el tamaño del tablero no tuvo ningún problema de entendimiento, al parecer sin siquiera necesitar leer las instrucciones. A la hora de entrar al juego, le costó unos segundos darse cuenta de que podía deslizar la pantalla hacia abajo y no entendió el juego. Una vez deslizó hacia abajo, vio las instrucciones del juego y lo entendió. Pudo jugar sin problema, aunque para entender el juego del todo tuvo que volver a leer las instrucciones un par de veces. Le costó entender que los hexágonos de las esquinas estaban en contacto con dos esquinas al mismo tiempo.
+| **Segundo usuario** | El usuario se registró sin problema. En la pantalla de seleccionar el bot y el tamaño del tablero no entendió en un primer vistazo lo que tenía que hacer ni qué era el bot y el tamaño. En seguida leyó las instrucciones y entendió el funcionamiento de la pantalla y continuó sin problema. Al entrar al juego, instantáneamente deslizó la pantalla hacia abajo y vió las reglas, por lo que desde el principio se hizo una idea de cómo funcionaba el juego. Aunque le costó un par de intentos empezar a entender de verdad cómo se ganaba, pudo jugar varias partidas por sí misma sin ningún inconveniente. Tuvo el mismo problema que el usuario anterior en cuanto a los hexágonos de las esquinas, ya que no entendía que contaban por los dos lados.
+| **Tercer usuario** | A diferencia del resto de usuarios, este último ha sabido desenvolverse con total destreza por toda la aplicación. Entendió que debía regitrarse sin problemas, leyó las reglas del funcionamiento de selección de bot y tablero y entendió a la primera como usarlos, y nada más entrar al juego vio las reglas, las leyó y pudo jugar entendiendo el funcionamiento de Y a la perfección.
+|===
+
+==== Cambios introducidos tras las pruebas
+
+====
+En vista de la confusión que tuvieron los dos primeros usuarios para entender que rellenar uno de los hexágonos de las esquinas contaba como entrar en contacto con dos lados, se ha añadido una explicación de esto mismo en las instrucciones del juego.
+
+====
