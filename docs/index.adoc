@@ -94,15 +94,11 @@ include::src/10_quality_requirements.adoc[]
 include::src/11_technical_risks.adoc[]
 
 <<<<
-// 12. Test
-include::src/12_tests.adoc[]
+// 12. Pruebas
+include::src/12_pruebas.adoc[]
 
 <<<<
-// 12. Pruebas usabilidad
-include::src/13_pruebas_usabilidad.adoc[]
-
-<<<<
-// 14. Glossary
-include::src/14_glossary.adoc[]
+// 13. Glossary
+include::src/13_glossary.adoc[]
 
 
