@@ -98,8 +98,8 @@ include::src/11_technical_risks.adoc[]
 include::src/12_tests.adoc[]
 
 <<<<
-// 13. Tests
-include::src/13_PruebasUsabilidad.adoc[]
+// 13. Pruebas de usabilidad
+include::src/13_pruebas_usabilidad.adoc[]
 
 <<<<
 // 14. Glossary

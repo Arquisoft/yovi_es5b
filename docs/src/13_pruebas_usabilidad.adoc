@@ -1,4 +1,4 @@
-[[pruebas-usabilidad]]
+[[seccion-pruebas-usabilidad]]
 == Pruebas de Usabilidad
 
 === Condiciones de realización de las pruebas
