@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-tests]]
-== 12. Pruebas realizadas
+== Pruebas realizadas
 
 === Pruebas de carga
 
