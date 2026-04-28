@@ -495,13 +495,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_tecnología_utilizada">8.1. Tecnología utilizada</a></li>
 <li><a href="#_entidades_y_esquema_relacional">8.2. Entidades y esquema relacional</a></li>
 <li><a href="#_decisiones_de_diseño_relevantes">8.3. Decisiones de diseño relevantes</a></li>
+<li><a href="#_ámbito_de_las_pruebas_de_aceptación_y_comportamiento_general_de_la_iu">8.4. Ámbito de las pruebas de aceptación y comportamiento general de la IU</a></li>
 </ul>
 </li>
 <li><a href="#section-design-decisions">9. Decisiones de arquitectura</a>
 <ul class="sectlevel2">
 <li><a href="#_selección_de_sistema_gestor_de_base_de_datos">9.1. Selección de sistema gestor de base de datos</a></li>
 <li><a href="#_selección_de_orm">9.2. Selección de ORM</a></li>
-<li><a href="#_arquitectura_de_comunicación_con_gamey">9.3. Arquitectura de comunicación con gamey</a></li>
+<li><a href="#_uso_de_test_driven_design">9.3. Uso de Test Driven Design</a></li>
+<li><a href="#_arquitectura_de_comunicación_con_gamey">9.4. Arquitectura de comunicación con gamey</a></li>
 </ul>
 </li>
 <li><a href="#section-quality-scenarios">10. Requisitos de calidad</a>
@@ -521,6 +523,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_pruebas_de_carga">12.1. Pruebas de carga</a></li>
 <li><a href="#_pruebas_de_usabilidad">12.2. Pruebas de Usabilidad</a></li>
+<li><a href="#_pruebas_de_seguridad">12.3. Pruebas de seguridad</a></li>
 </ul>
 </li>
 <li><a href="#section-glossary">13. Glosario</a></li>
@@ -562,7 +565,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="section-introduction-and-goals">1. Introducción y objetivos</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de reglas y verificación está implementado en Rust, mientras que el cliente web principal está desarrollado en TypeScript.</p>
+<p>La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de juego y estará implementado en Rust, mientras que el cliente web principal estará desarrollado en TypeScript.</p>
 </div>
 <div class="sect2">
 <h3 id="_resumen_de_requisitos">1.1. Resumen de requisitos</h3>
@@ -578,13 +581,32 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Se podrá jugar con distintas estrategias y con varios modos de dificultad. Se necesitan al menos dos estrategias distintas; los jugadores eligirán contra qué estrategias y dificultades jugar.</p>
 </li>
 <li>
-<p>Los usuarios podrán registrarse en el sistema. Una vez registrados, las partidas que jueguen serán almacenadas en un histórico de partidas (número de juegos realizados, ratio de victorias, etc.) que podrán ser consultado desde su cuenta.</p>
+<p>Los usuarios podrán registrarse en el sistema. Una vez registrados, las partidas que jueguen serán almacenadas en un histórico de partidas (número de partidas totales, ganadas y perdidas) que podrán ser consultado desde su cuenta.</p>
 </li>
 <li>
-<p>La aplicación ofrecerá una API que permitirá a los bots obtener información relacionada con los usuarios del sistema usuarios y el histórico de partidas. Se deberá documentar correctamente este API.</p>
+<p>La aplicación ofrecerá una API que permitirá a terceros interactuar con la aplicación: gestionar usuarios, histórico y registros, para así tener la posibilidad de desarrollar su propia aplicación.</p>
 </li>
 <li>
 <p>La aplicación ofrecerá un API que permitirá a los bots jugar contra la aplicación, utilizando un método <strong>play</strong> que especificará su posición del tablero en notación YEN mediante un parámetro <strong>position</strong>. Opcionalmente, también se especificará el ID del bot contra el que jugar mediante un parámetro <strong>bot_id</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Además, se decide añadir las siguientes características opcionales:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Internacionalización con los idiomas español, inglés, alemás y francés.</p>
+</li>
+<li>
+<p>Ranking de usuarios donde se puedan ver los usuarios con más partidas ganadas.</p>
+</li>
+<li>
+<p>Sugerir movimiento al jugador, limitándolo a una sugerencia por jugador en cada partida.</p>
+</li>
+<li>
+<p>Permitir realizar partidas jugador contra jugador locales utilizando una sola cuenta.</p>
 </li>
 </ul>
 </div>
@@ -617,14 +639,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mantenibilidad</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe ser fácil de mantener y extender. Esto se logra siguiendo buenas prácticas de programación, manteniendo excelente comunicación dentro del equipo de desarrollo y documentación clara.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe ser fácil de mantener y extender. Esto se logra manteniendo una documentación clara y asegurando la modularidad de la aplicación.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Seguridad</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Los datos privados de los usuarios registrados deben mantenerse seguros.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Exactitud</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Correctitud funcional</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.</p></td>
 </tr>
 </tbody>
@@ -655,6 +677,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <td class="tableblock halign-left valign-top"><p class="tableblock">Usuarios / Jugadores</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consumidores de la API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Poder utilizar la API de forma sencilla y sin problemas, teniendo así la capacidad de crear sus propios <strong>frontends</strong> del juego.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Micrati</p></td>
@@ -691,7 +718,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <td class="tableblock halign-left valign-top"><p class="tableblock">Descripción</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Arquitectura Políglota</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Stack tecnológico</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe estar compuesto por servicios que utilizan diferentes tecnologías: <strong>TypeScript</strong> (Aplicación web) y <strong>Rust</strong> (Motor de Juego).</p></td>
 </tr>
 <tr>
@@ -700,11 +727,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>API para bots</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Se debe ofrecer un <strong>API</strong> que permita a bots interactuar con la aplicación.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Estándar de Documentación</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">La documentación de la arquitectura debe seguir la plantilla <strong>Arc42</strong> y estar escrita en formato <strong>AsciiDoc</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Se debe ofrecer un <strong>API</strong> que permita a bots interactuar con la aplicación que siga una interfaz concreta.</p></td>
 </tr>
 </tbody>
 </table>
@@ -741,20 +764,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Restricción</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conveción</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Descripción</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Arquitectura de Tres Capas</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">El sistema debe mantener una separación clara entre la interfaz de usuario (<code>webapp</code>), la gestión de usuarios (<code>users</code>) y la lógica del juego (<code>gamey</code>).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Comunicación API</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Los servicios deben comunicarse a través de APIs REST utilizando JSON, con puntos de enlace (endpoints) configurables (ej. <code>VITE_API_URL</code>).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Estándar de Documentación</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La documentación de la arquitectura debe seguir la plantilla <strong>Arc42</strong> y estar escrita en formato <strong>AsciiDoc</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Estándar de Notación</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">El motor de juego debe utilizar formatos específicos para la representación de las partidas: <strong>YEN</strong> (Y Exchange Notation).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Documentación OpenAPI</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Se debe utilizar el estándar OpenAPI para documentar la API pública.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Actas</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Se debe crear un registro de actas de reunión por cada reunión realizada.</p></td>
 </tr>
 </tbody>
 </table>
@@ -773,7 +800,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h3 id="_contexto_de_negocio">3.1. Contexto de negocio</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-c46880d1e86282bd60c212ace0c4ac4a.png" alt="Diagram" width="713" height="151">
+<img src="./images/diag-plantuml-md5-19063ce6b3f97fdf7f930316554053e3.png" alt="Diagram" width="808" height="209">
 </div>
 </div>
 <div class="paragraph">
@@ -783,18 +810,21 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <p>El actor externo principal del sistema es el <strong>jugador</strong>, que puede registrarse y participar en partidas.</p>
 </div>
 <div class="paragraph">
-<p>Además, existe el actor de <strong>bot externo</strong>, el cual se conectra con el API de la aplicación para jugar y para obtener información de personajes y partidas.</p>
+<p>Además, existe el actor de <strong>bot externo</strong>, el cual se conectra con el API de la aplicación para jugar y que también puede utilizar los <strong>endpoints</strong> de la API para gestionar información como usuarios o rankings.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_contexto_técnico">3.2. Contexto técnico</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-ef0ff6b6bca0443b018f6be356ed6488.png" alt="Diagram" width="613" height="140">
+<img src="./images/diag-plantuml-md5-ef0ff6b6bca0443b018f6be356ed6488.png" alt="Diagram" width="649" height="141">
 </div>
 </div>
 <div class="paragraph">
 <p>El sistema YOVI expone una interfaz basada en servicios web accesibles mediante protocolo HTTP/HTTPS.</p>
+</div>
+<div class="paragraph">
+<p>Las llamadas que requieren autenticación serán gestionadas mediante <strong>cookies de sesión</strong> obtenidas en los <strong>endpoints</strong> públicos de inicio de sesión y registro.</p>
 </div>
 <div class="paragraph">
 <p>Los actores externos interactúan con el sistema mediante peticiones y respuestas estructuradas en formato JSON.</p>
@@ -826,7 +856,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">HTTP/HTTPS + JSON</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Acciones automatizadas del juego</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Llamadas a la API pública y a la API play</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Estado del juego y resultados</p></td>
 </tr>
 </tbody>
@@ -851,10 +881,10 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="ulist">
 <ul>
 <li>
-<p>React &amp; Vite: Para construir una interfaz de usuario rápida y reactiva como Single Page Application (SPA).</p>
+<p><strong>React con Vite</strong>: Para construir una interfaz de usuario rápida y reactiva como Single Page Application (SPA).</p>
 </li>
 <li>
-<p>TypeScript: Añade tipado estático para reducir errores en el desarrollo del frontend.</p>
+<p><strong>TypeScript</strong>: Añade tipado estático para reducir errores en el desarrollo del frontend.</p>
 </li>
 </ul>
 </div>
@@ -864,7 +894,10 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="ulist">
 <ul>
 <li>
-<p>Node.js &amp; Express: Entorno ligero y escalable para gestionar la lógica de usuarios y la API REST.</p>
+<p><strong>Node.js &amp; Express</strong>: Entorno ligero y escalable para gestionar la lógica de usuarios y la API REST.</p>
+</li>
+<li>
+<p><strong>express-session</strong>: módulo de Express para gestionar la autenticación mediante cookies de sesión</p>
 </li>
 </ul>
 </div>
@@ -874,30 +907,76 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="ulist">
 <ul>
 <li>
-<p>Rust: Elegido por su alto rendimiento y seguridad de memoria para el core del motor y la lógica de bots.</p>
-</li>
-<li>
-<p>Cargo: Sistema de gestión de paquetes y construcción para el ecosistema Rust.</p>
+<p><strong>Rust</strong>: alto rendimiento y seguridad de memoria para el motor de juego y la lógica de bots.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
 <p>Persistencia y Datos:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>MySQL</strong>: base de datos relacional para gestionar de forma eficiente el modelo de datos de la aplicación, el cual sigue una estructura relacional.</p>
+</li>
+<li>
+<p><strong>Sequelize</strong>: ORM de MySQL para facilitar la interacción con el modelo relacional de la aplicación.</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>MySQL: junto al ORM Sequelize para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.</p>
+</li>
+<li>
+<p>Orquestación:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Docker</strong>: se utiliza Docker para la orquestación y despliegue de los distintos contenedores que forman la aplicación.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Pruebas:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pruebas unitarias: se utiliza la biblioteca <strong>vitest</strong> y las herramientas estándar de Rust de pruebas unitarias.</p>
+</li>
+<li>
+<p>Pruebas de aceptación: se utilizan las bibliotecas <strong>vitest</strong> y <strong>playwright</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_decisiones_de_organización_del_equipo">4.2. Decisiones de organización del equipo</h3>
 <div class="paragraph">
-<p>Para maximizar la eficiencia y la colaboración usaremos todas las herramientas disponibles, como GitHub para el control de versiones y la gestión de tareas a través de Issues y Projects, ademas de crear un kanban para organizar las tareas y el progreso del proyecto. Se asignarán roles específicos a cada miembro del equipo, como desarrolladores frontend, backend y de motor de juego, para asegurar que cada área del proyecto esté bien cubierta.</p>
+<p>Se utilizan las siguientes herramientas de GitHub:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sistema de issues</p>
+</li>
+<li>
+<p>Sistema de pull requests para revisión de código</p>
+</li>
+<li>
+<p>Proyectos y vista de kanban para gestión de issues</p>
+</li>
+<li>
+<p>Wiki de GitHub para el registro de acta, decisiones y guías misceláneas.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Tambien usaremos Discord o Teams para la comunicación en tiempo real y la coordinación de actividades diarias.</p>
+<p>Las comunicaciones en tiempo real se llevarán a cabo mediante Whatsapp o Discord.</p>
+</div>
+<div class="paragraph">
+<p>Se asigna a cada miembro del equipo la responsabilidad de ser capaz de entender el comportamiento general del código resto de miembros del equipo, independientemente de qué parte del código haya programado el mismo.</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -910,7 +989,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h3 id="_sistema_general_de_caja_blanca">5.1. Sistema General de Caja Blanca</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-1.png" alt="vista bloques 1" width="605" height="94">
+<img src="./images/vista-bloques-1.png" alt="vista bloques 1" width="825" height="87">
 </div>
 </div>
 <div class="dlist">
@@ -947,11 +1026,11 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Bot</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con el <em>API</em> de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Interactúa con el <em>API</em> pública de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina mediante el método <em>play</em></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Aplicación web YOVI</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> Muestra la interfaz web al usuario y expone el API para los bots.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"> Muestra la interfaz web al usuario y expone el API público para los bots.</p></td>
 </tr>
 </tbody>
 </table>
@@ -962,14 +1041,14 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h4 id="_caja_blanca_aplicación_web_yovi">5.2.1. Caja Blanca Aplicación web YOVI</h4>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-2-yovi.png" alt="vista bloques 2 yovi" width="620" height="441">
+<img src="./images/vista-bloques-2-yovi.png" alt="vista bloques 2 yovi" width="831" height="553">
 </div>
 </div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Motivación</dt>
 <dd>
-<p>La aplicación se divide en tres subsistemas: el motor de juego, <em>Gamey</em>, el módulo de gestión de usuarios, <em>Users</em>, y la interfaz de la aplicación web, <em>Webapp</em>. <em>Webapp</em> se comunica con <em>Gamey</em> y <em>Users</em> para poder llevar a cabo sus funciones de gestionar sesiones de usuarios y juegos en curso.</p>
+<p>La aplicación se divide en tres servicios: el motor de juego, <em>Gamey</em>, el módulo de gestión de usuarios, <em>Users</em>, y la interfaz de la aplicación web, <em>Webapp</em>. <em>Webapp</em> se comunica con <em>Gamey</em> y <em>Users</em> para poder llevar a cabo sus funciones de gestionar sesiones de usuarios y estadísticas. A su vez, <em>Users</em> se conecta con la base de datos para obtener la información relativa a los usuarios y estadísticas.</p>
 </dd>
 <dt class="hdlist1">Bloques de construcción contenidos</dt>
 </dl>
@@ -1020,14 +1099,14 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h4 id="_caja_blanca_gamey">5.3.1. Caja Blanca Gamey</h4>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-3-gamey.png" alt="vista bloques 3 gamey" width="383" height="533">
+<img src="./images/vista-bloques-3-gamey.png" alt="vista bloques 3 gamey" width="472" height="669">
 </div>
 </div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Motivación</dt>
 <dd>
-<p>El módulo de juego <em>Gamey</em> separa las responsabilidades de gestión de peticiones de juego, gestión de mecánicas del juego y selección de IAs contra las que jugar en submódules diferentes con el objetivo de que estos sean fácilmente configurables o reemplazables.</p>
+<p>El módulo de juego <em>Gamey</em> separa las responsabilidades de gestión de peticiones de juego, gestión de mecánicas del juego y selección de IAs contra las que jugar en submódulos diferentes con el objetivo de que estos sean fácilmente configurables o reemplazables.</p>
 </dd>
 <dt class="hdlist1">Bloques de construcción contenidos</dt>
 </dl>
@@ -1087,18 +1166,18 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">users-service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">service/users</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona el registro e inicio de sesión de usuarios</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">users-stats-service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">service/stats</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"> Gestiona las estadísticas de juego y rankings de usuarios</p></td>
 </tr>
 </tbody>
 </table>
 <div class="imageblock">
 <div class="content">
-<img src="./images/vista-bloques-3-users.png" alt="vista bloques 3 users" width="526" height="446">
+<img src="./images/vista-bloques-3-users.png" alt="vista bloques 3 users" width="608" height="598">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1131,11 +1210,11 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="sect2">
 <h3 id="_registro_de_un_nuevo_usuario">6.1. Registro de un nuevo usuario</h3>
 <div class="paragraph">
-<p>Al entrar por primera vez a la aplicación, el usuario se encuentra con la pantalla de registro. En esta pantalla, el usuario introduce sus datos y al hacer clic en el botón de registro, se envía una solicitud al servidor para crear una nueva cuenta. Si es valida se crea la cuenta y se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error indicando el motivo del fallo.</p>
+<p>Al entrar por primera vez a la aplicación, el usuario se encuentra con la pantalla de registro. En esta pantalla, el usuario introduce sus datos y al hacer clic en el botón de registro, se envía una solicitud al servidor para crear una nueva cuenta. Si es valida se crea la cuenta y se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/registro_usuario.png" alt="registro usuario" width="661" height="365">
+<img src="./images/registro_usuario.png" alt="registro usuario" width="691" height="376">
 </div>
 </div>
 </div>
@@ -1146,7 +1225,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/inicio_sesion_usuario.png" alt="inicio sesion usuario" width="777" height="518">
+<img src="./images/inicio_sesion_usuario.png" alt="inicio sesion usuario" width="819" height="535">
 </div>
 </div>
 </div>
@@ -1157,7 +1236,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/secuencia_partida_juego.png" alt="secuencia partida juego" width="699" height="547">
+<img src="./images/secuencia_partida_juego.png" alt="secuencia partida juego" width="727" height="565">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1171,7 +1250,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h3 id="_nivel_de_infraestructura_1">7.1. Nivel de infraestructura 1</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diagrama-despliegue-1.png" alt="diagrama despliegue 1" width="668" height="361">
+<img src="./images/diagrama-despliegue-1.png" alt="diagrama despliegue 1" width="936" height="415">
 </div>
 </div>
 <div class="dlist">
@@ -1180,6 +1259,20 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <dd>
 <p>La infraestructura del sistema se divide en varios servicios desplegados en sendos contenedores Docker con el objetivo de conseguir una arquitectura modular que permita que cada servicio sea fácilmente reemplazable y desplegable en otra máquina o entorno.</p>
 </dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Nótese que desde el navegador web, el usuario tiene acceso a</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Webapp: puerto HTTP 80</p>
+</li>
+<li>
+<p>API pública de la aplicación: Puerto HTTP 3000</p>
+<div class="dlist">
+<dl>
 <dt class="hdlist1">Características de Calidad/Rendimiento</dt>
 <dd>
 <div class="ulist">
@@ -1210,6 +1303,9 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <p>Cada módulo de la aplicación es desplegado en un contenedor Docker distinto. De la misma forma, el sistema gestor de bases de datos también es desplegado en su propio contenedor Docker.</p>
 </dd>
 </dl>
+</div>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>A continuación se detalla el mapeo de artefactos de software a infraestructura.</p>
@@ -1262,6 +1358,11 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <div class="paragraph">
 <p>El modelo de datos está compuesto por dos tablas: <strong>Usuarios</strong> y <strong>Partidas</strong>. La relación entre ellas es de <strong>uno a muchos</strong>: un usuario puede tener asociadas múltiples partidas, pero cada partida pertenece exactamente a un usuario. La integridad referencial se gestiona mediante la clave foránea <code>id_usuario</code> en la tabla <code>Partidas</code>.</p>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/yovi_database.png" alt="Base de datos de Yovi">
+</div>
+</div>
 <div class="sect3">
 <h4 id="_tabla_usuarios">8.2.1. Tabla Usuarios</h4>
 <div class="paragraph">
@@ -1302,7 +1403,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <td class="tableblock halign-left valign-top"><p class="tableblock">Nombre de usuario para login</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>contrasena</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>contraseña</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(255)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">NOT NULL</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Contraseña del usuario (hash)</p></td>
@@ -1371,6 +1472,15 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </li>
 </ul>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_ámbito_de_las_pruebas_de_aceptación_y_comportamiento_general_de_la_iu">8.4. Ámbito de las pruebas de aceptación y comportamiento general de la IU</h3>
+<div class="paragraph">
+<p>Las pruebas de aceptación se ejecutan sobre Chrome, y el resto de pruebas han sido realizadas en navegadores basados en Chromium y Firefox. Es posible que en algunos navegadores no probados, como Safari, algunas características visuales de la aplicación no se muestren correctamente.</p>
+</div>
+<div class="paragraph">
+<p>Además, las pruebas se han realizado en pantallas de resoluciones 1920x1080 y 1280x800. No se garantiza el correcto funcionamiento de la interfaz en resoluciones inferiores.</p>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -1379,7 +1489,7 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 <h2 id="section-design-decisions">9. Decisiones de arquitectura</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Para más decisiones arquitectónicas, véase el punto 4 de esta documentación y el siguiente enlace de la wiki: <a href="https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones">Registro de decisiones</a>.</p>
+<p>Para más decisiones arquitectónicas, véase el punto 4 de esta documentación.</p>
 </div>
 <div class="sect2">
 <h3 id="_selección_de_sistema_gestor_de_base_de_datos">9.1. Selección de sistema gestor de base de datos</h3>
@@ -1445,17 +1555,17 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 </div>
 <div class="sect2">
-<h3 id="_arquitectura_de_comunicación_con_gamey">9.3. Arquitectura de comunicación con gamey</h3>
+<h3 id="_uso_de_test_driven_design">9.3. Uso de Test Driven Design</h3>
 <div class="sect3">
 <h4 id="_contexto_3">9.3.1. Contexto</h4>
 <div class="paragraph">
-<p>Se debía decidir cómo comunicar el estado de la partida con el motor de juego (gamey).</p>
+<p>Existía la necesidad de agilizar el desarrollo de las pruebas unitarias para mantener el mínimo de cobertura de código.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_decisión_3">9.3.2. Decisión</h4>
 <div class="paragraph">
-<p>Se tomó la decisión de utilizar una arquitectura cliente servidor sin estado; de esta forma, no se envía un movimiento como tal, sino la disposición actual de las fichas en el tablero. A partir de esta información, Gamey calcula y devuelve su jugada sin depender de acciones previas en la partida.</p>
+<p>Se tomó la decisión de, en ciertos módulos como el módulo stats de users, desarrollar primero las pruebas unitarias y después implementar la funcionalidad de acorde a estas.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1466,6 +1576,36 @@ El sistema se presenta como una caja negra, mostrando únicamente sus relaciones
 </div>
 <div class="sect3">
 <h4 id="_consecuencias_3">9.3.4. Consecuencias</h4>
+<div class="paragraph">
+<p>Si bien al principio hubo un coste de adaptación, se consiguió agilizar el desarrollo de pruebas unitarias.</p>
+</div>
+<div class="paragraph">
+<p>Sin embargo, usar esta metodología para todo el código no siempre es posible, así que solo se utiliza en partes críticas del código donde existen muchos casos de prueba.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_arquitectura_de_comunicación_con_gamey">9.4. Arquitectura de comunicación con gamey</h3>
+<div class="sect3">
+<h4 id="_contexto_4">9.4.1. Contexto</h4>
+<div class="paragraph">
+<p>Se debía decidir cómo comunicar el estado de la partida con el motor de juego (gamey).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_decisión_4">9.4.2. Decisión</h4>
+<div class="paragraph">
+<p>Se tomó la decisión de utilizar una arquitectura cliente servidor sin estado; de esta forma, no se envía un movimiento como tal, sino la disposición actual de las fichas en el tablero. A partir de esta información, Gamey calcula y devuelve su jugada sin depender de acciones previas en la partida.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_estado_4">9.4.3. Estado</h4>
+<div class="paragraph">
+<p><strong>Aceptado</strong></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_consecuencias_4">9.4.4. Consecuencias</h4>
 <div class="paragraph">
 <p>No tener que gestionar el estado de la partida en gamey ayuda al desacoplamiento entre gamey y el cliente, pues gamey no necesita conocer el estado de movimientos de la partida para poder responder a las peticiones de juego.
 También facilita la programación de bots, puesto que estos no necesitan acceder al estado de movimientos previos de la partida para dar su respuesta.</p>
@@ -1485,7 +1625,7 @@ También facilita la programación de bots, puesto que estos no necesitan accede
 <h3 id="_árbol_de_calidad">10.1. Árbol de Calidad</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/arbol-calidad.png" alt="arbol calidad" width="739" height="310">
+<img src="./images/arbol-calidad.png" alt="arbol calidad" width="786" height="320">
 </div>
 </div>
 </div>
@@ -1673,7 +1813,7 @@ También facilita la programación de bots, puesto que estos no necesitan accede
 </tbody>
 </table>
 <div class="paragraph">
-<p>Exactitud</p>
+<p>Correctitud funcional</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1962,14 +2102,139 @@ Para dar servicio a un número mayor de usuarios, sería necesario escalar o rep
 </div>
 <div class="sect3">
 <h4 id="_cambios_introducidos_tras_las_pruebas">12.2.3. Cambios introducidos tras las pruebas</h4>
-<div class="exampleblock">
-<div class="content">
 <div class="paragraph">
 <p>En vista de la confusión que tuvieron los dos primeros usuarios para entender que rellenar uno de los hexágonos de las esquinas contaba como entrar en contacto con dos lados, se ha añadido una explicación de esto mismo en las instrucciones del juego.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_pruebas_de_seguridad">12.3. Pruebas de seguridad</h3>
+<div class="paragraph">
+<p>El objetivo de estas pruebas es identificar vulnerabilidades que pudieran ser explotadas por un actor malicioso, con el fin de mitigarlas antes de que representen un riesgo real para el sistema o sus usuarios.</p>
+</div>
+<div class="paragraph">
+<p>Para la evaluación y categorización de las vulnerabilidades, se emplea el estándar <a href="https://www.incibe.es/incibe-cert/blog/cvss3-0">CVSS 3.0</a>, que permite medir su gravedad de forma objetiva y estandarizada.</p>
+</div>
+<div class="paragraph">
+<p>Las pruebas se han realizado siguiendo un enfoque de caja blanca, es decir, con acceso total al código.</p>
+</div>
+<div class="paragraph">
+<p><strong>NOTA IMPORTANTE</strong>: Algunas de las vulnerabilidades descritas en este apartado siguen presentes en el entorno de producción. Al tratarse de un proyecto académico, su posible explotación no supone un impacto real; sin embargo, en un contexto profesional, la gestión de vulnerabilidades debe seguir un proceso controlado y responsable.</p>
+</div>
+<div class="sect3">
+<h4 id="_vulnerabilidades_encontradas">12.3.1. Vulnerabilidades encontradas</h4>
+<div class="paragraph">
+<p>Durante el análisis, se revisó el código en busca de vulnerabilidades comunes como inyecciones SQL, XSS y otras amenazas similares, sin encontrarse evidencias de este tipo de fallos. No obstante, se identificaron otro tipo de debilidades de seguridad, relacionadas con la disponibilidad de la web y la divulgación de información sensible.
+A continuación se detallan las dos vulnerabilidades identificadas:</p>
+</div>
+<div class="sect4">
+<h5 id="_1_denegación_de_servicio"><strong>1 - Denegación de servicio</strong></h5>
+
+</div>
+<div class="sect4">
+<h5 id="_vector_cvss">Vector CVSS</h5>
+<div class="paragraph">
+<p>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_severidad">Severidad</h5>
+<div class="paragraph">
+<p><strong>Alta</strong> (7.5): la vulnerabilidad es explotable remotamente sin necesidad de autenticación ni interacción con otro usuario. Afecta a la disponibilidad de la aplicación en gran medida pero no afecta a la confidencialidad ni a la integridad.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_descripción">Descripción</h5>
+<div class="paragraph">
+<p>Es posible saltarse los límites establecidos por la web para elegir el tamaño del tablero de juego. Si se pasa un número muy alto, la memoria del componente <strong>gamey</strong> se satura y el servicio se cae.</p>
+</div>
+<div class="paragraph">
+<p>Ejecutando este comando curl, se envía una petición al servicio de gamey indicando "99999" como tamaño de tablero.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-shell" data-lang="shell">curl -X "GET" "http://20.199.9.107:4000/v1/play?position=%7B%22size%22%3A%2099999%2C%22turn%22%3A%201%2C%22players%22%3A%5B%22B%22%2C%22R%22%5D%2C%22layout%22%3A%20%22.%22%7D&amp;bot_id=random_bot&amp;strategy=normal" -H "accept: application/json"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Como se puede ver en la siguiente imagen, al realizar la petición se colapsa el servicio y deja de responder:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/gamey_dos.png" alt="Denegación de servicio">
+</div>
+</div>
+<div class="paragraph">
+<p>Aunque se pueda navegar por la página web, como el servicio de <em>gamey</em> está caído, no es posible jugar una partida, y todas las llamadas a <em>/status</em>, que comprueban si el juego está disponible, devuelven un error:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/gamey_dos_errores.png" alt="Gamey caído">
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_remediación">Remediación</h5>
+<div class="paragraph">
+<p>Para que no se pueda producir la denegación de servicio, se debe implementar en el backend de la aplicación una comprobación de los parámetros introducidos por el usuario que establezca un límite máximo para el tamaño del tablero.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_2_enumeración_de_usuarios"><strong>2 - Enumeración de usuarios</strong></h5>
+
+</div>
+<div class="sect4">
+<h5 id="_vector_cvss_2">Vector CVSS</h5>
+<div class="paragraph">
+<p>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_severidad_2">Severidad</h5>
+<div class="paragraph">
+<p><strong>Media</strong> (5.3): la vulnerabilidad es explotable remotamente sin requerir privilegios ni interacción con otro usuario. Su impacto se limita a una filtración parcial de información (confidencialidad baja), sin afectar a integridad ni disponibilidad.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_descripción_2">Descripción</h5>
+<div class="paragraph">
+<p>La aplicación presenta una vulnerabilidad de enumeración de usuarios basada en diferencias en el tiempo de respuesta del endpoint de inicio de sesión. Midiendo el tiempo que tarda el servidor en responder ante distintas combinaciones de credenciales, un atacante puede inferir si un nombre de usuario existe en el sistema sin necesidad de autenticarse.</p>
+</div>
+<div class="paragraph">
+<p>Si el usuario no existe en el sistema, el servidor no realiza ninguna verificación de la contraseña, produciendo un tiempo de respuesta muy bajo, de unos <strong>41 ms</strong> de media.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/usuario_incorrecto.png" alt="Usuario incorrecto">
+</div>
+</div>
+<div class="paragraph">
+<p>En cambio, cuando el usuario sí existe, el servidor calcula y verifica el hash de la contraseña proporcionada, lo que aumenta el tiempo de respuesta significativamente (alrededor de <strong>360 ms</strong>):</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/usuario_correcto.png" alt="Usuario correcto">
+</div>
+</div>
+<div class="paragraph">
+<p>Por otro lado, el formulario de registro de la web también se podría considerar una enumeración de usuarios, ya que cuando se intenta registrar un usuario que ya existe, la aplicación lo dice explícitamente:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/registro_usuario_existente.png" alt="Registro de usuario que ya existe">
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_remediación_2">Remediación</h5>
+<div class="paragraph">
+<p>Para solucionar esta vulnerabilidad, se debe realizar siempre el cálculo del hash de la contraseña proporcionada. De esta forma, los tiempos de respuesta siempre serán consistentes, independientemente de si el usuario existe o no.</p>
+</div>
+<div class="paragraph">
+<p>Sobre el formulario de registro, la recomendación sería unificar los mensajes de error en un mismo error genérico, para evitar dar información de más. No obstante, eliminar los mensajes de error descriptivos puede afectar negativamente a la experiencia de usuario, por lo que debe valorarse con cuidado aplicar esta medida.</p>
+</div>
 <div style="page-break-after: always;"></div>
+</div>
 </div>
 </div>
 </div>
@@ -2003,7 +2268,7 @@ Para dar servicio a un número mayor de usuarios, sería necesario escalar o rep
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>Bot</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Entidad externa que se conecta al API de Yovi para jugar o ver el registro de partidas o usuarios</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Entidad externa que se conecta al API de Yovi para jugar o ver el registro de estadísticas o usuarios</em></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>YEN</em></p></td>
@@ -2021,6 +2286,10 @@ Para dar servicio a un número mayor de usuarios, sería necesario escalar o rep
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>webapp</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>Cliente de la aplicación web con el que interactúan los jugadores</em></p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>ORM</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Mapeo objeto relacional, técnica de gestión de datos de base de datos mediante objetos.</em></p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -2029,7 +2298,7 @@ Para dar servicio a un número mayor de usuarios, sería necesario escalar o rep
 <div id="footer">
 <div id="footer-text">
 Version 7.0 ES<br>
-Last updated 2026-04-27 19:17:22 +0200
+Last updated 2026-04-28 21:28:55 +0200
 </div>
 </div>
 </body>
