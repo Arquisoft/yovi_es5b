@@ -2,6 +2,8 @@ import { Given, When, Then } from '@cucumber/cucumber'
 import assert from 'assert'
 import { test, expect } from '@playwright/test';
 
+let usuarioCreado;
+
 // Función auxiliar para saltar la pantalla de bienvenida
 async function superarBienvenida(page) {
   await page.waitForSelector('text=Cargando sesión...', { state: 'detached', timeout: 10000 });
@@ -13,10 +15,11 @@ async function superarBienvenida(page) {
 Given('Me he registrado con nombre {string}, usuario {string} y contraseña {string} y accedo a la página de inicio de sesión', async function (nombre, nom_usuario, password) {
   const page = this.page;
   if (!page) throw new Error('Page not initialized');
+    usuarioCreado = nom_usuario + new Date().valueOf();
   await page.goto('http://localhost:5173');
   await superarBienvenida(page);
   await page.fill('#fullName', nombre);
-  await page.fill('#username', nom_usuario); 
+  await page.fill('#username', usuarioCreado); 
   await page.fill('#password', password);
   
   await page.fill('#confirmPassword', password);
@@ -34,7 +37,7 @@ Given('Me he registrado con nombre {string}, usuario {string} y contraseña {str
 When('Relleno el formulario de inicio de sesión con las credenciales correctas {string} {string} y pulso en Iniciar sesión', async function (nom_usuario, password) {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
-  await page.fill('#login-username', nom_usuario)
+  await page.fill('#login-username', usuarioCreado)
   await page.fill('#login-password', password)
   await page.click('.submit-button')
 })
