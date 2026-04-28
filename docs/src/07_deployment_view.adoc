@@ -83,6 +83,7 @@ node "Contenedor Docker MySQL" {
 node "<<device>> Navegador web"
 
 "Contenedor Docker Webapp" -- "<<device>> Navegador web" : "<<protocol>> HTTP 80"
+"Contenedor Docker Users" -- "<<device>> Navegador web" : "<<protocol>> HTTP 3000"
 actor Jugador
 actor Bot
 Jugador -- "<<device>> Navegador web"
@@ -93,6 +94,11 @@ Bot -- "Contenedor Docker Webapp" : "<<protocol>> HTTP 80"
 Motivación::
 
 La infraestructura del sistema se divide en varios servicios desplegados en sendos contenedores Docker con el objetivo de conseguir una arquitectura modular que permita que cada servicio sea fácilmente reemplazable y desplegable en otra máquina o entorno.
+
+Nótese que desde el navegador web, el usuario tiene acceso a
+
+* Webapp: puerto HTTP 80
+* API pública de la aplicación: Puerto HTTP 3000
 
 Características de Calidad/Rendimiento::
 

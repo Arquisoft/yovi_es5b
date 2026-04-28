@@ -26,7 +26,7 @@ system -[hidden]right- Bot
 Jugador --> system : Se registra y juega
 system --> Jugador : Muestra estado del juego y estadísticas
 Bot --> system : Juega mediante la API
-system --> Bot: Provee info. de partidas y jugadores
+system --> Bot: Provee info. de partidas, jugadores y API
 @enduml
 ----
 
@@ -34,7 +34,7 @@ El *sistema YOVI* proporciona al jugador información sobre el estado del juego 
 
 El actor externo principal del sistema es el *jugador*, que puede registrarse y participar en partidas.
 
-Además, existe el actor de *bot externo*, el cual se conectra con el API de la aplicación para jugar y para obtener información de personajes y partidas.
+Además, existe el actor de *bot externo*, el cual se conectra con el API de la aplicación para jugar y que también puede utilizar los *endpoints* de la API para gestionar información como usuarios o rankings.
 
 === Contexto técnico
 
@@ -63,7 +63,10 @@ Bot --> system : Peticiones HTTP/HTTPS + JSON
 
 El sistema YOVI expone una interfaz basada en servicios web accesibles mediante protocolo HTTP/HTTPS.
 
+Las llamadas que requieren autenticación serán gestionadas mediante **cookies de sesión** obtenidas en los *endpoints* públicos de inicio de sesión y registro.
+
 Los actores externos interactúan con el sistema mediante peticiones y respuestas estructuradas en formato JSON.
+
 
 
 ==== Mapeo de entrada/salida a canales
@@ -79,6 +82,6 @@ Los actores externos interactúan con el sistema mediante peticiones y respuesta
 
 | Bot
 | HTTP/HTTPS + JSON
-| Acciones automatizadas del juego
+| Llamadas a la API pública y a la API play
 | Estado del juego y resultados
 |===

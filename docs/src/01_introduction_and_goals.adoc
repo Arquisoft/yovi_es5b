@@ -3,7 +3,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-introduction-and-goals]]
 == Introducción y objetivos
 
-La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de juego y astará implementado en Rust, mientras que el cliente web principal estará desarrollado en TypeScript.
+La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de juego y estará implementado en Rust, mientras que el cliente web principal estará desarrollado en TypeScript.
 
 
 ifdef::arc42help[]
@@ -47,6 +47,7 @@ Además, se decide añadir las siguientes características opcionales:
 |Rendimiento|La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (< 0.5 segundos) para evitar que abandonen la aplicación y garantizar una experiencia fluida en el juego.
 |Mantenibilidad|El sistema debe ser fácil de mantener y extender. Esto se logra manteniendo una documentación clara y asegurando la modularidad de la aplicación.
 |Seguridad|Los datos privados de los usuarios registrados deben mantenerse seguros.
+|Correctitud funcional|El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.
 |===
 
 === Stakeholders

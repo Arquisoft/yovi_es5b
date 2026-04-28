@@ -12,7 +12,7 @@ A continuacion se presentan los distintos escenarios que describen las interacci
 
 
 === Registro de un nuevo usuario
-Al entrar por primera vez a la aplicación, el usuario se encuentra con la pantalla de registro. En esta pantalla, el usuario introduce sus datos y al hacer clic en el botón de registro, se envía una solicitud al servidor para crear una nueva cuenta. Si es valida se crea la cuenta y se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error indicando el motivo del fallo.
+Al entrar por primera vez a la aplicación, el usuario se encuentra con la pantalla de registro. En esta pantalla, el usuario introduce sus datos y al hacer clic en el botón de registro, se envía una solicitud al servidor para crear una nueva cuenta. Si es valida se crea la cuenta y se muestra un mensaje de éxito, de lo contrario se muestra un mensaje de error.
 
 [plantuml, registro_usuario, png]
 ----
