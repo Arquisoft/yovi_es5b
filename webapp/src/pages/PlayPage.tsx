@@ -45,6 +45,7 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
     <div className='lobby-container'>
       <div className='play-header'>
         <h2 className='play-title'>
+          <LanguageSelector username={user.nom_usuario} selectClassName='combobox language-combobox' />
           {gameMode === 'pvp' ? (
             <>
               <strong>{user.nom_usuario || t('play.defaultPlayer1')}</strong> {t('play.versus')} <strong>{player2Name}</strong>
@@ -57,7 +58,6 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
         </h2>
 
         <div className='auth-selector'>
-          <LanguageSelector username={user.nom_usuario} selectClassName='combobox language-combobox' />
 
           {gameMode === 'bot' && (
             <select 
