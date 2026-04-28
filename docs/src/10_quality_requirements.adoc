@@ -55,7 +55,7 @@ endif::arc42help[]
 + Yovi
 ++ Efectividad
 ++ Calidad del producto
-+++_ Exactitud
++++_ Correctitud funcional
 ++ Rendimiento
 +++_ Comportamiento temporal
 ++ Compatibilidad
@@ -142,7 +142,7 @@ Seguridad
 | Bot | Accede a información de usuarios | API de usuarios | Operación normal | Privacidad de los datos solicitados | Solo mostrar información no sensible
 |===
 
-Exactitud
+Correctitud funcional
 [cols="1,1,1,1,1,1" options="header"]
 |===
 | **Fuente** | **Estímulo** | **Artefacto** | **Entorno** | **Respuesta** | **Medida de la respuesta**

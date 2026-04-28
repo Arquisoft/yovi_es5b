@@ -47,6 +47,7 @@ Además, se decide añadir las siguientes características opcionales:
 |Rendimiento|La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (< 0.5 segundos) para evitar que abandonen la aplicación y garantizar una experiencia fluida en el juego.
 |Mantenibilidad|El sistema debe ser fácil de mantener y extender. Esto se logra manteniendo una documentación clara y asegurando la modularidad de la aplicación.
 |Seguridad|Los datos privados de los usuarios registrados deben mantenerse seguros.
+|Correctitud funcional|El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.
 |===
 
 === Stakeholders
