@@ -87,8 +87,8 @@ Bloques de construcción contenidos::
 |===
 | **Nombre** | **Responsabilidad**
 | Usuario | Interactúa con la aplicación web para registrarse en ella y jugar partidas al juego Y
-| Bot | Interactúa con el _API_ de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina
-| Aplicación web YOVI | Muestra la interfaz web al usuario y expone el API para los bots.
+| Bot | Interactúa con el _API_ pública de la aplicación para obtener información de jugadores/partidas y para jugar contra la máquina mediante el método _play_
+| Aplicación web YOVI | Muestra la interfaz web al usuario y expone el API público para los bots.
 |===
 
 ifdef::arc42help[]
@@ -172,7 +172,7 @@ Users --> BD : "Obtiene datos persistidos de jugadores"
 
 Motivación::
 
-La aplicación se divide en tres subsistemas: el motor de juego, _Gamey_, el módulo de gestión de usuarios, _Users_, y la interfaz de la aplicación web, _Webapp_. _Webapp_ se comunica con _Gamey_ y _Users_ para poder llevar a cabo sus funciones de gestionar sesiones de usuarios y juegos en curso.
+La aplicación se divide en tres servicios: el motor de juego, _Gamey_, el módulo de gestión de usuarios, _Users_, y la interfaz de la aplicación web, _Webapp_. _Webapp_ se comunica con _Gamey_ y _Users_ para poder llevar a cabo sus funciones de gestionar sesiones de usuarios y estadísticas. A su vez, _Users_ se conecta con la base de datos para obtener la información relativa a los usuarios y estadísticas.
 
 Bloques de construcción contenidos::
 [cols="1,2" options="header"]
@@ -239,7 +239,7 @@ Users --> BD
 
 Motivación::
 
-El módulo de juego _Gamey_ separa las responsabilidades de gestión de peticiones de juego, gestión de mecánicas del juego y selección de IAs contra las que jugar en submódules diferentes con el objetivo de que estos sean fácilmente configurables o reemplazables.
+El módulo de juego _Gamey_ separa las responsabilidades de gestión de peticiones de juego, gestión de mecánicas del juego y selección de IAs contra las que jugar en submódulos diferentes con el objetivo de que estos sean fácilmente configurables o reemplazables.
 
 Bloques de construcción contenidos::
 [cols="1,2" options="header"]
@@ -262,8 +262,8 @@ Bloques de construcción contenidos::
 [cols="1,2" options="header"]
 |===
 | **Nombre** | **Responsabilidad**
-| users-service | Gestiona el registro e inicio de sesión de usuarios
-| users-stats-service | Gestiona las estadísticas de juego y rankings de usuarios
+| service/users | Gestiona el registro e inicio de sesión de usuarios
+| service/stats | Gestiona las estadísticas de juego y rankings de usuarios
 |===
 
 [plantuml,"vista-bloques-3-users",png]
@@ -276,8 +276,8 @@ node "Aplicación web YOVI" as yovi {
     component "Gamey" #DarkGray
     component Webapp #DarkGray
     component Users {
-        component "users-service" as users #DarkGray
-        component "user-stats-service" as stats #DarkGray
+        component "service/users" as users #DarkGray
+        component "service/stats" as stats #DarkGray
     }
     component BD as db{
         database "Base de datos MySQL"

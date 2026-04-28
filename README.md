@@ -4,13 +4,19 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_yovi_es5b&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_yovi_es5b)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_yovi_es5b&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_yovi_es5b)
 
-[Deployment in Azure](http://20.199.9.107)
+## Enlaces útiles
 
-[OpenAPI docs](http://20.199.9.107:3000/api-docs)
+[Enlace a la aplicación](http://20.199.9.107)
 
-[Documentation](https://arquisoft.github.io/yovi_es5b/)
+[Documentación OpenAPI](http://20.199.9.107:3000/api-docs)
 
-[Decision log](https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones)
+[Documentación Arc42](https://arquisoft.github.io/yovi_es5b/)
+
+[Wiki del proyecto](https://github.com/Arquisoft/yovi_es5b/wiki)
+
+[Kanban del proyecto](https://github.com/orgs/Arquisoft/projects/221)
+
+[Registro de decisiones](https://arquisoft.github.io/yovi_es5b/#section-design-decisions)
 
 ## Colaboradores
 
@@ -21,6 +27,33 @@
 | **Guillermo** Gil Naves | UO300475 | [UO300475](https://github.com/UO300475) |
 | **Ignacio** Torre Suárez | UO245469 | [NachoTS](https://github.com/NachoTS) |
 | **Pedro** Díaz González | UO294790 | [Gedepe](https://github.com/Gedepe) |
+
+## Lanzar el proyecto en local
+
+Para lanzar el proyecto en local y acceder a la misma, [ver su entrada respectiva en la wiki](https://github.com/Arquisoft/yovi_es5b/wiki/C%C3%B3mo-lanzar-la-aplicaci%C3%B3n-en-local-(desarrollo))
+
+
+## Scripts disponibles
+
+Cada módulo posee su conjunto de scripts. A continuación se listan los scripts de cada módulo:
+
+### Webapp (`webapp/package.json`)
+
+- `npm run dev`: Starts the development server for the webapp.
+- `npm test`: Runs the unit tests.
+- `npm run test:e2e`: Runs the end-to-end tests.
+
+### Users (`users/package.json`)
+
+- `npm start`: Starts the user service.
+- `npm test`: Runs the tests for the service.
+
+### Gamey (`gamey/Cargo.toml`)
+
+- `cargo build`: Builds the gamey application.
+- `cargo test`: Runs the unit tests.
+- `cargo run`: Runs the gamey application.
+- `cargo doc`: Generates documentation for the GameY engine application
 
 ## Estructura del proyecto
 
@@ -76,60 +109,5 @@ El proyecto se divide en cuatro subdirectorios principales:
 
 `database` es el submódulo que contiene la información necesaria para arrancar la base de datos MySQL de `users`.
 
-- `Dockerfile`: Archivo que define la imagen de MySQL para gamey.
+- `Dockerfile`: Archivo que define la imagen de MySQL para la base de datos.
 
-## Ejecutar el proyecto
-
-Se puede ejecutar el proyecto en local usando Docker o sin Docker. 
-
-### Sin Docker
-
-1. **Base de datos**: sobre el directorio base: lanzar el contenedor de la base de datos con `docker-compose -f docker-compose.yml up -d database`
-2. **Módulo gamey**: sobre el directorio `gamey`: ejecutar `cargo run -- --mode server --port 4000`
-3. **Módulo users**: sobre el directorio `users`: ejecutar `npm run start`
-4. **Módulo webapp**: sobre el directorio `webapp`: ejecutar `npm run dev`
-
-Finalmente, entrar en [http://localhost:5173/](http://localhost:5173/).
-
-**NOTA**: recordar ejecutar **npm install** en `users` y `webapp` por si hay alguna dependencia nueva pendiente de instalar.
-
-### Con Docker
-
-Primero, se debe haber instalado [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/) en la máquina.
-
-1. **Construir y arrancar los contenedores:**
-    Desde el directorio raíz del proyecto, ejecutar:
-
-```bash
-docker-compose up --build
-```
-
-Esta orden construirá las imágenes para webapp, gamey, users y database y arrancará los respectivos contenedores.
-
-2.**Acceder a la aplicación:**
-- Aplicación web: [http://localhost](http://localhost)
-- API users: [http://localhost:3000](http://localhost:3000)
-- API gamey: [http://localhost:4000](http://localhost:4000)
-- Documentación OpenAPI: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
-
-## Scripts disponibles
-
-Cada módulo posee su conjunto de scripts. A continuación se listan los scripts de cada módulo:
-
-### Webapp (`webapp/package.json`)
-
-- `npm run dev`: Starts the development server for the webapp.
-- `npm test`: Runs the unit tests.
-- `npm run test:e2e`: Runs the end-to-end tests.
-
-### Users (`users/package.json`)
-
-- `npm start`: Starts the user service.
-- `npm test`: Runs the tests for the service.
-
-### Gamey (`gamey/Cargo.toml`)
-
-- `cargo build`: Builds the gamey application.
-- `cargo test`: Runs the unit tests.
-- `cargo run`: Runs the gamey application.
-- `cargo doc`: Generates documentation for the GameY engine application

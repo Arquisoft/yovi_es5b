@@ -37,7 +37,7 @@ There you will find links and examples about ADR.
 endif::arc42help[]
 [cols="1,2" options="header"]
 
-Para más decisiones arquitectónicas, véase el punto 4 de esta documentación y el siguiente enlace de la wiki: https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones[Registro de decisiones].
+Para más decisiones arquitectónicas, véase el punto 4 de esta documentación. 
 
 === Selección de sistema gestor de base de datos
 
@@ -80,6 +80,27 @@ Se tomó la decisión de utilizar un ORM para facilitar y acelerar el desarrollo
 La lógica de de interacción con la persistencia queda atada al API de **Sequelize**. Cambiar este ORM por otro puede incurrir en tiempo de desarrollo adicional.
 
 Por otra parte, se espera que el uso de este ORM acelere el desarrollo del módulo *users*.
+
+=== Uso de Test Driven Design
+
+==== Contexto
+
+Existía la necesidad de agilizar el desarrollo de las pruebas unitarias para mantener el mínimo de cobertura de código.
+
+==== Decisión
+
+Se tomó la decisión de, en ciertos módulos como el módulo stats de users, desarrollar primero las pruebas unitarias y después implementar la funcionalidad de acorde a estas.
+
+==== Estado
+
+*Aceptado*
+
+==== Consecuencias
+
+Si bien al principio hubo un coste de adaptación, se consiguió agilizar el desarrollo de pruebas unitarias.
+
+Sin embargo, usar esta metodología para todo el código no siempre es posible, así que solo se utiliza en partes críticas del código donde existen muchos casos de prueba.
+
 
 === Arquitectura de comunicación con gamey
 

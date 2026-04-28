@@ -46,7 +46,7 @@ endif::arc42help[]
 | Persona humana que se conecta a la aplicación con el objetivo de jugar al juego Y
 
 | Bot
-| Entidad externa que se conecta al API de Yovi para jugar o ver el registro de partidas o usuarios
+| Entidad externa que se conecta al API de Yovi para jugar o ver el registro de estadísticas o usuarios
 
 | YEN
 | Formato de texto utilizado para representar el estado de una partida del juego Y en Yovi
@@ -59,5 +59,8 @@ endif::arc42help[]
 
 | webapp
 | Cliente de la aplicación web con el que interactúan los jugadores 
+
+| ORM
+| Mapeo objeto relacional, técnica de gestión de datos de base de datos mediante objetos.
 
 |===

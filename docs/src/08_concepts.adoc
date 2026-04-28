@@ -97,4 +97,10 @@ Registra el historial de partidas jugadas, asociando cada partida a un usuario y
 === Decisiones de diseño relevantes
 
 * *Resultado de la partida*: se almacena como un valor booleano (true si el usuario gana y false si el usuario pierde) porque los empates no son posibles en el juego Y.
-* *Almacenamiento de contraseñas*: El campo `contraseña` debe almacenar exclusivamente el hash de la contraseña. La responsabilidad del hasheo recae en la capa de servicio, no en el modelo.
+* *Almacenamiento de contraseñas*: El campo `contrasena` debe almacenar exclusivamente el hash de la contraseña. La responsabilidad del hasheo recae en la capa de servicio, no en el modelo.
+
+=== Ámbito de las pruebas de aceptación y comportamiento general de la IU
+
+Las pruebas de aceptación se ejecutan sobre Chrome, y el resto de pruebas han sido realizadas en navegadores basados en Chromium y Firefox. Es posible que en algunos navegadores no probados, como Safari, algunas características visuales de la aplicación no se muestren correctamente.
+
+Además, las pruebas se han realizado en pantallas de resoluciones 1920x1080 y 1280x800. No se garantiza el correcto funcionamiento de la interfaz en resoluciones inferiores.

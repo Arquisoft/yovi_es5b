@@ -3,7 +3,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-introduction-and-goals]]
 == Introducción y objetivos
 
-La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de reglas y verificación está implementado en Rust, mientras que el cliente web principal está desarrollado en TypeScript.
+La empresa de desarrollo de juegos Micrati ha decidido desarrollar una plataforma web donde los usuarios puedan jugar diferentes variantes del juego Y, un juego estratégico de tablero existente. El objetivo inicial es ofrecer una experiencia entretenida e intuitiva que atraiga a nuevos usuarios y los mantenga comprometidos con el producto a largo plazo. La plataforma (YOVI) estará disponible en web, permitirá jugar contra diferentes estrategias de bots con niveles de dificultad seleccionables. El motor de juego y estará implementado en Rust, mientras que el cliente web principal estará desarrollado en TypeScript.
 
 
 ifdef::arc42help[]
@@ -26,9 +26,16 @@ Los requisitos principales del sistema son:
 
 - Ofrecer una versión clásica del juego Y en la web, donde los usuarios podran registrarse y jugar partidas contra la máquina.
 - Se podrá jugar con distintas estrategias y con varios modos de dificultad. Se necesitan al menos dos estrategias distintas; los jugadores eligirán contra qué estrategias y dificultades jugar.
-- Los usuarios podrán registrarse en el sistema. Una vez registrados, las partidas que jueguen serán almacenadas en un histórico de partidas (número de juegos realizados, ratio de victorias, etc.) que podrán ser consultado desde su cuenta.
-- La aplicación ofrecerá una API que permitirá a los bots obtener información relacionada con los usuarios del sistema usuarios y el histórico de partidas. Se deberá documentar correctamente este API.
+- Los usuarios podrán registrarse en el sistema. Una vez registrados, las partidas que jueguen serán almacenadas en un histórico de partidas (número de partidas totales, ganadas y perdidas) que podrán ser consultado desde su cuenta.
+- La aplicación ofrecerá una API que permitirá a terceros interactuar con la aplicación: gestionar usuarios, histórico y registros, para así tener la posibilidad de desarrollar su propia aplicación.
 - La aplicación ofrecerá un API que permitirá a los bots jugar contra la aplicación, utilizando un método *play* que especificará su posición del tablero en notación YEN mediante un parámetro *position*. Opcionalmente, también se especificará el ID del bot contra el que jugar mediante un parámetro *bot_id*.
+
+Además, se decide añadir las siguientes características opcionales:
+
+- Internacionalización con los idiomas español, inglés, alemás y francés.
+- Ranking de usuarios donde se puedan ver los usuarios con más partidas ganadas.
+- Sugerir movimiento al jugador, limitándolo a una sugerencia por jugador en cada partida.
+- Permitir realizar partidas jugador contra jugador locales utilizando una sola cuenta.
 
 === Objetivos de calidad
 
@@ -38,9 +45,9 @@ Los requisitos principales del sistema son:
 |Usabilidad|El sistema debe ser fácil de usar y de aprender para los usuarios finales. Esto fomentará que utilicen la aplicación nuevamente y disfruten la experiencia. Interfaces intuitivas y flujos de usuario simplificados (≤3 pasos para acciones principales).
 |Accesibilidad|El juego debería tener en cuenta la usabilidad por parte de personas con problemas de visión o audición para que estas puedan jugar sin problemas.
 |Rendimiento|La aplicación debe responder a las solicitudes de los usuarios en un tiempo razonable (< 0.5 segundos) para evitar que abandonen la aplicación y garantizar una experiencia fluida en el juego.
-|Mantenibilidad|El sistema debe ser fácil de mantener y extender. Esto se logra siguiendo buenas prácticas de programación, manteniendo excelente comunicación dentro del equipo de desarrollo y documentación clara.
+|Mantenibilidad|El sistema debe ser fácil de mantener y extender. Esto se logra manteniendo una documentación clara y asegurando la modularidad de la aplicación.
 |Seguridad|Los datos privados de los usuarios registrados deben mantenerse seguros.
-|Exactitud|El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.
+|Correctitud funcional|El motor del juego debe validar movimientos y detectar correctamente la condición de victoria según las reglas del juego Y, con precisión del 100% en casos de prueba definidos.
 |===
 
 === Stakeholders
@@ -50,6 +57,7 @@ Los requisitos principales del sistema son:
 |Role/Name|Contact|Expectations
 |Equipo de desarrollo|https://github.com/NachoTS, https://github.com/tonipdd, https://github.com/alonsobayonalejandro-ctrl, https://github.com/Gedepe, https://github.com/UO300475|Responsables de desarrollar la aplicación usando buenas técnicas, trabajar adecuadamente como equipo y lograr una solución lo más mantenible, usable y extensible posible.
 |Usuarios / Jugadores| - |Tener una buena experiencia utilizando la aplicación, donde puedan jugar al juego usando diferentes estrategias y consultar sus estadísticas.
+|Consumidores de la API| - |Poder utilizar la API de forma sencilla y sin problemas, teniendo así la capacidad de crear sus propios *frontends* del juego.
 |Micrati| - |Espera obtener una aplicación que se alinee con sus ideas y objetivos, que pueda servir como base para futuras extensiones comerciales.
 |Profesores de la asignatura ASW| - |Asumir el rol de Product Owner, definiendo requisitos de alto nivel, proporcionando retroalimentación al equipo de desarrollo y evaluando el producto desarrollado. Asegurar que se sigan buenas prácticas arquitectónicas y que el código sea mantenible y bien documentado.
 |===
