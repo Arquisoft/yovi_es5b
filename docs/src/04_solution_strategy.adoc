@@ -8,27 +8,46 @@ Basándonos en los requisitos del proyecto, se han seleccionado las siguientes t
 
 * Frontend:
 
-** React & Vite: Para construir una interfaz de usuario rápida y reactiva como Single Page Application (SPA).
+** *React con Vite*: Para construir una interfaz de usuario rápida y reactiva como Single Page Application (SPA).
 
-** TypeScript: Añade tipado estático para reducir errores en el desarrollo del frontend.
+** *TypeScript*: Añade tipado estático para reducir errores en el desarrollo del frontend.
 
 * Backend de Usuarios:
 
-** Node.js & Express: Entorno ligero y escalable para gestionar la lógica de usuarios y la API REST.
+** **Node.js & Express**: Entorno ligero y escalable para gestionar la lógica de usuarios y la API REST.
+
+** **express-session**: módulo de Express para gestionar la autenticación mediante cookies de sesión
 
 * Motor de Juego:
 
-** Rust: Elegido por su alto rendimiento y seguridad de memoria para el core del motor y la lógica de bots.
+** **Rust**: alto rendimiento y seguridad de memoria para el motor de juego y la lógica de bots.
 
-** Cargo: Sistema de gestión de paquetes y construcción para el ecosistema Rust.
 
 * Persistencia y Datos:
 
-MySQL: junto al ORM Sequelize para la gestión de la base de datos relacional, facilitando las operaciones CRUD y la integración con el backend de usuarios.
+** **MySQL**: base de datos relacional para gestionar de forma eficiente el modelo de datos de la aplicación, el cual sigue una estructura relacional.
+
+** **Sequelize**: ORM de MySQL para facilitar la interacción con el modelo relacional de la aplicación.
+
+* Orquestación:
+
+** **Docker**: se utiliza Docker para la orquestación y despliegue de los distintos contenedores que forman la aplicación.
+
+* Pruebas:
+
+** Pruebas unitarias: se utiliza la biblioteca **vitest** y las herramientas estandar de Rust de pruebas unitarias.
+
+** Pruebas de aceptación: se utilizan las bibliotecas **vitest** y **playwright**.
 
 === Decisiones de organización del equipo
 
-Para maximizar la eficiencia y la colaboración usaremos todas las herramientas disponibles, como GitHub para el control de versiones y la gestión de tareas a través de Issues y Projects, ademas de crear un kanban para organizar las tareas y el progreso del proyecto. Se asignarán roles específicos a cada miembro del equipo, como desarrolladores frontend, backend y de motor de juego, para asegurar que cada área del proyecto esté bien cubierta.
+Se utilizan las siguientes herramientas de GitHub:
 
-Tambien usaremos Discord o Teams para la comunicación en tiempo real y la coordinación de actividades diarias.
+* Sistema de issues
+* Sistema de pull requests para revisión de código
+* Proyectos y vista de kanban para gestión de issues
+* Wiki de GitHub para el registro de acta, decisiones y guías misceláneas.
 
+Las comunicaciones en tiempo real se llevarán a cabo mediante Whatsapp o Discord.
+
+Se asigna a cada miembro del equipo la responsabilidad de ser capaz de entender el comportamiento general del resto de miembros del equipo, independientemente de qué parte del código haya programado el mismo.
