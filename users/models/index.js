@@ -1,4 +1,5 @@
-import { DataTypes } from 'sequelize';
+import pkg from 'sequelize';
+const { DataTypes } = pkg;
 import sequelize from '../config/db.js';
 
 const Usuario = sequelize.define('Usuario', {

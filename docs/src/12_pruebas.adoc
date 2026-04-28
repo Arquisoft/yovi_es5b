@@ -28,11 +28,11 @@ Este escenario simula una carga baja de usuarios (concretamente 10). Se espera q
 
 Los resultados son los siguientes:
 
-image::13_carga10-results.png[Resultados Carga10]
+image::12_carga10-results.png[Resultados Carga10]
 
 Como se puede ver, no ha habido ningún error, y los tiempos de respuesta son muy cortos. En la siguiente imagen se ve como la gran mayoría de las respuestas tardan alrededor de los 35 milisegundos:
 
-image::13_carga10-response-time-distribution.png[Tiempos de respuesta de Carga10]
+image::12_carga10-response-time-distribution.png[Tiempos de respuesta de Carga10]
 
 
 ===== PicoCarga100
@@ -41,11 +41,11 @@ Este escenario simula un pico inusual de 100 usuarios en la aplicación.
 
 Los resultados de esta prueba son:
 
-image::13_picoCarga100-stats.png[Resultados PicoCarga100]
+image::12_picoCarga100-stats.png[Resultados PicoCarga100]
 
 Los resultados son buenos, ya que en ningún caso la página ha dejado de responder y todos los usuarios han tenido una buena experiencia, aunque cabe destacar que un pequeño porcentaje de las peticiones (~0,5%) tardaron alrededor de 3 segundos en recibir respuesta:
 
-image::13_picoCarga100-response-time-distribution.png[Tiempos de respuesta de PicoCarga100]
+image::12_picoCarga100-response-time-distribution.png[Tiempos de respuesta de PicoCarga100]
 
 
 ===== Carga1000
@@ -54,17 +54,17 @@ En este caso se simula una carga muy alta de usuarios (1000 en total) que van en
 
 Los resultados de esta prueba son:
 
-image::13_carga1000-stats.png[Resultados Carga1000]
+image::12_carga1000-stats.png[Resultados Carga1000]
 
 
 Como era de esperar, la aplicación no soporta un número tan alto de usuarios concurrentes. Los primeros fallos comienzan a ocurrir cuando se sobrepasan los 500 usuarios.
 
-image::13_carga1000-responses-per-second.png[Respuestas por segundo de Carga1000]
+image::12_carga1000-responses-per-second.png[Respuestas por segundo de Carga1000]
 
 
 A continuación se muestran los errores ocurridos:
 
-image::13_carga1000-errors.png[Errores Carga1000]
+image::12_carga1000-errors.png[Errores Carga1000]
 
 
 Alrededor del 48% de los errores corresponde a timeouts al hacer peticiones al puerto 3000, donde se encuentra alojado el servicio de **users**. Esto demuestra que muchos usuarios no podrían registrarse en la aplicación.
@@ -78,15 +78,15 @@ El 8% restante corresponde a errores de autenticación (código 403). Esto puede
 
 Para afinar los resultados anteriores, se comprueba si la aplicación soportaría esos 500 usuarios a la vez.
 
-image::13_picoCarga500-stats.png[Resultados PicoCarga500]
+image::12_picoCarga500-stats.png[Resultados PicoCarga500]
 
 En este escenario se obtienen más errores de los esperados. Como se puede ver en la siguiente captura, la mayoría de los errores se debe a "connection time outs", ya que la aplicación se satura cuando los 500 usuarios tratan de jugar simultáneamente.
 
-image::13_picoCarga500-errors.png[Errores de PicoCarga500]
+image::12_picoCarga500-errors.png[Errores de PicoCarga500]
 
 Analizando los resultados con más detalle, se observa cómo durante el primer minuto de las pruebas, en las que los usuarios se están registrando y accediendo a la partida, no hay errores. Las respuestas fallidas comienzan a aparecer cuando los usuarios tratan de jugar sus partidas, por lo que parece que el cuello de botella de la aplicación es el servicio de *gamey*.
 
-image::13_picoCarga500-responses-per-second.png[Respuestas por segundo de PicoCarga500]
+image::12_picoCarga500-responses-per-second.png[Respuestas por segundo de PicoCarga500]
 
 ==== Conclusiones
 
@@ -95,7 +95,94 @@ El límite de la infraestructura actual se sitúa en torno a los 500 usuarios co
 No obstante, si los 500 jugadores llevaran a cabo las mismas acciones al mismo tiempo, se ha podido observar que el servicio de gamey no soporta una carga tan elevada, siendo este el principal cuello de botella de la aplicación.
 Para dar servicio a un número mayor de usuarios, sería necesario escalar o replicar estos dos servicios, especialmente el de *gamey*.
 
-<<<
+
+
+=== Monitorización y Observabilidad del servicio de users
+
+A continuación se detalla la infraestructura de monitorización desplegada para el servicio de users, basada en el estándar de las 4 Señales de Oro (Latencia, Tráfico, Errores y Saturación).
+
+image::12_grafos_monitorizacion.png[Gráficas de monitorización del servicio de users]
+
+
+==== Metodología
+
+Para transformar el microservicio en un **sistema observable**, se ha instrumentado el código Node.js utilizando **express-prom-bundle** (middleware para captura automática de métricas HTTP) y **prom-client**(biblioteca base para gestionar métricas en Node.js). Los datos son recolectados por un servidor de **Prometheus** cada 15 segundos y visualizados en un dashboard de **Grafana**.
+
+Este enfoque permite identificar de forma preventiva cuellos de botella técnicos antes de que se conviertan en fallos de servicio.
+
+
+==== Análisis Detallado por Panel
+
+===== 1. Concurrencia (Active Handles)
+Este panel monitoriza la carga interna del Event Loop de Node.js, representando el número de recursos que el servidor mantiene abiertos en un instante dado.
+
+image::12_grafo_concurrencia_active_handlers.png[Gráfico de concurrencia (Active Handles)]
+
+* **Métrica**: $$sum(nodejs\_active\_handles)$$
+* **Descripción**: Muestra la cantidad de tareas simultáneas como conexiones TCP, consultas a base de datos o temporizadores activos.
+* **Análisis Crítico**: El sistema presenta una línea base constante de **4 handles**, correspondientes a los listeners del servidor y el pool de conexiones de Sequelize. Los picos de hasta **7 handles** durante las pruebas coinciden con ráfagas de usuarios, confirmando que el servidor procesa y libera correctamente las conexiones sin dejar tareas "zombis".
+
+===== 2. Uso de Memoria RAM (Heap)
+Monitoriza el consumo de memoria física (Resident Set Size) del contenedor de Node.js.
+
+image::12_grafo_uso_memoria_ram.png[Gráfico de uso de memoria RAM (Heap)]
+
+* **Métrica**: `process_resident_memory_bytes`
+* **Descripción**: Evalúa la huella de memoria del servicio en tiempo real para detectar fugas de recursos.
+* **Análisis Crítico**: El servicio se estabiliza en **~125 MB** tras el periodo de calentamiento inicial. La estabilidad de esta línea bajo carga es la prueba técnica de que no existen fugas de memoria (memory leaks) en la lógica de gestión de usuarios y sesiones.
+
+===== 3. Uso de CPU
+Representa el porcentaje de capacidad del procesador utilizado por el microservicio.
+
+image::12_grafo_uso_cpu.png[Gráfico de uso de CPU]
+
+* **Métrica**: $$rate(process\_cpu\_seconds\_total[5m]) * 100$$
+* **Descripción**: Indica el esfuerzo computacional necesario para procesar las peticiones entrantes.
+* **Análisis Crítico**: Se observa un incremento desde el **0.2% hasta el 1.1%** durante las pruebas de carga. Este aumento relativo del 500% está directamente correlacionado con los procesos de `/login` y `/register`, validando que el coste computacional del cifrado impacta en la CPU pero se mantiene dentro de márgenes de seguridad óptimos.
+
+===== 4. Latencia P95 por Endpoint
+Mide el tiempo de respuesta real para el 95% de las peticiones, filtrando los valores atípicos que podrían falsear un promedio simple.
+
+image::12_grafo_latencia_p95.png[Gráfico de latencia P95 por endpoint]
+
+* **Métrica**: $$histogram\_quantile(0.95, sum(rate(http\_request\_duration\_seconds\_bucket[5m]))\ by\ (le, path))$$
+* **Descripción**: Indicador clave de la experiencia de usuario final en el acceso a los servicios.
+* **Análisis Crítico**: El panel revela un contraste absoluto entre rutas: mientras `/ranking` o `/stats` son casi instantáneas, `/login` y `/register` presentan una latencia de **~1.44 segundos**. Esta diferencia es la evidencia técnica de que el rendimiento está limitado por la seguridad criptográfica de las contraseñas y no por deficiencias en la infraestructura de red o base de datos.
+
+===== 5. Errores del Servidor (5xx)
+Panel de seguridad crítica que detecta excepciones no controladas o fallos de infraestructura.
+
+image::12_grafo_errores_servidor_5xx.png[Gráfico de errores 5xx]
+
+* **Métrica**: `sum(rate(http_request_duration_seconds_count{status_code=~"5.."}[1m])) by (path)`
+* **Descripción**: Conteo de fallos internos del servidor (errores 500, 502 o 503).
+* **Análisis Crítico**: El estado actual de **"No data"** durante todas las pruebas de concurrencia confirma la robustez del servicio. Indica que no se han producido caídas de la base de datos MySQL ni errores fatales en el código bajo presión de tráfico.
+
+===== 6. Accesos por Endpoint
+Mide el volumen de tráfico entrante distribuido por cada ruta del API para identificar tendencias de uso.
+
+image::12_grafo_accesos_por_endpoint.png[Gráfico de accesos por endpoint]
+
+* **Métrica**: `sum(rate(http_request_duration_seconds_count[1m])) by (path)`
+* **Descripción**: Representa la "velocidad" de entrada de usuarios expresada en req/s (peticiones por segundo).
+* **Análisis Crítico**: Se registran picos controlados de **0.08 a 0.1 req/s**. Debido al intervalo de muestreo de 15 segundos de Prometheus, se observa cómo peticiones automáticas y manuales aparecen agrupadas cronológicamente, permitiendo mapear el flujo de navegación real del usuario.
+
+===== 7. Estado de Peticiones HTTP
+Desglosa el éxito o fracaso de las peticiones mediante el código de estado HTTP y el método empleado.
+
+image::12_grafo_estado_peticiones_http.png[Gráfico de estado de peticiones HTTP]
+
+* **Métrica**: `sum(rate(http_request_duration_seconds_count[1m])) by (method, status_code)`
+* **Descripción**: Clasifica el tráfico en éxitos (2xx), errores de cliente (4xx) o respuestas de caché (3xx).
+* **Análisis Crítico**: El panel muestra una convivencia de respuestas **200 OK** y **304 Not Modified**, lo que indica una correcta optimización de la caché del navegador. También permite identificar errores **404** o **403** para monitorizar intentos de acceso no autorizados o rutas mal configuradas.
+
+
+==== Conclusiones
+
+La infraestructura de monitorización confirma que el servicio de users es resiliente y estable bajo carga moderada. La principal conclusión técnica es la identificación del cuello de botella criptográfico en la autenticación, el cual representa el 90% del tiempo de respuesta del servicio.
+
+Cualquier incremento futuro en la latencia de otros endpoints (como /ranking) sería un indicador directo de saturación en la base de datos MySQL o en la red, ya que actualmente su tiempo de respuesta es despreciable en comparación con el proceso de login.
+
 === Pruebas de Usabilidad
 
 ==== Condiciones de realización de las pruebas
