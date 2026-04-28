@@ -15,12 +15,15 @@ async function superarBienvenida(page) {
   await botonComenzar.click({ force: true });
 }
 
+let usuarioCreado;
+
 // Helper reutilizable: registra un usuario y deja la sesión iniciada en el lobby
 async function registrarYAccederAlLobby(page, nombre, nom_usuario, password) {
   await page.goto('http://localhost:5173')
   await superarBienvenida(page);
+  usuarioCreado = nom_usuario + new Date().valueOf();
   await page.fill('#fullName', nombre)
-  await page.fill('#username', nom_usuario)
+  await page.fill('#username', usuarioCreado)
   await page.fill('#password', password)
   await page.fill('#confirmPassword', password);
   await page.click('.submit-button');  
@@ -32,7 +35,7 @@ async function loginYAccederAlLobby(page, nom_usuario, password) {
   await superarBienvenida(page);
   await page.click('.login-page-button')
   await page.waitForSelector('#login-username', { state: 'visible' });
-  await page.fill('#login-username', nom_usuario)
+  await page.fill('#login-username', usuarioCreado)
   await page.fill('#login-password', password)
   await page.click('.submit-button');
   await page.waitForSelector('.btn-logout', { timeout: 10000 });
