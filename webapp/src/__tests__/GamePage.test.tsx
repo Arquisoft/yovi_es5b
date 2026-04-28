@@ -116,4 +116,88 @@ describe('GamePage', () => {
     screen.getByRole('option', { name: /Tablero mediano/i }).click();
     expect(screen.getByText('Tablero grande')).toBeTruthy()
   })
+
+  it('debería mostrar el slider cuando se selecciona "Personalizado"', async () => {
+    const { container } = render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    // Obtén los 3 selects: game mode, bot, board size (en ese orden)
+    const allSelects = container.querySelectorAll('.register-form select')
+    const boardSizeSelect = allSelects[2] as HTMLSelectElement
+    expect(boardSizeSelect).toBeTruthy()
+
+    // Selecciona "Personalizado"
+    fireEvent.change(boardSizeSelect, { target: { value: 'custom' } })
+
+    // Verifica que el slider aparece
+    await waitFor(() => {
+      const slider = container.querySelector('#board-size-slider') as HTMLInputElement
+      expect(slider).toBeTruthy()
+    })
+  })
+
+  it('debería permitir cambiar el tamaño del tablero con el slider entre 3 y 25', async () => {
+    const { container } = render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    // Obtén el tercer select (board size)
+    const allSelects = container.querySelectorAll('.register-form select')
+    const boardSizeSelect = allSelects[2] as HTMLSelectElement
+    fireEvent.change(boardSizeSelect, { target: { value: 'custom' } })
+
+    // Espera a que aparezca el slider
+    await waitFor(() => {
+      const slider = container.querySelector('#board-size-slider') as HTMLInputElement
+      expect(slider).toBeTruthy()
+    })
+
+    const slider = container.querySelector('#board-size-slider') as HTMLInputElement
+    if (!slider) throw new Error('Slider not found')
+
+    // Cambia el valor del slider a 15
+    fireEvent.change(slider, { target: { value: '15' } })
+
+    // Verifica que la etiqueta se actualiza
+    await waitFor(() => {
+      expect(screen.getByText(/Tamaño del tablero: 15/i)).toBeTruthy()
+    })
+  })
+
+  it('debería respetar los límites mínimo (3) y máximo (25) del slider', async () => {
+    const { container } = render(
+      <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe" }}/>
+    )
+
+    // Obtén el tercer select (board size)
+    const allSelects = container.querySelectorAll('.register-form select')
+    const boardSizeSelect = allSelects[2] as HTMLSelectElement
+    fireEvent.change(boardSizeSelect, { target: { value: 'custom' } })
+
+    await waitFor(() => {
+      const slider = container.querySelector('#board-size-slider') as HTMLInputElement
+      expect(slider).toBeTruthy()
+    })
+
+    const slider = container.querySelector('#board-size-slider') as HTMLInputElement
+    if (!slider) throw new Error('Slider not found')
+
+    // Verifica que el atributo min es 3
+    expect(slider.getAttribute('min')).toBe('3')
+    // Verifica que el atributo max es 25
+    expect(slider.getAttribute('max')).toBe('25')
+
+    // Prueba con valor mínimo
+    fireEvent.change(slider, { target: { value: '3' } })
+    await waitFor(() => {
+      expect(screen.getByText(/Tamaño del tablero: 3/i)).toBeTruthy()
+    })
+
+    // Prueba con valor máximo
+    fireEvent.change(slider, { target: { value: '25' } })
+    await waitFor(() => {
+      expect(screen.getByText(/Tamaño del tablero: 25/i)).toBeTruthy()
+    })
+  })
 })
