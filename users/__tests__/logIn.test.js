@@ -54,7 +54,9 @@ describe('Pruebas de Inicio de Sesión', () => {
 
         // Comprobamos que el validador detiene el proceso (400)
         expect(res.status).toBe(400)
-        expect(res.body.nom_usuario).toBe("El nick debe tener entre 4 y 30 caracteres.")
+        expect(res.body.error_code).toBe("VALIDATION_ERROR")
+        expect(res.body.errors.nom_usuario.code).toBe("USERNAME_INVALID_LENGTH")
+        expect(res.body.errors.nom_usuario.message).toBe("El nick debe tener entre 4 y 30 caracteres.")
     })
 
     it('debería fallar si la contraseña es demasiado corta', async () => {
@@ -64,7 +66,9 @@ describe('Pruebas de Inicio de Sesión', () => {
 
         // Comprobamos que el validador detiene el proceso (400)
         expect(res.status).toBe(400)
-        expect(res.body.contrasena).toBe("La contraseña debe tener al menos 8 caracteres.")
+        expect(res.body.error_code).toBe("VALIDATION_ERROR")
+        expect(res.body.errors.contrasena.code).toBe("PASSWORD_TOO_SHORT")
+        expect(res.body.errors.contrasena.message).toBe("La contraseña debe tener al menos 8 caracteres.")
     })
 
     it('debería fallar si el usuario no existe en el sistema', async () => {
@@ -76,6 +80,7 @@ describe('Pruebas de Inicio de Sesión', () => {
             .send({ nom_usuario: "nadie", contrasena: "password123" })
 
         expect(res.status).toBe(400)
+        expect(res.body.error_code).toBe("AUTH_INVALID_CREDENTIALS")
         expect(res.body.error).toBe("Error al iniciar sesión. Credenciales no válidas.")
     })
 
@@ -92,6 +97,7 @@ describe('Pruebas de Inicio de Sesión', () => {
 
         //Salta error (400)
         expect(res.status).toBe(400)
+        expect(res.body.error_code).toBe("AUTH_INVALID_CREDENTIALS")
         expect(res.body.error).toBe("Error al iniciar sesión. Credenciales no válidas.")
     })
 })

@@ -11,11 +11,14 @@ Given('Acceso a la página de registro', async function () {
 When('Relleno el formulario nombre de usuario como {string}, nombre {string}, contraseña {string} y pulso en Registrar', async function (nombre, nom_usuario, password) {
   const page = this.page
   if (!page) throw new Error('Page not initialized')
+
+  const nom_usuario_test = nom_usuario + new Date().valueOf();
+
   const botonComenzar = page.locator('.btn-enter');
   await botonComenzar.waitFor({ state: 'visible' });
   await botonComenzar.click({ force: true });
   await page.fill('#fullName', nombre)
-  await page.fill('#username', nom_usuario)
+  await page.fill('#username', nom_usuario_test)
   await page.fill('#password', password)
   await page.fill('#confirmPassword', password)
   await page.click('button:has-text("Aceptar Registro")');
@@ -27,7 +30,7 @@ Then('Debería haber creado mi cuenta de {string} y tener acceso a la pantalla d
 
   // Buscar que el nombre de usuario aparece en el texto de bienvenida
   const lobby = page.locator('.lobby-main');
-  await expect(lobby).toHaveText(new RegExp(`Bienvenido,.*${nombre}`));
+  await expect(lobby).toHaveText(new RegExp(`Bienvenido,.*${nombre}.*`));
   // Buscar que el botón de jugar está presente
   const botonRegistrar = page.locator(".btn-play");
   await expect(botonRegistrar).toHaveText("JUGAR");

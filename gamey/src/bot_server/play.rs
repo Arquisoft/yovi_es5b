@@ -53,10 +53,11 @@ pub async fn play(
         Ok(yen) => Ok(yen),
         Err(err) => 
             Err(ErrorResponse::error(
-                &format!("Invalid YEN format: {}", err),
+                "INVALID_YEN_FORMAT",
+                "Invalid game position format.",
                 Some(path.api_version.to_owned()),
                 Some(params.bot_id.to_owned().unwrap_or(String::from("random_bot")))
-            ))
+            ).with_details(format!("Invalid YEN format: {}", err)))
         
     }?;
 

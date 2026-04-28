@@ -1,4 +1,5 @@
 import { Partida, Usuario, sequelize } from '../models/index.js'
+import { Op } from 'sequelize';
 
 /**
  * Obtiene el número total de partidas jugadas por un usuario.
@@ -108,6 +109,11 @@ const obtenerRanking = async () => {
                 as: 'Partidas',
                 attributes: []
             }],
+            where: {
+                nom_usuario: {
+                    [Op.notLike]: '_usuario_test_%',
+                }
+            },
             group: ['Usuario.id_usuario'], // Hace GROUPBY id_usuario
             order: [[sequelize.literal('ganadas'), 'DESC']], // Hace ORDERBY por partidas ganadas, de más a menos
             raw: true // Quita metadatos innecesarios de Sequelize

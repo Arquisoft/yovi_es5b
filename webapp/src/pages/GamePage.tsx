@@ -3,13 +3,16 @@ import type { User } from '../types/user';
 import PlayPage from './PlayPage';
 import '../css/Estilo.css';
 import Estadisticas from './Estadisticas.tsx';
+import LanguageSelector from '../components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 interface GamePageProps {
   user: User;
 }
 
 const GamePage: React.FC<GamePageProps> = ({ user }) => {
-
+  const { t } = useTranslation();
+  
   // Estado para la salud del microservicio de juego (Puerto 4000)
   const [gameyStatus, setGameyStatus] = useState<'checking' | 'ok' | 'error'>('checking');
   // Controlan qué vista mostrar (Partida, Estadísticas o Menú)
@@ -59,7 +62,7 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
   // Eliminar cookie de sesión
   const handleLogout = () => {
     document.cookie = "JSESSIONID="
-    window.location.href = '/';
+    globalThis.location.href = '/';
   };
 
   // Renderizado condicional: Prioridad 1 - La pantalla de juego
@@ -79,94 +82,87 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
       <header className="lobby-container">
         {/* Badge dinámico que cambia de color según el estado del servidor */}
         <div className={`status-badge ${gameyStatus}`}>
-           {gameyStatus === 'ok' ? 'Conectado' : 'Desconectado'}
+            {gameyStatus === 'ok' ? t('lobby.connected') : t('lobby.disconnected')}
         </div>
 
         {/* Agrupamos botones con tu clase auth-selector para el layout */}
         <div className="auth-selector">
+          <LanguageSelector username={user.nom_usuario} selectClassName="combobox language-combobox" />
           <button onClick={() => setViewStats(true)} className="selector-button">
-            Estadísticas
+            {t('lobby.stats')}
           </button>
           <button onClick={handleLogout} className="btn-logout">
-            Salir
+            {t('lobby.logout')}
           </button>
         </div>
       </header>
 
       <main className="lobby-main">
-        <h1>Juego Y</h1>
-        <p>Bienvenido, <strong>{user.nombre}</strong></p>
+        <h1>{t('lobby.title')}</h1>
+        <p>{t('lobby.welcomeUser', { name: user.nombre })}</p>
 
-        {/* Usamos tu contenedor de formulario para agrupar los selectores */}
         <div className="register-form">
-          
-          {/* Selector de modo de juego (Bot vs PvP) */}
-          <select 
-            value={gameMode} 
-            onChange={(e) => setGameMode(e.target.value as 'bot' | 'pvp')} 
+          <select
+            value={gameMode}
+            onChange={(e) => setGameMode(e.target.value as 'bot' | 'pvp')}
             className="combobox"
           >
-            <option value="bot">Jugador vs Bot</option>
-            <option value="pvp">Jugador vs Jugador</option>
+            <option value="bot">{t('lobby.modeBot')}</option>
+            <option value="pvp">{t('lobby.modePvp')}</option>
           </select>
 
-          {/* Nombre J2: solo visible en PvP. Usamos tu clase combobox para el input de texto */}
           {gameMode === 'pvp' && (
             <input
               type="text"
-              placeholder="Nombre del Jugador 2 (opcional)"
+              placeholder={t('lobby.player2Placeholder')}
               value={player2Name}
               onChange={(e) => setPlayer2Name(e.target.value)}
               className="combobox combobox--player-name"
             />
           )}
 
-          {/* Dificultad: solo visible en modo Bot */}
           {gameMode === 'bot' && (
-            <select 
-              value={botId} 
-              onChange={(e) => setBotId(e.target.value)} 
+            <select
+              value={botId}
+              onChange={(e) => setBotId(e.target.value)}
               className="combobox"
             >
-              <option value="random_bot">Bot Aleatorio (Fácil)</option>
-              <option value="mirrorbot">Bot Espejo (Fácil)</option>
-              <option value="lapabot">Bot Lapa (Medio)</option>
-              <option value="mediumbot">Bot Medio (Medio)</option>
-              <option value="bridgebot_lax">Bot Puente continuo (Difícil)</option>
-              <option value="bridgebot">Bot Puente (Difícil)</option>
+              <option value="random_bot">{t('lobby.botRandom')}</option>
+              <option value="mirrorbot">{t('lobby.botMirror')}</option>
+              <option value="lapabot">{t('lobby.botLapa')}</option>
+              <option value="mediumbot">{t('lobby.botMedium')}</option>
+              <option value="bridgebot_lax">{t('lobby.botBridgeLax')}</option>
+              <option value="bridgebot">{t('lobby.botBridge')}</option>
             </select>
           )}
 
-          {/* Tamaño del tablero común para ambos modos */}
-          <select 
-            value={size} 
-            onChange={(e) => setSize(e.target.value)} 
+          <select
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
             className="combobox"
           >
-            <option value="5">Tablero pequeño</option>
-            <option value="10">Tablero mediano</option>
-            <option value="15">Tablero grande</option>
+            <option value="5">{t('lobby.boardSmall')}</option>
+            <option value="10">{t('lobby.boardMedium')}</option>
+            <option value="15">{t('lobby.boardLarge')}</option>
           </select>
 
-          {/* Botón de jugar con tu clase animada y lógica de bloqueo */}
           <button
             onClick={handleStartGame}
             className="btn-play"
             disabled={gameyStatus !== 'ok'}
           >
-            {gameyStatus === 'ok' ? 'JUGAR' : 'SIN CONEXIÓN'}
+            {gameyStatus === 'ok' ? t('lobby.play') : t('lobby.withoutConexion')}
           </button>
         </div>
 
         <div className="info-section">
           <p>
-            <strong>Board:</strong> Selecciona el tamaño del tablero mediante el número de hexágonos por lado.
+            <strong>{t('lobby.boardHelpLabel')}</strong> {t('lobby.boardHelpText')}
           </p>
           <p>
-            <strong>Modo:</strong> Elige entre enfrentarte a nuestra IA o jugar localmente contra un amigo.
+            <strong>{t('lobby.botHelpLabel')}</strong> {t('lobby.botHelpText')}
           </p>
         </div>
-
       </main>
     </div>
   );

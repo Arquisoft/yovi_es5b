@@ -4,6 +4,12 @@ import RegisterForm from '../components/forms/RegisterForm'
 import { afterEach, describe, expect, test, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 
+const waitForRegisterFormToSettle = async () => {
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: /aceptar registro/i })).not.toBeDisabled()
+  })
+}
+
 describe('RegisterForm - Pruebas para secuencia de registro', () => {
   const mockOnSuccess = vi.fn()
 
@@ -22,6 +28,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       const user = userEvent.setup()
 
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -36,6 +43,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!') // Usamos ^ y $ para que busque el texto exacto y no se confunda con "Repetir Contraseña"
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -50,6 +58,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!') // Usamos ^ y $ para que busque el texto exacto y no se confunda con "Repetir Contraseña"
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -64,6 +73,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/nombre completo/i), 'Pepe Viyuela')
       await user.type(screen.getByLabelText(/nombre de usuario/i), 'chema1')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -79,6 +89,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/nombre de usuario/i), '  ')
       await user.type(screen.getByLabelText(/^contraseña:$/i), ' ')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/por favor, rellena todos los campos\./i)).toBeTruthy()
@@ -103,6 +114,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
       await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/register', {
@@ -135,6 +147,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
       await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/el usuario ya existe/i)).toBeTruthy()
@@ -157,6 +170,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/^contraseña:$/i), '1234')
       await user.type(screen.getByLabelText(/repetir contraseña/i), '1234')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/la contraseña debe tener al menos 8 caracteres/i)).toBeTruthy()
@@ -176,6 +190,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
       await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(screen.getByText(/no se pudo conectar con el servidor de usuarios\./i)).toBeTruthy()
@@ -200,6 +215,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
       await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
@@ -227,6 +243,7 @@ describe('RegisterForm - Pruebas para secuencia de registro', () => {
       await user.type(screen.getByLabelText(/^contraseña:$/i), 'Contraseña123!')
       await user.type(screen.getByLabelText(/repetir contraseña/i), 'Contraseña123!')
       await user.click(screen.getByRole('button', { name: /aceptar registro/i }))
+      await waitForRegisterFormToSettle()
 
       await waitFor(() => {
         const callArgs = mockFetch.mock.calls[0]

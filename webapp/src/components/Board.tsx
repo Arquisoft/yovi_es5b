@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Hexagon } from './Hexagon';
+import { useTranslation } from 'react-i18next';
+import { translateApiError, type ApiErrorPayload } from '../utils/i18n/errorTranslator';
 
 type BoardProps = {
     botId: string;
@@ -34,13 +36,14 @@ type MoveResponse = { // respuesta del endpoint /v1/ybot/choose/{bot_id} de Game
     status: GameStatus;   // estado de la partida tras evaluar el tablero
 };
 
+
 type StatusResponse = { // respuesta del endpoint /v1/ybot/status de Gamey
     api_version: string;
     status: GameStatus;   // estado de la partida tras evaluar el tablero
 };
 
 export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: BoardProps) => {
-
+  const { t } = useTranslation();
   // Calcula el tamaño del hexágono para que el tablero quepa en el SVG
   const SVG_W = 600;
   const SVG_H = 560;
@@ -107,16 +110,14 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
     return { size: boardSize, turn, players: ["B", "R"], layout: filas.join("/") };
   };
 
-  // Envía el tablero a Gamey y coloca el movimiento devuelto por el bot.
-  // Si el humano ya ganó antes de que el bot mueva, no coloca ficha del bot.
   const askBotForMove = async (currentBoard: Record<string, CellState>) => {
     setIsBotThinking(true);
     try {
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-      const yenPayload = generarYEN(currentBoard); // turn=1 por defecto: le toca al bot como player 1
-      const botEndpoint = botId
+      const yenPayload = generarYEN(currentBoard);
+      const botEndpoint = botId;
 
-      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/${botEndpoint}`, {
+      const res = await fetch(GAMEY_URL + '/v1/ybot/choose/' + botEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(yenPayload)
@@ -125,37 +126,45 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
       if (res.ok) {
         const data: MoveResponse = await res.json();
 
-        const humanWon = data.status.Finished?.winner === 0; // el humano ganó con su último movimiento
-        if (!humanWon && data.coords && data.coords.x !== undefined) {
-          const botMoveId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
+        const humanWon = data.status.Finished?.winner === 0;
+        if (!humanWon && data.coords?.x !== undefined) {
+          const botMoveId = String(data.coords.x) + '-' + String(data.coords.y) + '-' + String(data.coords.z);
           setBoardState({ ...currentBoard, [botMoveId]: 'bot' as CellState });
         } else if (!humanWon) {
-          console.warn("El bot devolvió una respuesta válida pero sin coordenadas.");
+          console.warn(t('board.logs.botMissingCoords'));
         }
+
         handleWinner(data.status);
       } else {
-        const errorText = await res.text();
-        console.error(`Error del servidor (${res.status}):`, errorText);
-        alert(`Error en el servidor al pedir movimiento al bot: ${botEndpoint}. Revisa la consola.`);
+        let fallbackText = t('errors.generic');
+        try {
+          const payload = await res.json();
+          fallbackText = translateApiError(payload as ApiErrorPayload, t);
+        } catch {
+          const errorText = await res.text();
+          fallbackText = errorText || fallbackText;
+        }
+
+        console.error(t('board.logs.serverError', { status: res.status }), fallbackText);
+        alert(t('board.requestBotError', { bot: botEndpoint }));
       }
     } catch (error) {
-      console.error("Error al contactar con el bot:", error);
+      console.error(t('board.logs.requestBotFailed'), error);
     } finally {
       setIsBotThinking(false);
     }
   };
 
-  // Comprueba si alguien ganó en PvP consultando al endpoint de estado de Gamey.
-  // No invoca ningún bot: solo evalúa el tablero tal como está.
+  // Comprueba si alguien gano en PvP consultando al endpoint de estado de Gamey.
+  // No invoca ningun bot: solo evalua el tablero tal como esta.
   const checkWinViaPvP = async (board: Record<string, CellState>, currentTurn: 'human' | 'bot') => {
     setIsBotThinking(true);
     try {
-      // Construir el YEN con el turno del jugador que acaba de mover (0 = J1/human, 1 = J2/bot)
       const turnIdx = currentTurn === 'human' ? 0 : 1;
       const yenPayload = generarYEN(board, turnIdx);
 
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-      const res = await fetch(`${GAMEY_URL}/v1/ybot/status`, {
+      const res = await fetch(GAMEY_URL + '/v1/ybot/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(yenPayload)
@@ -164,47 +173,39 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
       if (res.ok) {
         const data: StatusResponse = await res.json();
 
-        if (data.status.Finished !== undefined) {
-          // winner 0 = J1 (human, azul) | winner 1 = J2 (bot, rojo)
+        if (data.status.Finished === undefined) {
+          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human');
+        } else {
           const playerWon: CellState = data.status.Finished.winner === 0 ? 'human' : 'bot';
           setWinner(playerWon);
           salvarPartidaEnBD(playerWon === 'human', player2Name);
-        } else {
-          setPvpTurn(currentTurn === 'human' ? 'bot' : 'human'); // nadie ganó: alterna el turno
         }
       } else {
         const errorText = await res.text();
-        console.error(`Error al verificar el estado PvP (${res.status}):`, errorText);
+        console.error(t('board.logs.serverError', { status: res.status }), errorText);
       }
     } catch (error) {
-      console.error("Error al contactar con Gamey para verificar victoria PvP:", error);
+      console.error(t('board.logs.requestBotFailed'), error);
     } finally {
       setIsBotThinking(false);
     }
   };
 
-  // Pide al bridgebot (bot más fuerte) una sugerencia de movimiento para el jugador de turno.
-  // Usa el mismo endpoint /choose que los bots: construye un YEN con el turno del jugador humano
-  // actual y el bridgebot nos devuelve la coordenada que jugaría él mismo en esa posición.
-  // No modifica el tablero: solo guarda la casilla en suggestedCell para resaltarla visualmente.
+  // Pide sugerencia a bridgebot para el jugador de turno sin modificar el tablero.
   const askSuggestion = async () => {
-    // Evita solicitudes si la partida terminó, hay una petición en curso o se está esperando al bot
     if (winner || isFetchingSuggestion || isBotThinking) return;
 
-    // Determina de quién es el turno actual (el que recibirá la sugerencia)
     const currentTurn: 'human' | 'bot' = gameMode === 'pvp' ? pvpTurn : 'human';
-
-    // Comprueba que ese jugador aún no haya usado su sugerencia en esta partida
     const alreadyUsed = currentTurn === 'human' ? humanSuggestionUsed : pvpBotSuggestionUsed;
     if (alreadyUsed) return;
 
     setIsFetchingSuggestion(true);
     try {
-      // turn=0 → J1/azul/human pide consejo  |  turn=1 → J2/rojo pide consejo (solo en PvP)
       const turnIdx = currentTurn === 'human' ? 0 : 1;
       const yenPayload = generarYEN(boardState, turnIdx);
       const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
-      const res = await fetch(`${GAMEY_URL}/v1/ybot/choose/bridgebot`, {
+
+      const res = await fetch(GAMEY_URL + '/v1/ybot/choose/bridgebot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(yenPayload)
@@ -212,53 +213,50 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
       if (res.ok) {
         const data: MoveResponse = await res.json();
-        if (data.coords && data.coords.x !== undefined) {
-          const cellId = `${data.coords.x}-${data.coords.y}-${data.coords.z}`;
+        if (data.coords?.x === undefined) {
+          console.warn(t('board.logs.botMissingCoords'));
+        } else {
+          const cellId = String(data.coords.x) + '-' + String(data.coords.y) + '-' + String(data.coords.z);
           setSuggestedCell(cellId);
-          // Marca la sugerencia como usada para ese jugador: una por partida
+
           if (currentTurn === 'human') {
             setHumanSuggestionUsed(true);
           } else {
             setPvpBotSuggestionUsed(true);
           }
-        } else {
-          console.warn('El bridgebot no devolvió una coordenada válida para la sugerencia.');
         }
       } else {
         const errorText = await res.text();
-        console.error(`Error del servidor al pedir sugerencia (${res.status}):`, errorText);
+        console.error(t('board.logs.serverError', { status: res.status }), errorText);
       }
     } catch (error) {
-      console.error('Error al contactar con bridgebot para sugerencia:', error);
+      console.error(t('board.logs.requestBotFailed'), error);
     } finally {
       setIsFetchingSuggestion(false);
     }
   };
 
   // Guarda el resultado en el servicio de usuarios (puerto 3000).
-  // En modo bot deduce el nombre del oponente de la dificultad si no se pasa explícitamente.
   const salvarPartidaEnBD = async (userWon: boolean, oponenteName?: string) => {
     try {
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
-      const oponente = oponenteName ?? botId
+      const oponente = oponenteName ?? botId;
 
-      const res = await fetch(`${USERS_URL}/guardar-partida`, {
+      const res = await fetch(USERS_URL + '/guardar-partida', {
         method: 'POST',
-        credentials: 'include', // incluye la cookie de sesión para autenticar al usuario
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oponente, ganada: userWon })
       });
 
-      if (res && res.ok) {
-        console.log('Partida guardada en la base de datos correctamente.');
-      } else if (res) {
-        const errorText = await res.text();
-        console.error(`Error al guardar la partida (${res.status}):`, errorText);
+      if (res.ok) {
+        console.log(t('board.logs.matchSaved'));
       } else {
-        console.error("No se recibió respuesta del servidor al intentar guardar la partida.");
+        const errorText = await res.text();
+        console.error(t('board.logs.matchSaveError', { status: res.status }), errorText);
       }
     } catch (error) {
-      console.error("Error al contactar con el servidor de BD:", error);
+      console.error(t('board.logs.matchSaveFailed'), error);
     }
   };
 
@@ -328,33 +326,31 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
   if (gameMode === 'pvp') {
     if (winner === 'human') {
-      statusMessage = `¡${player1Name} GANA LA PARTIDA!`;
+      statusMessage = t('board.pvpWinner', { name: player1Name });
       statusClass = 'status-winner';
     } else if (winner === 'bot') {
-      statusMessage = `¡${player2Name} GANA LA PARTIDA!`;
+      statusMessage = t('board.pvpWinner', { name: player2Name });
       statusClass = 'status-bot';
     } else if (pvpTurn === 'human') {
-      statusMessage = `Turno de ${player1Name} (Azul)`;
+      statusMessage = t('board.pvpTurnHuman', { name: player1Name });
       statusClass = 'status-human';
     } else {
-      statusMessage = `Turno de ${player2Name} (Rojo)`;
+      statusMessage = t('board.pvpTurnBot', { name: player2Name });
       statusClass = 'status-bot';
     }
-  } else {
-    if (winner === 'human') {
-      statusMessage = '¡HAS GANADO LA PARTIDA!';
+  } else if (winner === 'human') {
+      statusMessage = t('board.won');
       statusClass = 'status-winner';
     } else if (winner === 'bot') {
-      statusMessage = 'El Bot te ha ganado...';
+      statusMessage = t('board.lost');
       statusClass = 'status-bot';
     } else if (isBotThinking) {
-      statusMessage = 'El bot está pensando...';
+      statusMessage = t('board.thinking');
       statusClass = 'status-bot';
     } else {
-      statusMessage = 'Tu turno (Juegas con Azul)';
+      statusMessage = t('board.yourTurn');
       statusClass = 'status-human';
     }
-  }
 
   return (
     <div className="board-wrapper">
@@ -377,11 +373,11 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
 
         let label: string;
         if (isFetchingSuggestion) {
-          label = 'Calculando sugerencia...';
+          label = t('board.suggestionLoading');
         } else if (alreadyUsed) {
-          label = 'Sugerencia ya utilizada';
+          label = t('board.suggestionUsed');
         } else {
-          label = 'Sugerir movimiento';
+          label = t('board.suggestionCta');
         }
 
         return (
@@ -407,7 +403,7 @@ export const Board = ({botId, boardSize, gameMode, player1Name, player2Name}: Bo
       {/* Botón de reinicio: solo aparece cuando la partida ha terminado */}
       {winner && (
         <button onClick={resetGame} className="btn-play">
-          Volver a jugar
+          {t('board.playAgain')}
         </button>
       )}
     </div>
