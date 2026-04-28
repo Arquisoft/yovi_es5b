@@ -65,6 +65,8 @@ La persistencia de datos se gestiona mediante una base de datos *MySQL*, accedid
 
 El modelo de datos está compuesto por dos tablas: **Usuarios** y **Partidas**. La relación entre ellas es de *uno a muchos*: un usuario puede tener asociadas múltiples partidas, pero cada partida pertenece exactamente a un usuario. La integridad referencial se gestiona mediante la clave foránea `id_usuario` en la tabla `Partidas`.
 
+image::yovi_database.png[Base de datos de Yovi]
+
 
 ==== Tabla Usuarios
 
@@ -76,7 +78,7 @@ Almacena los datos de registro y autenticación de cada jugador registrado en el
 | `id_usuario` | INTEGER | PK, AUTO_INCREMENT | Identificador único del usuario
 | `nombre` | VARCHAR(255) | NOT NULL | Nombre real del usuario
 | `nom_usuario` | VARCHAR(255) | NOT NULL, UNIQUE | Nombre de usuario para login
-| `contrasena` | VARCHAR(255) | NOT NULL | Contraseña del usuario (hash)
+| `contraseña` | VARCHAR(255) | NOT NULL | Contraseña del usuario (hash)
 |===
 
 ==== Tabla Partidas
@@ -95,4 +97,4 @@ Registra el historial de partidas jugadas, asociando cada partida a un usuario y
 === Decisiones de diseño relevantes
 
 * *Resultado de la partida*: se almacena como un valor booleano (true si el usuario gana y false si el usuario pierde) porque los empates no son posibles en el juego Y.
-* *Almacenamiento de contraseñas*: El campo `contrasena` debe almacenar exclusivamente el hash de la contraseña. La responsabilidad del hasheo recae en la capa de servicio, no en el modelo.
+* *Almacenamiento de contraseñas*: El campo `contraseña` debe almacenar exclusivamente el hash de la contraseña. La responsabilidad del hasheo recae en la capa de servicio, no en el modelo.
