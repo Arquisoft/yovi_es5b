@@ -35,7 +35,7 @@ Basándonos en los requisitos del proyecto, se han seleccionado las siguientes t
 
 * Pruebas:
 
-** Pruebas unitarias: se utiliza la biblioteca **vitest** y las herramientas estandar de Rust de pruebas unitarias.
+** Pruebas unitarias: se utiliza la biblioteca **vitest** y las herramientas estándar de Rust de pruebas unitarias.
 
 ** Pruebas de aceptación: se utilizan las bibliotecas **vitest** y **playwright**.
 
@@ -50,4 +50,4 @@ Se utilizan las siguientes herramientas de GitHub:
 
 Las comunicaciones en tiempo real se llevarán a cabo mediante Whatsapp o Discord.
 
-Se asigna a cada miembro del equipo la responsabilidad de ser capaz de entender el comportamiento general del resto de miembros del equipo, independientemente de qué parte del código haya programado el mismo.
+Se asigna a cada miembro del equipo la responsabilidad de ser capaz de entender el comportamiento general del código resto de miembros del equipo, independientemente de qué parte del código haya programado el mismo.

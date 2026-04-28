@@ -95,7 +95,7 @@ Motivación::
 
 La infraestructura del sistema se divide en varios servicios desplegados en sendos contenedores Docker con el objetivo de conseguir una arquitectura modular que permita que cada servicio sea fácilmente reemplazable y desplegable en otra máquina o entorno.
 
-Nótese que desde el navegador web, el usuario tiene acceso a:
+Nótese que desde el navegador web, el usuario tiene acceso a
 
 * Webapp: puerto HTTP 80
 * API pública de la aplicación: Puerto HTTP 3000
