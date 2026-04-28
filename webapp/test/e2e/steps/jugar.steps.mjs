@@ -62,8 +62,9 @@ When('Selecciono la estrategia {string} y pulso en JUGAR', async function (estra
   const page = this.page
   if (!page) throw new Error('Page not initialized')
   // Seleccionar la estrategia en el desplegable del lobby
-  const combos = page.locator('select.combobox'); 
-  const selectorDificultad = combos.nth(1); //solo cogemos el primer combobox para asegurar que sea el de bot
+  const selectorDificultad = page.locator('select.combobox').filter({
+    has: page.locator('option[value="random_bot"]')
+  });
   await selectorDificultad.selectOption({ label: estrategia });
   await page.click('.btn-play')
   // Esperamos a que el tablero esté visible
@@ -77,7 +78,7 @@ Then('Debería ver el tablero de juego con el mensaje de turno', async function 
   const tablero = page.locator('svg')
   await expect(tablero).toBeVisible()
   // Debe mostrarse el mensaje indicando que es el turno del jugador
-  const mensajeTurno = page.locator('p', { hasText: 'Es tu turno' })
+  const mensajeTurno = page.locator('p', { hasText: /Es tu turno/i })
   await expect(mensajeTurno).toBeVisible()
 })
 

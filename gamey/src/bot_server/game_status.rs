@@ -49,6 +49,7 @@ pub async fn game_status(
         Ok(game) => game,
         Err(err) => {
             return Err(Json(ErrorResponse::error(
+                "INVALID_YEN_FORMAT",
                 &format!("Invalid YEN format: {}", err),
                 Some(params.api_version),
                 None,

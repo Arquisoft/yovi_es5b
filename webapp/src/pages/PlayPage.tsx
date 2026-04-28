@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Board } from '../components/Board';
 import type { User } from "../types/user";
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../components/LanguageSelector';
 import '../css/Estilo.css';
+
 
 // Dificultades de los bots
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
@@ -20,6 +23,7 @@ type PlayPageProps = {
 };
 
 const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby, onChangeDifficulty }: PlayPageProps) => {
+  const { t } = useTranslation();
   // Inicializa basándose en botId recibido como prop
   const initialDifficulty = botId || 'random_bot';
   const [difficulty, setDifficulty] = useState<string>(initialDifficulty);
@@ -38,64 +42,63 @@ const PlayPage = ({ user, botId, boardSize, gameMode, player2Name, onBackToLobby
   };
 
   return (
-    <div className="lobby-container">
-      <div className="play-header">
-        <h2 className="play-title">
-          {gameMode === 'pvp'
-            ? <><strong>{user.nom_usuario || 'Jugador 1'}</strong> vs <strong>{player2Name}</strong></>
-            : <>Partida de: <strong>{user.nom_usuario || "Jugador"}</strong></>
-          }
+    <div className='lobby-container'>
+      <div className='play-header'>
+        <h2 className='play-title'>
+          <LanguageSelector username={user.nom_usuario} selectClassName='combobox language-combobox' />
+          {gameMode === 'pvp' ? (
+            <>
+              <strong>{user.nom_usuario || t('play.defaultPlayer1')}</strong> {t('play.versus')} <strong>{player2Name}</strong>
+            </>
+          ) : (
+            <>
+              {t('play.titlePrefix')} <strong>{user.nom_usuario || t('play.defaultPlayer')}</strong>
+            </>
+          )}
         </h2>
 
-        <div className="auth-selector">
-          {/* Solo mostramos el selector de dificultad si estamos en modo bot */}
+        <div className='auth-selector'>
+
           {gameMode === 'bot' && (
             <select 
               value={difficulty} 
               onChange={handleChangeDifficulty}
               className="combobox"
             >
-              <option value="random_bot">Bot Aleatorio (Fácil)</option>
-              <option value="mirrorbot">Bot Espejo (Fácil)</option>
-              <option value="lapabot">Bot Lapa (Medio)</option>
-              <option value="mediumbot">Bot Medio (Medio)</option>
-              <option value="bridgebot_lax">Bot Puente continuo (Difícil)</option>
-              <option value="bridgebot">Bot Puente (Difícil)</option>
+              <option value="random_bot">{t('lobby.botRandom')}</option>
+              <option value="mirrorbot">{t('lobby.botMirror')}</option>
+              <option value="lapabot">{t('lobby.botLapa')}</option>
+              <option value="mediumbot">{t('lobby.botMedium')}</option>
+              <option value="bridgebot_lax">{t('lobby.botBridgeLax')}</option>
+              <option value="bridgebot">{t('lobby.botBridge')}</option>
             </select>
           )}
 
-          <button 
-            onClick={handleAbandon}
-            className="btn-logout"
-          >
-            Abandonar Partida
+          <button onClick={handleAbandon} className='btn-logout'>
+            {t('play.abandon')}
           </button>
         </div>
       </div>
 
-      <p className="turn-indicator">
-        {gameMode === 'pvp' 
-          ? 'Los jugadores se turnan. Selecciona una casilla del tablero.' 
-          : 'Es tu turno. Selecciona una casilla del tablero.'}
+      <p className='turn-indicator'>
+        {gameMode === 'pvp' ? t('play.turnHelpPvp') : t('play.turnHelp')}
       </p>
 
-      {/* Contenedor del tablero con tu clase card y la lógica de reset por key */}
-      <div key={gameKey} className="card board-container">
-        <Board 
-          botId={botId} 
-          boardSize={boardSize} 
-          gameMode={gameMode} 
-          player1Name={user.nom_usuario || 'Jugador 1'} 
+      <div key={gameKey} className='card board-container'>
+        <Board
+          botId={botId}
+          boardSize={boardSize}
+          gameMode={gameMode}
+          player1Name={user.nom_usuario || t('play.defaultPlayer1')}
           player2Name={player2Name}
         />
       </div>
 
-      <div className="info-section">
-        <h3>Reglas del Juego Y</h3>
+      <div className='info-section'>
+        <h3>{t('play.rulesTitle')}</h3>
         <p>
-          Pulsa un hexágono para rellenarlo de tu color. Debes intentar trazar una línea
-          de tu color que logre conectar los tres bordes del triángulo
-          que compone el tablero. <strong>Los hexágonos de la esquina valen por los dos lados</strong>.
+          {t('play.rulesTextBeforeHighlight')} <strong>{t('play.rulesTextHighlight')}</strong>
+          {t('play.rulesTextAfterHighlight')}
         </p>
       </div>
     </div>

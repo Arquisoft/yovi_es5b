@@ -22,13 +22,14 @@ pub const SUPPORTED_VERSION: &str = "v1";
 pub fn check_api_version(version: &str) -> Result<(), ErrorResponse> {
     if version != SUPPORTED_VERSION {
         Err(ErrorResponse::error(
-            &format!(
-                "Unsupported API version: {}. Supported version is {}",
-                version, SUPPORTED_VERSION
-            ),
+            "UNSUPPORTED_API_VERSION",
+            "Unsupported API version.",
             Some(version.to_string()),
             None,
-        ))
+        ).with_details(format!(
+            "Unsupported API version: {}. Supported version is {}",
+            version, SUPPORTED_VERSION
+        )))
     } else {
         Ok(())
     }
@@ -48,8 +49,9 @@ mod tests {
         let result = check_api_version("v2");
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.message.contains("Unsupported API version"));
-        assert!(err.message.contains("v2"));
+        assert_eq!(err.code, "UNSUPPORTED_API_VERSION");
+        assert_eq!(err.message, "Unsupported API version.");
+        assert!(err.details.unwrap().contains("v2"));
         assert_eq!(err.api_version, Some("v2".to_string()));
     }
 

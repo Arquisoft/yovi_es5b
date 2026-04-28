@@ -1,0 +1,27 @@
+export const ERROR_CODES = {
+    VALIDATION_ERROR: 'VALIDATION_ERROR',
+    AUTH_INVALID_CREDENTIALS: 'AUTH_INVALID_CREDENTIALS',
+    REGISTER_FAILED: 'REGISTER_FAILED',
+    LOGIN_FAILED: 'LOGIN_FAILED',
+    USER_NAME_INVALID: 'USER_NAME_INVALID',
+    USERNAME_INVALID_LENGTH: 'USERNAME_INVALID_LENGTH',
+    USERNAME_TAKEN: 'USERNAME_TAKEN',
+    PASSWORD_TOO_SHORT: 'PASSWORD_TOO_SHORT',
+    USER_NOT_AUTHENTICATED: 'USER_NOT_AUTHENTICATED',
+    USER_NOT_FOUND: 'USER_NOT_FOUND',
+    STATS_FETCH_FAILED: 'STATS_FETCH_FAILED',
+    MISSING_MATCH_PARAMS: 'MISSING_MATCH_PARAMS',
+    MATCH_SAVE_FAILED: 'MATCH_SAVE_FAILED'
+};
+
+export const fieldError = (code, message) => ({
+    code,
+    message
+});
+
+export const apiError = (code, message, extra = {}) => ({
+    error_code: code,
+    message,
+    error: message,
+    ...extra
+});

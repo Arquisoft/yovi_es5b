@@ -17,7 +17,9 @@ Before(async function () {
   const devtools = false
 
   this.browser = await chromium.launch({ headless, slowMo, devtools })
-  this.page = await this.browser.newPage()
+  this.page = await this.browser.newPage({
+    locale: 'es-ES' // Esto asegura que i18next detecte español
+  })
 })
 
 After(async function () {

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../../css/Estilo.css'; // Importación de los estilos relegados al fichero CSS
+import { useTranslation } from 'react-i18next';
+import { translateApiError, type ApiErrorPayload } from '../../utils/i18n/errorTranslator';
 
 interface RegisterFormProps {
   // Callback para comunicar al componente padre que el registro fue exitoso
@@ -8,7 +10,14 @@ interface RegisterFormProps {
 
 import type {User} from "../../types/user";
 
+type FormErrorState =
+  | { kind: 'i18n-key'; key: string }
+  | { kind: 'api'; payload: ApiErrorPayload }
+  | null;
+
 const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
+  const { t } = useTranslation();
+
   //Estados del formulario
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -16,23 +25,32 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   
   // Estados auxiliares para feedback visual y errores
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<FormErrorState>(null);
   const [loading, setLoading] = useState(false);
+
+  let errorMessage: string | null = null;
+  if (errorState) {
+    if (errorState.kind === 'i18n-key') {
+      errorMessage = t(errorState.key);
+    } else {
+      errorMessage = translateApiError(errorState.payload, t);
+    }
+  }
 
   //Manejador del envío del formulario, se marca como 'async' porque realiza una petición de red (fetch).
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Evita que la página se recargue al enviar
-    setError(null);         // Limpiamos errores previos
+    setErrorState(null);    // Limpiamos errores previos
 
     //Antes de ir al servidor, comprobamos que no haya campos vacíos
     if (!fullName.trim() || !username.trim() || !password.trim()) {
-      setError('Por favor, rellena todos los campos.');
+      setErrorState({ kind: 'i18n-key', key: 'errors.requiredFields' });
       return;
     }
 
     //Veririfca que la contraseña en introducir y repetir coinciden
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden.');
+      setErrorState({ kind: 'i18n-key', key: 'errors.passwordMismatch' });
       setLoading(false);
       return;
     }
@@ -63,13 +81,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
         onRegisterSuccess(data);
       } else {
         //El backend rechazó la petición
-        const errorMsg = data.error || Object.values(data)[0] || 'Error en el registro';
-        setError(typeof errorMsg === 'string' ? errorMsg : 'Datos inválidos');
+        setErrorState({ kind: 'api', payload: data as ApiErrorPayload });
       }
     } catch (err) {
       //Se lanza error si no se pudo alcanzar el servidor 
       console.error("Error de conexión:", err);
-      setError('No se pudo conectar con el servidor de usuarios.');
+      setErrorState({ kind: 'i18n-key', key: 'errors.connectionUsers' });
     } finally {
       setLoading(false); // Liberamos el estado de carga
     }
@@ -79,7 +96,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     <form onSubmit={handleSubmit} className="register-form">
       {/*Nombre Completo */}
       <div className="form-group">
-        <label htmlFor="fullName">Nombre Completo:</label>
+        <label htmlFor="fullName">{t('auth.fullName')}:</label>
         <input
           type="text"
           id="fullName"
@@ -91,7 +108,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
 
       {/*Nombre de Usuario */}
       <div className="form-group">
-        <label htmlFor="username">Nombre de Usuario:</label>
+        <label htmlFor="username">{t('auth.username')}:</label>
         <input
           type="text"
           id="username"
@@ -103,7 +120,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
 
       {/*Contraseña */}
       <div className="form-group">
-        <label htmlFor="password">Contraseña:</label>
+        <label htmlFor="password">{t('auth.password')}:</label>
         <input
           type="password"
           id="password"
@@ -114,7 +131,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
       </div>
 
       <div className="form-group">
-        <label htmlFor="confirmPassword">Repetir Contraseña:</label>
+        <label htmlFor="confirmPassword">{t('auth.confirmPassword')}:</label>
         <input
           type="password"
           id="confirmPassword"
@@ -125,11 +142,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
       </div>
 
       {/* Muestra de errores dinámicos usando la clase del CSS externo */}
-      {error && <div className="error-message">{error}</div>}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
       {/* Botón de acción con estado de carga */}
       <button type="submit" className="submit-button" disabled={loading}>
-        {loading ? 'Registrando...' : 'Aceptar Registro'}
+        {loading ? t('auth.submitRegisterLoading') : t('auth.submitRegister')}
       </button>
     </form>
   );

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../../css/Estilo.css'; 
+import { useTranslation } from 'react-i18next';
+import { translateApiError, type ApiErrorPayload } from '../../utils/i18n/errorTranslator';
 
 interface LogInFormProps {
   //Notificamos al componente padre que las credenciales son válidas
@@ -8,23 +10,39 @@ interface LogInFormProps {
 
 import type {User} from "../../types/user";
 
+type FormErrorState =
+  | { kind: 'i18n-key'; key: string }
+  | { kind: 'api'; payload: ApiErrorPayload }
+  | null;
+
 const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
+  const { t } = useTranslation();
+
   // Estados para capturar las credenciales del usuario
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
   // Estados para manejar el feedback visual
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<FormErrorState>(null);
   const [loading, setLoading] = useState(false);
 
-   //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
+  let errorMessage: string | null = null;
+  if (errorState) {
+    if (errorState.kind === 'i18n-key') {
+      errorMessage = t(errorState.key);
+    } else {
+      errorMessage = translateApiError(errorState.payload, t);
+    }
+  }
+
+  //Manejador del inicio de sesión, realiza una petición POST al microservicio de usuarios.
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Evita la recarga de la página
-    setError(null);         // Limpia intentos anteriores
+    setErrorState(null);    // Limpia intentos anteriores
 
     //Antes de ir al servidor, comprobamos que no haya campos vacíos
     if (!username.trim() || !password.trim()) {
-      setError('Por favor, rellena todos los campos.');
+      setErrorState({ kind: 'i18n-key', key: 'errors.requiredFields' });
       return;
     }
 
@@ -52,12 +70,12 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
         onLoginSuccess(data);
       } else {
         //Credenciales incorrectas o usuario no encontrado.
-        setError(data.error || 'Credenciales incorrectas');
+        setErrorState({ kind: 'api', payload: data as ApiErrorPayload });
       }
     } catch (err) {
       //Fallo en la red o servidor caído.
       console.error("Error en login:", err);
-      setError('No se pudo conectar con el servidor de usuarios.');
+      setErrorState({ kind: 'i18n-key', key: 'errors.connectionUsers' });
     } finally {
       setLoading(false); // Restablece el estado del botón
     }
@@ -67,7 +85,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
     <form onSubmit={handleSubmit} className="register-form">
       {/* Campo de entrada para el usuario */}
       <div className="form-group">
-        <label htmlFor="login-username">Nombre de Usuario:</label>
+        <label htmlFor="login-username">{t('auth.username')}:</label>
         <input
           type="text"
           id="login-username"
@@ -79,7 +97,7 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
 
       {/* Campo de entrada para la contraseña */}
       <div className="form-group">
-        <label htmlFor="login-password">Contraseña:</label>
+        <label htmlFor="login-password">{t('auth.password')}:</label>
         <input
           type="password"
           id="login-password"
@@ -90,11 +108,11 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
       </div>
 
       {/* Muestra de errores dinámicos con la clase CSS externa */}
-      {error && <div className="error-message">{error}</div>}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
       {/* Botón de acción con feedback de estado */}
       <button type="submit" className="submit-button" disabled={loading}>
-        {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
+        {loading ? t('auth.submitLoginLoading') : t('auth.submitLogin')}
       </button>
     </form>
   );

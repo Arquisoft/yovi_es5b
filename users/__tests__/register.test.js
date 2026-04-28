@@ -62,7 +62,9 @@ describe('Pruebas unitarias de registro', () => {
 
         // Verificamos el error de validación (400)
         expect(res.status).toBe(400)
-        expect(res.body.nombre).toBe("El nombre debe tener entre 4 y 30 caracteres.")
+        expect(res.body.error_code).toBe("VALIDATION_ERROR")
+        expect(res.body.errors.nombre.code).toBe("USER_NAME_INVALID")
+        expect(res.body.errors.nombre.message).toBe("El nombre debe tener entre 4 y 30 caracteres.")
     })
 
     it('debería fallar si el nick ya está en uso', async () => {
@@ -75,7 +77,9 @@ describe('Pruebas unitarias de registro', () => {
 
         // Comprobamos que el validador detiene el proceso (400)
         expect(res.status).toBe(400)
-        expect(res.body.nom_usuario).toBe("El nick de usuario ya está en uso.")
+        expect(res.body.error_code).toBe("VALIDATION_ERROR")
+        expect(res.body.errors.nom_usuario.code).toBe("USERNAME_TAKEN")
+        expect(res.body.errors.nom_usuario.message).toBe("El nick de usuario ya está en uso.")
     })
 
     it('debería fallar si la contraseña es corta', async () => {
@@ -87,6 +91,8 @@ describe('Pruebas unitarias de registro', () => {
 
         // Comprobamos que el validador detiene el proceso (400)
         expect(res.status).toBe(400)
-        expect(res.body.contrasena).toBe("La contraseña debe tener al menos 8 caracteres.")
+        expect(res.body.error_code).toBe("VALIDATION_ERROR")
+        expect(res.body.errors.contrasena.code).toBe("PASSWORD_TOO_SHORT")
+        expect(res.body.errors.contrasena.message).toBe("La contraseña debe tener al menos 8 caracteres.")
     })
 })

@@ -6,7 +6,7 @@ describe('GamePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Mock fetch globalmente antes de cada test
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       text: async () => 'OK',
     })
@@ -29,12 +29,9 @@ describe('GamePage', () => {
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
     )
-
-    const welcome = await screen.findByText(/Bienvenido/i)
-    const username = await screen.findByText('Pepe')
-
+    
+    const welcome = await screen.findByText(/Bienvenido, Pepe/i)
     expect(welcome).toBeTruthy()
-    expect(username).toBeTruthy()
   })
 
   it('should check gamey status on mount', async () => {
@@ -43,7 +40,7 @@ describe('GamePage', () => {
     )
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:4000/status')
+      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:4000/status')
     })
   })
 
@@ -57,7 +54,7 @@ describe('GamePage', () => {
   })
 
   it('should display disconnected status when gamey is down', async () => {
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Connection failed'))
+    globalThis.fetch = vi.fn().mockRejectedValueOnce(new Error('Connection failed'))
 
     render(
       <GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe123" }}/>
@@ -77,11 +74,11 @@ describe('GamePage', () => {
   })
 
   it('debería mostrar el input del nombre del Jugador 2 al seleccionar modo PvP', async () => {
-    render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
+    const { container } = render(<GamePage user={{id:"1", nombre: "Pepe", nom_usuario:"pepe"}}/>)
 
-    const selects = await screen.findAllByRole('combobox')
-    // El primer selector es el de modo de juego
-    fireEvent.change(selects[0], { target: { value: 'pvp' } })
+    // Tomamos el selector de modo dentro del formulario de juego (ignora el selector de idioma del header)
+    const gameModeSelect = container.querySelector('.register-form select') as HTMLSelectElement
+    fireEvent.change(gameModeSelect, { target: { value: 'pvp' } })
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/Nombre del Jugador 2/i)).toBeTruthy()

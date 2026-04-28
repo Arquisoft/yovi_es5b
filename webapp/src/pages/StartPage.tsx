@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import GamePage from "../pages/GamePage";
 import RegisterPage from "../pages/RegisterPage";
 import "../css/Estilo.css"; 
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../components/LanguageSelector';
 
 import type { User } from "../types/user";
 
 
 //La única misión de esta clase es decidir qué pantalla debe ver el usuario nada más abrir la web.
 const StartPage = () => {
+  const { t } = useTranslation();
+
   // Estado para almacenar los datos del usuario si está logueado
   const [user, setUser] = useState<User | null>(null);
   
@@ -55,7 +59,10 @@ const StartPage = () => {
   if (loading) {
     return (
       <div className="lobby-container">
-        <p>Cargando sesión...</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <LanguageSelector selectClassName='combobox language-combobox' />
+        </div>
+        <p>{t('start.loadingSession')}</p>
       </div>
     );
   }
@@ -63,18 +70,20 @@ const StartPage = () => {
   if (!hasStarted) {
     return (
       <div className="welcome-screen">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <LanguageSelector selectClassName='combobox language-combobox' />
+        </div>
         <h1 className="main-title">Yovi_es5B</h1>
         <div className="welcome-card">
-          <h2 className="welcome-title">¡Bienvenido!</h2>
+          <h2 className="welcome-title">{t('start.welcomeTitle')}</h2>
           <p className="welcome-text">
-            Estás a punto de entrar en el proyecto <strong>Yovi_es5B</strong>. 
-            Aquí podrás jugar al juego Y tanto contra bots como contra otra persona en local.
+            {t('start.welcomeIntro')} <strong>Yovi_es5B</strong>. {t('start.welcomeDescription')}
           </p>
           <button 
             className="btn-enter" 
             onClick={() => setHasStarted(true)}
           >
-            COMENZAR 
+            {t('start.begin')} 
           </button>
         </div>
       </div>

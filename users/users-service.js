@@ -2,6 +2,7 @@ import { app, port } from "./config/app.js";
 import { sequelize, Usuario } from './models/index.js';
 import { registrarUsuario, iniciarSesion } from "./service/users.js";
 import { validarRegistrarUsuario, validarIniciarSesion } from"./validator/user-validators.js";
+import { ERROR_CODES, apiError } from './errors.js';
 import { obtenerPartidasJugadas, obtenerPartidasGanadas, obtenerPartidasPerdidas, guardarPartida, obtenerRanking } from "./service/stats.js";
 
 /**
@@ -27,7 +28,11 @@ app.get('/getuser', async (req, res) => {
 app.post('/register', async (req, res) => {
     const errores = await validarRegistrarUsuario(req?.body?.nombre, req?.body?.nom_usuario, req?.body?.contrasena);
     if (Object.keys(errores).length > 0) {
-        res.status(400).json(errores);
+        res.status(400).json(apiError(
+            ERROR_CODES.VALIDATION_ERROR,
+            'Hay errores de validación en el formulario.',
+            { errors: errores }
+        ));
         return;
     }
 
@@ -36,7 +41,7 @@ app.post('/register', async (req, res) => {
         req.session.user = { id_usuario: nuevoUsuario.id_usuario, nombre: nuevoUsuario.nombre, nom_usuario: nuevoUsuario.nom_usuario };
         res.status(200).json(nuevoUsuario);
     } catch (err) {
-        res.status(400).json({ error: "Ocurrió un error al registrar al usuario." });
+        res.status(400).json(apiError(ERROR_CODES.REGISTER_FAILED, "Ocurrió un error al registrar al usuario."));
     }
 });
 
@@ -52,7 +57,11 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const errores = await validarIniciarSesion(req?.body?.nom_usuario, req?.body?.contrasena);
     if (Object.keys(errores).length > 0) {
-        res.status(400).json(errores);
+        res.status(400).json(apiError(
+            ERROR_CODES.VALIDATION_ERROR,
+            'Hay errores de validación en el formulario.',
+            { errors: errores }
+        ));
         return;
     }
 
@@ -60,7 +69,7 @@ app.post('/login', async (req, res) => {
         const usuario = await iniciarSesion(req.body.nom_usuario, req.body.contrasena);
         // Autenticación fallida
         if (usuario == null) {
-            res.status(400).json({ error: "Error al iniciar sesión. Credenciales no válidas." });
+            res.status(400).json(apiError(ERROR_CODES.AUTH_INVALID_CREDENTIALS, "Error al iniciar sesión. Credenciales no válidas."));
             return;
         }
 
@@ -68,7 +77,7 @@ app.post('/login', async (req, res) => {
         req.session.user = { id_usuario: usuario.id_usuario, nombre: usuario.nombre, nom_usuario: usuario.nom_usuario };
         res.status(200).json(usuario);
     } catch (err) {
-        res.status(400).json({ error: "Ocurrió un error al iniciar sesión." });
+        res.status(400).json(apiError(ERROR_CODES.LOGIN_FAILED, "Ocurrió un error al iniciar sesión."));
     }
 });
 
@@ -85,14 +94,14 @@ app.post('/login', async (req, res) => {
 **/
 app.get('/stats/:nom_usuario', async (req, res) => {
     if (!req.session.user) {
-        res.status(403).json({ error: "No hay usuario autenticado." });
+        res.status(403).json(apiError(ERROR_CODES.USER_NOT_AUTHENTICATED, "No hay usuario autenticado."));
         return;
     }
 
     try {
         const usuario = await Usuario.findOne({ where: { nom_usuario: req.params.nom_usuario } });
         if (!usuario) {
-            res.status(404).json({ error: "Usuario no encontrado." });
+            res.status(404).json(apiError(ERROR_CODES.USER_NOT_FOUND, "Usuario no encontrado."));
             return;
         }
         
@@ -102,7 +111,7 @@ app.get('/stats/:nom_usuario', async (req, res) => {
         
         res.status(200).json({ jugadas, ganadas, perdidas });
     } catch (err) {
-        res.status(500).json({ error: "Error al obtener estadísticas." });
+        res.status(500).json(apiError(ERROR_CODES.STATS_FETCH_FAILED, "Error al obtener estadísticas."));
     }
 });
 
@@ -122,14 +131,14 @@ app.get('/stats/:nom_usuario', async (req, res) => {
 **/
 app.post('/guardar-partida', async (req, res) => {
     if (!req.session.user) {
-        res.status(403).json({ error: "No hay usuario autenticado." });
+        res.status(403).json(apiError(ERROR_CODES.USER_NOT_AUTHENTICATED, "No hay usuario autenticado."));
         return;
     }
 
     const { oponente, ganada } = req.body;
 
     if (!oponente || ganada === undefined || ganada === null) {
-        res.status(400).json({ error: "Faltan parámetros: oponente y ganada son requeridos." });
+        res.status(400).json(apiError(ERROR_CODES.MISSING_MATCH_PARAMS, "Faltan parámetros: oponente y ganada son requeridos."));
         return;
     }
 
@@ -137,7 +146,7 @@ app.post('/guardar-partida', async (req, res) => {
         const partida = await guardarPartida(req.session.user.id_usuario, oponente, ganada);
         res.status(200).json({ message: "Partida guardada correctamente.", partida });
     } catch (err) {
-        res.status(500).json({ error: "Error al guardar la partida." });
+        res.status(500).json(apiError(ERROR_CODES.MATCH_SAVE_FAILED, "Error al guardar la partida."));
     }
 });
 
