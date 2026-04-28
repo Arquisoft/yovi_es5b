@@ -33,5 +33,9 @@ jobs:
         grep '^SF:' gamey/lcov.info | head
     - name: Analyze with SonarQube
       uses: SonarSource/sonarqube-scan-action@master
+      with:
+        args: >
+          -Dsonar.verbose=true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_SCANNER_OPTS: -Xmx4096m

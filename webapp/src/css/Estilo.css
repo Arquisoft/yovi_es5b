@@ -383,3 +383,36 @@ h3 {
   min-width: 170px;
   margin-bottom: 0;
 }
+
+.board-custom-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background-color: lightgrey;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
+
+.board-custom-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: black;
+  text-align: center;
+}
+
+.board-size-slider {
+  width: 100%;
+  accent-color: #27ae60;
+  cursor: pointer;
+  height: 0.4rem;
+}
+
+.board-size-range {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: dimgray;
+}
