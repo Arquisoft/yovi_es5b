@@ -22,6 +22,10 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 // botId es el nombre de bot de gamey
   const [botId, setBotId] = useState("random_bot");
   const [size, setSize] = useState('5');
+
+  const [customSize, setCustomSize] = useState(7);
+  const [showCustomSlider, setShowCustomSlider] = useState(false);
+
   // Modo de juego seleccionado en el lobby: 'bot' para jugar contra IA, 'pvp' para dos jugadores locales
   const [gameMode, setGameMode] = useState<'bot' | 'pvp'>('bot');
   // Nombre del segundo jugador en modo PvP; si se deja vacío se usará 'Invitado'
@@ -67,7 +71,8 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
   // Renderizado condicional: Prioridad 1 - La pantalla de juego
   if (playGame) {
-      return <PlayPage botId={botId} user={user} boardSize={Number(size)} gameMode={gameMode} player2Name={effectivePlayer2Name} onBackToLobby={handleBackToLobby}
+      const effectiveBoardSize = size === 'custom' ? customSize : Number(size);
+      return <PlayPage botId={botId} user={user} boardSize={effectiveBoardSize} gameMode={gameMode} player2Name={effectivePlayer2Name} onBackToLobby={handleBackToLobby}
                 onChangeDifficulty={(botId: string) => setBotId(botId)}/>;
   }
 
@@ -138,13 +143,39 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
 
           <select
             value={size}
-            onChange={(e) => setSize(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSize(val);
+              setShowCustomSlider(val === 'custom');
+            }}
             className="combobox"
           >
             <option value="5">{t('lobby.boardSmall')}</option>
             <option value="10">{t('lobby.boardMedium')}</option>
             <option value="15">{t('lobby.boardLarge')}</option>
+            <option value="custom">{t('lobby.boardCustom')}</option>
           </select>
+
+          {showCustomSlider && (
+            <div className="board-custom-slider">
+              <label className="board-custom-label" htmlFor="board-size-slider">
+                {t('lobby.boardCustomLabel', { size: customSize })}
+              </label>
+              <input
+                id="board-size-slider"
+                type="range"
+                min={3}
+                max={25}
+                value={customSize}
+                onChange={(e) => setCustomSize(Number(e.target.value))}
+                className="board-size-slider"
+              />
+              <div className="board-size-range">
+                <span>3</span>
+                <span>25</span>
+              </div>
+            </div>
+          )}
 
           <button
             onClick={handleStartGame}
