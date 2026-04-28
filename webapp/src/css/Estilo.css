@@ -386,6 +386,7 @@ h3 {
 
 /* SELECTOR DE TAMAÑO PERSONALIZADO DEL TABLERO */
 
+/* Contenedor principal del selector de tamaño personalizado */
 .board-custom-slider {
   display: flex;
   flex-direction: column;
@@ -397,6 +398,7 @@ h3 {
   box-sizing: border-box;
 }
 
+/* Etiqueta que muestra el tamaño actual seleccionado */
 .board-custom-label {
   font-size: 1rem;
   font-weight: 700;
@@ -404,6 +406,7 @@ h3 {
   text-align: center;
 }
 
+/* Input range para seleccionar el tamaño del tablero */
 .board-size-slider {
   width: 100%;
   accent-color: #27ae60;
@@ -411,6 +414,7 @@ h3 {
   height: 0.4rem;
 }
 
+/* Fila con los valores mínimo y máximo del rango */
 .board-size-range {
   display: flex;
   justify-content: space-between;
