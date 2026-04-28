@@ -127,6 +127,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="form-input"
+          placeholder={t('auth.passwordMinCharacters')}
         />
       </div>
 
@@ -138,6 +139,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           className="form-input"
+          placeholder={t('auth.passwordMinCharacters')}
         />
       </div>
 
