@@ -4,6 +4,8 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_yovi_es5b&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_yovi_es5b)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_yovi_es5b&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_yovi_es5b)
 
+## Enlaces útiles
+
 [Enlace a la aplicación](http://20.199.9.107)
 
 [Documentación OpenAPI](http://20.199.9.107:3000/api-docs)
@@ -14,7 +16,7 @@
 
 [Kanban del proyecto](https://github.com/orgs/Arquisoft/projects/221)
 
-[Registro de decisiones (wiki)](https://github.com/Arquisoft/yovi_es5b/wiki/Registro-de-Decisiones)
+[Registro de decisiones](https://arquisoft.github.io/yovi_es5b/#section-design-decisions)
 
 ## Colaboradores
 
