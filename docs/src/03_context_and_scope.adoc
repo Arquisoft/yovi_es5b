@@ -26,7 +26,7 @@ system -[hidden]right- Bot
 Jugador --> system : Se registra y juega
 system --> Jugador : Muestra estado del juego y estadísticas
 Bot --> system : Juega mediante la API
-system --> Bot: Provee info. de partidas y jugadores
+system --> Bot: Provee info. de partidas, jugadores y API
 @enduml
 ----
 
