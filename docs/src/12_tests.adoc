@@ -152,7 +152,7 @@ image::12_grafo_latencia_p95.png[Gráfico de latencia P95 por endpoint]
 ===== 5. Errores del Servidor (5xx)
 Panel de seguridad crítica que detecta excepciones no controladas o fallos de infraestructura.
 
-image::12_grafo_errores_5xx.png[Gráfico de errores 5xx]
+image::12_grafo_errores_servidor_5xx.png[Gráfico de errores 5xx]
 
 * **Métrica**: `sum(rate(http_request_duration_seconds_count{status_code=~"5.."}[1m])) by (path)`
 * **Descripción**: Conteo de fallos internos del servidor (errores 500, 502 o 503).
