@@ -117,7 +117,82 @@ Para dar servicio a un número mayor de usuarios, sería necesario escalar o rep
 
 ==== Cambios introducidos tras las pruebas
 
-====
 En vista de la confusión que tuvieron los dos primeros usuarios para entender que rellenar uno de los hexágonos de las esquinas contaba como entrar en contacto con dos lados, se ha añadido una explicación de esto mismo en las instrucciones del juego.
 
-====
+
+=== Pruebas de seguridad
+
+El objetivo de estas pruebas es identificar vulnerabilidades que pudieran ser explotadas por un actor malicioso, con el fin de mitigarlas antes de que representen un riesgo real para el sistema o sus usuarios.
+
+Para la evaluación y categorización de las vulnerabilidades, se emplea el estándar https://www.incibe.es/incibe-cert/blog/cvss3-0[CVSS 3.0], que permite medir su gravedad de forma objetiva y estandarizada.
+
+Las pruebas se han realizado siguiendo un enfoque de caja blanca, es decir, con acceso total al código.
+
+*NOTA IMPORTANTE*: Algunas de las vulnerabilidades descritas en este apartado siguen presentes en el entorno de producción. Al tratarse de un proyecto académico, su posible explotación no supone un impacto real; sin embargo, en un contexto profesional, la gestión de vulnerabilidades debe seguir un proceso controlado y responsable.
+
+==== Vulnerabilidades encontradas
+
+Durante el análisis, se revisó el código en busca de vulnerabilidades comunes como inyecciones SQL, XSS y otras amenazas similares, sin encontrarse evidencias de este tipo de fallos. No obstante, se identificaron otro tipo de debilidades de seguridad, relacionadas con la disponibilidad de la web y la divulgación de información sensible.
+A continuación se detallan las dos vulnerabilidades identificadas:
+
+===== *1 - Denegación de servicio*
+
+===== Vector CVSS
+CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H
+
+===== Severidad
+*Alta* (7.5): la vulnerabilidad es explotable remotamente sin necesidad de autenticación ni interacción con otro usuario. Afecta a la disponibilidad de la aplicación en gran medida pero no afecta a la confidencialidad ni a la integridad.
+
+===== Descripción
+Es posible saltarse los límites establecidos por la web para elegir el tamaño del tablero de juego. Si se pasa un número muy alto, la memoria del componente *gamey* se satura y el servicio se cae.
+
+Ejecutando este comando curl, se envía una petición al servicio de gamey indicando "99999" como tamaño de tablero.
+
+[source, shell]
+----
+curl -X "GET" "http://20.199.9.107:4000/v1/play?position=%7B%22size%22%3A%2099999%2C%22turn%22%3A%201%2C%22players%22%3A%5B%22B%22%2C%22R%22%5D%2C%22layout%22%3A%20%22.%22%7D&bot_id=random_bot&strategy=normal" -H "accept: application/json"
+----
+
+Como se puede ver en la siguiente imagen, al realizar la petición se colapsa el servicio y deja de responder:
+
+image::gamey_dos.png[Denegación de servicio]
+
+Aunque se pueda navegar por la página web, como el servicio de _gamey_ está caído, no es posible jugar una partida, y todas las llamadas a _/status_, que comprueban si el juego está disponible, devuelven un error:
+
+image::gamey_dos_errores.png[Gamey caído]
+
+===== Remediación
+Para que no se pueda producir la denegación de servicio, se debe implementar en el backend de la aplicación una comprobación de los parámetros introducidos por el usuario que establezca un límite máximo para el tamaño del tablero.
+
+
+===== *2 - Enumeración de usuarios*
+
+===== Vector CVSS
+CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
+
+===== Severidad
+*Media* (5.3): la vulnerabilidad es explotable remotamente sin requerir privilegios ni interacción con otro usuario. Su impacto se limita a una filtración parcial de información (confidencialidad baja), sin afectar a integridad ni disponibilidad.
+
+===== Descripción
+
+La aplicación presenta una vulnerabilidad de enumeración de usuarios basada en diferencias en el tiempo de respuesta del endpoint de inicio de sesión. Midiendo el tiempo que tarda el servidor en responder ante distintas combinaciones de credenciales, un atacante puede inferir si un nombre de usuario existe en el sistema sin necesidad de autenticarse.
+
+Si el usuario no existe en el sistema, el servidor no realiza ninguna verificación de la contraseña, produciendo un tiempo de respuesta muy bajo, de unos *41 ms* de media.
+
+image::usuario_incorrecto.png[Usuario incorrecto]
+
+
+En cambio, cuando el usuario sí existe, el servidor calcula y verifica el hash de la contraseña proporcionada, lo que aumenta el tiempo de respuesta significativamente (alrededor de *360 ms*):
+
+image::usuario_correcto.png[Usuario correcto]
+
+Por otro lado, el formulario de registro de la web también se podría considerar una enumeración de usuarios, ya que cuando se intenta registrar un usuario que ya existe, la aplicación lo dice explícitamente:
+
+image::registro_usuario_existente.png[Registro de usuario que ya existe]
+
+
+===== Remediación
+
+Para solucionar esta vulnerabilidad, se debe realizar siempre el cálculo del hash de la contraseña proporcionada. De esta forma, los tiempos de respuesta siempre serán consistentes, independientemente de si el usuario existe o no.
+
+Sobre el formulario de registro, la recomendación sería unificar los mensajes de error en un mismo error genérico, para evitar dar información de más. No obstante, eliminar los mensajes de error descriptivos puede afectar negativamente a la experiencia de usuario, por lo que debe valorarse con cuidado aplicar esta medida.
