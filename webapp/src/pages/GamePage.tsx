@@ -38,7 +38,6 @@ const GamePage: React.FC<GamePageProps> = ({ user }) => {
         const GAMEY_URL = import.meta.env.VITE_GAMEY_URL ?? 'http://localhost:4000';
         const res = await fetch(`${GAMEY_URL}/status`);
         const data = await res.text();
-        // Si el servidor responde "OK", el estado es 'ok', de lo contrario 'error'
         setGameyStatus(res.ok && data.trim() === 'OK' ? 'ok' : 'error');
       } catch (err) {
         console.error("Error conectando con Gamey:", err);

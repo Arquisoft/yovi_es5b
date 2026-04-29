@@ -34,7 +34,7 @@ export const normalizeLanguage = (value?: string | null): AppLanguage => {
 
   const normalizedValue = value.toLowerCase();
 
-  // Check for language codes
+  // Comprobar códigos de idioma del locale
   if (normalizedValue.startsWith('en') || normalizedValue === 'english') return 'en';
   if (normalizedValue.startsWith('pt') || normalizedValue === 'portuguese') return 'pt';
   if (normalizedValue.startsWith('fr') || normalizedValue === 'french') return 'fr';
@@ -89,6 +89,6 @@ export const setStoredLanguage = (language: AppLanguage, username?: string): voi
     storage.setItem(getLanguageStorageKey(username), language);
     storage.setItem(GLOBAL_LANGUAGE_KEY, language);
   } catch {
-    // Ignore persistence errors (e.g. private mode or blocked storage).
+    // Ignora errores de persistencia que ocurren al usar modo incógnito o configuraciones muy específicas
   }
 };

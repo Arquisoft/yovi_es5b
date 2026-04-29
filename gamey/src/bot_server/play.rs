@@ -61,7 +61,6 @@ pub async fn play(
         
     }?;
 
-    // TODO implementar selector de estrategia
     println!("Estrategia seleccionada: {}", params.strategy.unwrap_or(String::from("normal")));
 
     // Calcular el siguiente movimiento y devolverlo como JSON

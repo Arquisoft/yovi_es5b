@@ -189,14 +189,6 @@ Then('Intento hacer clic de nuevo en esa misma casilla', async function () {
   await casillaOcupada.click()
 })
 
-/*When('Intento hacer clic de nuevo en esa misma casilla', async function () {
-  const page = this.page
-  if (!page) throw new Error('Page not initialized')
-  const casillaOcupada = page.locator(`svg polygon[points="${this.puntosCasilla}"]`)
-  this.azulesAntes = await page.locator('svg polygon[fill="#3b82f6"]').count()
-  await casillaOcupada.click()
-})*/
-
 Then('El número de piezas azules en el tablero no debería haber aumentado', async function () {
   const page = this.page
   if (!page) throw new Error('Page not initialized')

@@ -80,7 +80,7 @@ const Estadisticas: React.FC<EstadisticasProps> = ({ user, onBack }) => {
       }
       
     } catch(err) {
-      console.error('Error en fetchRanking: ' + err); // Mostrar por consola el error
+      console.error('Error en fetchRanking: ' + err);
     }
   };
 

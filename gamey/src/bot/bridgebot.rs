@@ -375,7 +375,7 @@ impl YBot for BridgeBot {
                 return pick_best_with_tie_break(contiguous, board_size);
             }
 
-            // Emergencia: si no hay contiguas disponibles, usar cualquier celda legal.
+            // si no hay contiguas disponibles, usar cualquier celda legal.
             return pick_best_with_tie_break(available_coords.clone(), board_size);
         }
 
@@ -412,7 +412,7 @@ impl YBot for BridgeBot {
                 .iter()
                 .filter(|p| hex_distance(cell, p) == 1)
                 .count() as i32;
-            // Ligero sesgo táctico: disputar zonas cercanas al rival puede cortar su expansión.
+            //  disputar zonas cercanas al rival puede cortar su expansión.
             score += enemy_adj * 120;
             // Mantener cohesión global para no dispersar la estructura.
             score += center_metric(cell) / 3;

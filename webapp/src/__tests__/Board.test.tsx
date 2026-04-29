@@ -164,7 +164,7 @@ describe('Pruebas del modo PvP (Jugador vs Jugador)', () => {
   })
 
   it('debería detectar la victoria del Jugador 1 en modo PvP', async () => {
-    // winner:0 → J1 (Guille) gana
+    // winner:0 → J1 gana
     globalThis.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: async () => ({
