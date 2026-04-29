@@ -77,8 +77,6 @@ mod tests {
         let coords = bot.choose_move(&game).unwrap();
         let index = coords.to_index(game.board_size());
 
-        // Index should be within the valid range for a size-5 board
-        // Total cells = (5 * 6) / 2 = 15
         assert!(index < 15);
     }
 
@@ -87,7 +85,6 @@ mod tests {
         let bot = MirrorBot;
         let mut game = GameY::new(2);
 
-        // Fill the board (size 2 has 3 cells)
         let moves = vec![
             Movement::Placement {
                 player: PlayerId::new(0),
@@ -107,7 +104,7 @@ mod tests {
             game.add_move(mv).unwrap();
         }
 
-        // Board is now full
+        // El tablero está lleno
         assert!(game.available_cells().is_empty());
         let chosen_move = bot.choose_move(&game);
         assert!(chosen_move.is_none());
@@ -118,7 +115,7 @@ mod tests {
         let bot = MirrorBot;
         let mut game = GameY::new(5);
 
-        // Make some moves to reduce available cells
+        // Se preparan algunos movimientos para reducir las opciones de celdas
         game.add_move(Movement::Placement {
             player: PlayerId::new(0),
             coords: Coordinates::new(2, 2, 0),
@@ -128,9 +125,9 @@ mod tests {
         let coords = bot.choose_move(&game).unwrap();
         let index = coords.to_index(game.board_size());
 
-        // The chosen index should be in the available cells
+        // El índice debe ser de las celdas disponibles
         assert!(game.available_cells().contains(&index));
-        // The chosen coords should be the mirrored coords
+        // Las coordenadas elegidas deben ser las espejadas
         assert_eq!(coords.x(), 2);
         assert_eq!(coords.y(), 0);
         assert_eq!(coords.z(), 2);

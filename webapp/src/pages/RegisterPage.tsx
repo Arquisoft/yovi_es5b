@@ -41,13 +41,13 @@ const RegisterPage = () => {
       <div className="auth-selector">
         <button
           onClick={() => setIsLogin(false)} // Cambia el estado para mostrar el formulario de registro
-          className={`selector-button ${isLogin ? "" : "active"}`} // Se ilumina si NO estamos en login
+          className={`selector-button ${isLogin ? "" : "active"}`} // Se ilumina si no estamos en login
         >
           {t('auth.registerTab')}
         </button>
         <button
           onClick={() => setIsLogin(true)} // Cambia el estado para mostrar el inicio de sesión
-          className={`login-page-button selector-button ${isLogin ? "active" : ""}`} // Se ilumina si  SÍ estamos en modo login
+          className={`login-page-button selector-button ${isLogin ? "active" : ""}`} // Se ilumina si estamos en modo login
         >
           {t('auth.loginTab')}
         </button>

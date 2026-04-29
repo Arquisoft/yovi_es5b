@@ -10,7 +10,7 @@ vi.mock('../components/Board', () => ({
   Board: () => <div data-testid="mock-board">Tablero Simulado</div>
 }))
 
-// También mockeamos las RUTAS por si cambian en el futuro, pero aquí usamos
+// También mockeamos las rutas por si cambian en el futuro, pero aquí usamos
 // valores simples para asegurar la prueba.
 vi.mock('../routes/constants', () => ({
   ROUTES: {

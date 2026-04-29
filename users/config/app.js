@@ -34,10 +34,10 @@ app.use((req, res, next) => {
 // Gestión de sesiones con express-session
 app.use(session({
   name: "JSESSIONID",
-  secret: 'your_secret_key',          // Use a strong, unique secret
-  resave: false,                      // Don't save unchanged sessions
-  saveUninitialized: false,           // Don't store empty sessions
-  cookie: { maxAge: 21600000, httpOnly: false }           // Session lasts 6 hours
+  secret: "7HQ66YNzghTNzd9ZQUVB", 
+  resave: false,                      // No reescribir sesiones sin cambios
+  saveUninitialized: false,           // No guardar sesiones vacías
+  cookie: { maxAge: 21600000, httpOnly: false }           // La sesión dura 6 horas
 }));
 
 // Autenticación mediante sesión de express-session

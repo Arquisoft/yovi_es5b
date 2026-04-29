@@ -49,7 +49,6 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
     setLoading(true); // Desactiva el botón mientras esperamos respuesta
 
     try {
-      //Enviamos los datos al puerto 3000 donde corre el microservicio de usuarios.
       const USERS_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
       const response = await fetch(`${USERS_URL}/login`, {
         credentials: "include",
@@ -58,8 +57,8 @@ const LogInForm: React.FC<LogInFormProps> = ({ onLoginSuccess }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nom_usuario: username, // Clave esperada por el validador del backend
-          contrasena: password   // Clave esperada por el validador del backend
+          nom_usuario: username, 
+          contrasena: password
         }),
       });
 
