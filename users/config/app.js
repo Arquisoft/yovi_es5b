@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const crypto = require('node:crypto');
 const promBundle = require('express-prom-bundle');
 const app = express();
 const port = 3000;
@@ -32,9 +33,10 @@ app.use((req, res, next) => {
 });
 
 // Gestión de sesiones con express-session
+const session_secret = crypto.randomBytes(8).toString('hex');
 app.use(session({
   name: "JSESSIONID",
-  secret: "7HQ66YNzghTNzd9ZQUVB", 
+  secret: session_secret, 
   resave: false,                      // No reescribir sesiones sin cambios
   saveUninitialized: false,           // No guardar sesiones vacías
   cookie: { maxAge: 21600000, httpOnly: false }           // La sesión dura 6 horas
